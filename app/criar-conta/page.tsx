@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import IntestineBackground from '@/components/IntestineBackground'
 
-export default function CriarContaPage() {
+function CriarContaForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
@@ -199,5 +199,25 @@ export default function CriarContaPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CriarContaPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-dark-bg relative overflow-hidden flex items-center justify-center">
+        <IntestineBackground />
+        <div className="relative z-10 text-center">
+          <div className="text-xl text-neon-cyan mb-4 font-semibold">Carregando...</div>
+          <div className="flex justify-center gap-3">
+            <div className="w-3 h-3 bg-neon-purple rounded-full animate-bounce" />
+            <div className="w-3 h-3 bg-neon-cyan rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+            <div className="w-3 h-3 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+          </div>
+        </div>
+      </div>
+    }>
+      <CriarContaForm />
+    </Suspense>
   )
 }

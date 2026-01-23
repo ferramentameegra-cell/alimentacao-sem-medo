@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { montarPlanoSemanal, formatarPlano, DadosUsuario } from '@/lib/montador_dieta'
 import { getSessao, salvarCardapio, criarConta, criarSessao } from '@/lib/auth'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const sessionId = request.headers.get('X-Session-Id')

@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { getSessao, salvarCardapio, reautenticarPorEmail } from '@/lib/auth'
 import { montarPlanoSemanal, formatarPlano, DadosUsuario } from '@/lib/montador_dieta'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * API com streaming de progresso para geração automática de cardápio
  * Usa Server-Sent Events (SSE) para comunicação em tempo real

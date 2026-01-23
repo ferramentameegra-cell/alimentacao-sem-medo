@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessao, reautenticarPorEmail } from '@/lib/auth'
 
+// Marcar como rota dinâmica para evitar renderização estática
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(request: NextRequest) {
   try {
     const sessionId = request.headers.get('X-Session-Id')
