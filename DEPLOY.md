@@ -35,7 +35,36 @@ O repositório foi criado e configurado com sucesso:
    - Publish directory: `.next`
 5. Clique em "Deploy site"
 
-### Opção 3: GitHub Actions (Deploy customizado)
+### Opção 3: Railway (Deploy em Produção)
+
+Railway é uma plataforma moderna de deploy que suporta Next.js nativamente.
+
+**Passo a passo:**
+
+1. **Acesse Railway**: https://railway.app
+2. **Faça login** com sua conta GitHub
+3. **Crie um novo projeto**:
+   - Clique em "New Project"
+   - Selecione "Deploy from GitHub repo"
+   - Escolha o repositório `alimentacao-sem-medo`
+4. **Railway detectará automaticamente**:
+   - Framework: Next.js
+   - Build Command: `npm run build`
+   - Start Command: `npm start`
+5. **Configure variáveis de ambiente** (se necessário):
+   - Vá em Settings > Variables
+   - Adicione `NODE_ENV=production`
+6. **Deploy automático**: Toda vez que você fizer push para `main`, o Railway fará deploy automaticamente
+
+**Arquivos de configuração já criados:**
+- `railway.json` - Configuração do Railway
+- `nixpacks.toml` - Configuração do buildpack
+- `Dockerfile` - Para deploy via Docker (opcional)
+- `Procfile` - Para deploy via buildpack (padrão)
+
+**URL do deploy**: Após o primeiro deploy, o Railway gerará uma URL automática. Você pode configurar um domínio customizado nas configurações do projeto.
+
+### Opção 4: GitHub Actions (Deploy customizado)
 
 O workflow já está configurado em `.github/workflows/deploy.yml`. Você pode personalizar para fazer deploy em qualquer plataforma.
 
