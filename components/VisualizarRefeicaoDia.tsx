@@ -110,18 +110,20 @@ export default function VisualizarRefeicaoDia({
           
           // Extrair refeição do dia específico
           if (cardapio.plano && cardapio.plano.dias) {
-            // Plano semanal (7 dias)
-            // Converter dia da semana JS (0-6) para dia do plano (1-7)
-            // Domingo (0) -> Dia 1, Segunda (1) -> Dia 2, etc.
-            const diaPlanoNumero = diaSemana === 0 ? 1 : diaSemana + 1
-            const diaPlano = cardapio.plano.dias.find((d: any) => d.dia === diaPlanoNumero)
+            // Plano semanal (7 dias) - agora usa 0-6 (Domingo-Sábado)
+            const diaPlano = cardapio.plano.dias.find((d: any) => d.dia === diaSemana)
             
             if (diaPlano) {
               const refeicaoData = diaPlano[tipoRefeicao] || []
+              // Buscar dica de preparo se disponível
+              const dicaKey = `${tipoRefeicao}_dica` as keyof typeof diaPlano
+              const dica = diaPlano[dicaKey] as string | undefined
+              
               setRefeicao({
-                dia: nomesDias[diaSemana],
+                dia: diaPlano.nomeDia || nomesDias[diaSemana],
                 tipo: nomesRefeicoes[tipoRefeicao],
-                itens: refeicaoData
+                itens: refeicaoData,
+                dica: dica
               })
             } else {
               setErro('Refeição não encontrada para este dia.')
@@ -197,10 +199,13 @@ export default function VisualizarRefeicaoDia({
                   
                   if (diaPlano) {
                     const refeicaoData = diaPlano[tipoRefeicao] || []
+                    const dicaKey = `${tipoRefeicao}_dica` as keyof typeof diaPlano
+                    const dica = diaPlano[dicaKey] as string | undefined
                     setRefeicao({
-                      dia: nomesDias[diaSemana],
+                      dia: diaPlano.nomeDia || nomesDias[diaSemana],
                       tipo: nomesRefeicoes[tipoRefeicao],
-                      itens: refeicaoData
+                      itens: refeicaoData,
+                      dica: dica
                     })
                     setGerandoCardapio(false)
                     return
@@ -287,18 +292,27 @@ export default function VisualizarRefeicaoDia({
             <div className="bg-dark-card border border-dark-border rounded-xl p-8">
               <div className="space-y-4">
                 {refeicao.itens.length > 0 ? (
-                  refeicao.itens.map((item: any, index: number) => (
-                    <div key={index} className="flex items-start gap-4 p-4 bg-dark-secondary rounded-lg border border-dark-border">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-text-primary mb-2">
-                          {item.nome}
-                        </h3>
-                        <p className="text-base text-neon-cyan font-medium">
-                          {item.quantidade}
-                        </p>
+                  <>
+                    {refeicao.itens.map((item: any, index: number) => (
+                      <div key={index} className="flex items-start gap-4 p-4 bg-dark-secondary rounded-lg border border-dark-border">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-text-primary mb-2">
+                            {item.nome}
+                          </h3>
+                          <p className="text-base text-neon-cyan font-medium">
+                            {item.quantidade}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    ))}
+                    {/* Exibir dica de preparo se disponível */}
+                    {refeicao.dica && (
+                      <div className="mt-4 p-4 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
+                        <div className="text-neon-cyan font-semibold text-sm mb-2">💡 Dica de preparo:</div>
+                        <div className="text-text-secondary italic text-sm">{refeicao.dica}</div>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <p className="text-base text-text-secondary text-center py-8">
                     Nenhum item encontrado para esta refeição.

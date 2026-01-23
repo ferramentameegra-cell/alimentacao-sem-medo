@@ -27,11 +27,16 @@ export interface DadosUsuario {
 }
 
 export interface PlanoDia {
-  dia: number
+  dia: number // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+  nomeDia: string // 'Domingo', 'Segunda-feira', etc.
   cafe_manha: ItemAlimentar[]
+  cafe_manha_dica?: string // Dica de preparo para café da manhã
   almoco: ItemAlimentar[]
+  almoco_dica?: string // Dica de preparo para almoço
   lanche_tarde: ItemAlimentar[]
+  lanche_tarde_dica?: string // Dica de preparo para lanche da tarde
   jantar: ItemAlimentar[]
+  jantar_dica?: string // Dica de preparo para jantar
 }
 
 export interface PlanoSemanal {
@@ -44,7 +49,7 @@ export interface PlanoSemanal {
  */
 export function montarDia(
   dadosUsuario: DadosUsuario,
-  diaNumero: number,
+  diaNumero: number, // 0-6 (Domingo-Sábado)
   itensUsados: Set<string> = new Set()
 ): PlanoDia {
   const condicao = dadosUsuario.condicao_digestiva === 'ambos' 
@@ -346,13 +351,26 @@ export function montarDia(
     }
   }
 
+  // Nomes dos dias da semana
+  const nomesDias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+  
+  // Garantir que diaNumero está no range 0-6
+  const diaSemana = diaNumero >= 0 && diaNumero <= 6 ? diaNumero : diaNumero % 7
+
   const plano: PlanoDia = {
-    dia: diaNumero,
+    dia: diaSemana,
+    nomeDia: nomesDias[diaSemana],
     cafe_manha: cafeManhaItens,
     almoco: almocoItens,
     lanche_tarde: lancheTardeItens,
     jantar: jantarItens,
   }
+
+  // Gerar dicas de preparo
+  plano.cafe_manha_dica = cafeManhaItens.length > 0 ? gerarDicaRefeicao(cafeManhaItens, 'cafe_manha') : undefined
+  plano.almoco_dica = almocoItens.length > 0 ? gerarDicaRefeicao(almocoItens, 'almoco') : undefined
+  plano.lanche_tarde_dica = lancheTardeItens.length > 0 ? gerarDicaRefeicao(lancheTardeItens, 'lanche_tarde') : undefined
+  plano.jantar_dica = jantarItens.length > 0 ? gerarDicaRefeicao(jantarItens, 'jantar') : undefined
 
   return plano
 }
@@ -395,6 +413,9 @@ export function montarPlanoSemanal(
     return itens.find(item => item.nome === nome) || null
   }
 
+  // Nomes dos dias da semana
+  const nomesDias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+
   // Gerar cada dia da semana (0 = Domingo, 1 = Segunda, ..., 6 = Sábado)
   for (let diaSemana = 0; diaSemana < 7; diaSemana++) {
     // Tentar gerar dia sem repetições usando o sistema de rastreamento
@@ -429,7 +450,8 @@ export function montarPlanoSemanal(
         return null
       }).filter((item: ItemAlimentar | null): item is ItemAlimentar => item !== null)
 
-      const almoco = diaSemRepeticoes.almoco.map((item: { nome: string; quantidade: string }) => {
+      // Para domingo (diaSemana === 0), garantir almoço diferenciado (mais prazer, comida de família)
+      let almoco = diaSemRepeticoes.almoco.map((item: { nome: string; quantidade: string }) => {
         const itemCompleto = buscarItemPorNome(item.nome, 'almoco')
         if (itemCompleto) {
           const fatorAjuste = calcularFatorAjuste(
@@ -447,6 +469,30 @@ export function montarPlanoSemanal(
         }
         return null
       }).filter((item: ItemAlimentar | null): item is ItemAlimentar => item !== null)
+
+      // Se for domingo, garantir que o almoço seja mais completo e prazeroso
+      if (diaSemana === 0 && almoco.length < 4) {
+        // Adicionar mais itens para tornar o almoço de domingo mais especial
+        const itensAlmoco = buscarItens('almoco', condicao)
+        const itensAdicionais = itensAlmoco
+          .filter(item => !almoco.some(a => a.nome === item.nome))
+          .slice(0, 4 - almoco.length)
+        
+        for (const item of itensAdicionais) {
+          const fatorAjuste = calcularFatorAjuste(
+            dadosUsuario.peso,
+            dadosUsuario.altura,
+            dadosUsuario.idade,
+            dadosUsuario.sexo,
+            dadosUsuario.rotina,
+            dadosUsuario.objetivo
+          )
+          almoco.push({
+            ...item,
+            quantidade: ajustarQuantidade(item.quantidade, fatorAjuste)
+          })
+        }
+      }
 
       const lanche_tarde = diaSemRepeticoes.lanche_tarde.map((item: { nome: string; quantidade: string }) => {
         const itemCompleto = buscarItemPorNome(item.nome, 'lanche_tarde')
@@ -486,16 +532,34 @@ export function montarPlanoSemanal(
         return null
       }).filter((item: ItemAlimentar | null): item is ItemAlimentar => item !== null)
 
+      // Gerar dicas de preparo para cada refeição
+      const cafe_manha_dica = cafe_manha.length > 0 ? gerarDicaRefeicao(cafe_manha, 'cafe_manha') : undefined
+      const almoco_dica = almoco.length > 0 ? gerarDicaRefeicao(almoco, 'almoco') : undefined
+      const lanche_tarde_dica = lanche_tarde.length > 0 ? gerarDicaRefeicao(lanche_tarde, 'lanche_tarde') : undefined
+      const jantar_dica = jantar.length > 0 ? gerarDicaRefeicao(jantar, 'jantar') : undefined
+
       dias.push({
-        dia: diaSemana + 1, // Converter para 1-7
+        dia: diaSemana, // Manter 0-6 (Domingo-Sábado)
+        nomeDia: nomesDias[diaSemana],
         cafe_manha,
+        cafe_manha_dica,
         almoco,
+        almoco_dica,
         lanche_tarde,
-        jantar
+        lanche_tarde_dica,
+        jantar,
+        jantar_dica
       })
     } else {
       // Fallback: usar método antigo se não conseguir gerar sem repetições
-      const planoDia = montarDia(dadosUsuario, diaSemana + 1, itensUsados)
+      const planoDia = montarDia(dadosUsuario, diaSemana, itensUsados)
+      // Adicionar nome do dia e dicas
+      const nomesDias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+      planoDia.nomeDia = nomesDias[diaSemana]
+      planoDia.cafe_manha_dica = planoDia.cafe_manha.length > 0 ? gerarDicaRefeicao(planoDia.cafe_manha, 'cafe_manha') : undefined
+      planoDia.almoco_dica = planoDia.almoco.length > 0 ? gerarDicaRefeicao(planoDia.almoco, 'almoco') : undefined
+      planoDia.lanche_tarde_dica = planoDia.lanche_tarde.length > 0 ? gerarDicaRefeicao(planoDia.lanche_tarde, 'lanche_tarde') : undefined
+      planoDia.jantar_dica = planoDia.jantar.length > 0 ? gerarDicaRefeicao(planoDia.jantar, 'jantar') : undefined
       dias.push(planoDia)
     }
   }
@@ -513,7 +577,9 @@ export function formatarPlano(plano: PlanoSemanal): string {
   let texto = ''
 
   plano.dias.forEach(dia => {
-    texto += `\nDIA ${dia.dia}\n\n`
+    // Usar nome do dia se disponível, senão usar número
+    const tituloDia = dia.nomeDia || `Dia ${dia.dia + 1}`
+    texto += `\n${tituloDia.toUpperCase()}\n\n`
     
     // Café da manhã
     texto += 'Café da manhã:\n'
@@ -521,8 +587,11 @@ export function formatarPlano(plano: PlanoSemanal): string {
       texto += `- ${item.nome} — ${item.quantidade}\n`
     })
     
-    // Dica de preparo para café da manhã
-    if (dia.cafe_manha.length > 0) {
+    // Dica de preparo para café da manhã (usar dica salva ou gerar)
+    if (dia.cafe_manha_dica) {
+      texto += '\n💡 Dica de preparo:\n'
+      texto += `- ${dia.cafe_manha_dica}\n`
+    } else if (dia.cafe_manha.length > 0) {
       const dica = gerarDicaRefeicao(dia.cafe_manha, 'cafe_manha')
       if (dica) {
         texto += '\n💡 Dica de preparo:\n'
@@ -536,8 +605,11 @@ export function formatarPlano(plano: PlanoSemanal): string {
       texto += `- ${item.nome} — ${item.quantidade}\n`
     })
     
-    // Dica de preparo para almoço
-    if (dia.almoco.length > 0) {
+    // Dica de preparo para almoço (usar dica salva ou gerar)
+    if (dia.almoco_dica) {
+      texto += '\n💡 Dica de preparo:\n'
+      texto += `- ${dia.almoco_dica}\n`
+    } else if (dia.almoco.length > 0) {
       const dica = gerarDicaRefeicao(dia.almoco, 'almoco')
       if (dica) {
         texto += '\n💡 Dica de preparo:\n'
@@ -551,8 +623,11 @@ export function formatarPlano(plano: PlanoSemanal): string {
       texto += `- ${item.nome} — ${item.quantidade}\n`
     })
     
-    // Dica de preparo para lanche da tarde
-    if (dia.lanche_tarde.length > 0) {
+    // Dica de preparo para lanche da tarde (usar dica salva ou gerar)
+    if (dia.lanche_tarde_dica) {
+      texto += '\n💡 Dica de preparo:\n'
+      texto += `- ${dia.lanche_tarde_dica}\n`
+    } else if (dia.lanche_tarde.length > 0) {
       const dica = gerarDicaRefeicao(dia.lanche_tarde, 'lanche_tarde')
       if (dica) {
         texto += '\n💡 Dica de preparo:\n'
@@ -566,8 +641,11 @@ export function formatarPlano(plano: PlanoSemanal): string {
       texto += `- ${item.nome} — ${item.quantidade}\n`
     })
     
-    // Dica de preparo para jantar
-    if (dia.jantar.length > 0) {
+    // Dica de preparo para jantar (usar dica salva ou gerar)
+    if (dia.jantar_dica) {
+      texto += '\n💡 Dica de preparo:\n'
+      texto += `- ${dia.jantar_dica}\n`
+    } else if (dia.jantar.length > 0) {
       const dica = gerarDicaRefeicao(dia.jantar, 'jantar')
       if (dica) {
         texto += '\n💡 Dica de preparo:\n'

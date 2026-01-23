@@ -296,7 +296,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                     <div key={dia.dia} className="space-y-4">
                       {/* Título do dia */}
                       <div className="text-2xl font-bold text-neon-cyan mb-4">
-                        DIA {dia.dia}
+                        {dia.nomeDia || `Dia ${dia.dia + 1}`}
                       </div>
                       
                       {/* Café da manhã */}
@@ -329,7 +329,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                           })}
                           {/* Dica de preparo */}
                           {(() => {
-                            const dica = gerarDicaRefeicao(dia.cafe_manha, 'cafe_manha')
+                            // Usar dica salva se disponível, senão gerar
+                            const dica = dia.cafe_manha_dica || gerarDicaRefeicao(dia.cafe_manha, 'cafe_manha')
                             return dica ? (
                               <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
                                 <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
@@ -370,7 +371,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                           })}
                           {/* Dica de preparo */}
                           {(() => {
-                            const dica = gerarDicaRefeicao(dia.almoco, 'almoco')
+                            // Usar dica salva se disponível, senão gerar
+                            const dica = dia.almoco_dica || gerarDicaRefeicao(dia.almoco, 'almoco')
                             return dica ? (
                               <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
                                 <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
@@ -411,7 +413,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                           })}
                           {/* Dica de preparo */}
                           {(() => {
-                            const dica = gerarDicaRefeicao(dia.lanche_tarde, 'lanche_tarde')
+                            // Usar dica salva se disponível, senão gerar
+                            const dica = dia.lanche_tarde_dica || gerarDicaRefeicao(dia.lanche_tarde, 'lanche_tarde')
                             return dica ? (
                               <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
                                 <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
@@ -452,7 +455,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                           })}
                           {/* Dica de preparo */}
                           {(() => {
-                            const dica = gerarDicaRefeicao(dia.jantar, 'jantar')
+                            // Usar dica salva se disponível, senão gerar
+                            const dica = dia.jantar_dica || gerarDicaRefeicao(dia.jantar, 'jantar')
                             return dica ? (
                               <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
                                 <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
