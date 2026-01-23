@@ -60,3 +60,25 @@ Para remover o token do remote e usar SSH:
 ```bash
 git remote set-url origin git@github.com:ferramentameegra-cell/alimentacao-sem-medo.git
 ```
+
+## ⚙️ Configurar GitHub Actions (Opcional)
+
+Se você quiser usar GitHub Actions para deploy automático:
+
+1. Crie um novo token no GitHub com permissão `workflow`:
+   - Vá em Settings > Developer settings > Personal access tokens > Tokens (classic)
+   - Gere um novo token com escopo `workflow`
+   - Use esse token no lugar do atual
+
+2. Recrie o workflow:
+   ```bash
+   mkdir -p .github/workflows
+   # Copie o conteúdo do arquivo deploy.yml que foi criado anteriormente
+   ```
+
+3. Faça commit e push:
+   ```bash
+   git add .github/workflows/deploy.yml
+   git commit -m "Adicionar workflow de deploy"
+   git push origin main
+   ```
