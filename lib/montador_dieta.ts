@@ -64,10 +64,17 @@ export function montarDia(
   const lancheTarde = buscarItens('lanche_tarde', condicao)
   const jantar = buscarItens('jantar', condicao)
 
+  // Nomes dos dias da semana
+  const nomesDias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+  
+  // Garantir que diaNumero está no range 0-6
+  const diaSemana = diaNumero >= 0 && diaNumero <= 6 ? diaNumero : diaNumero % 7
+
   // Se não há itens na base, retornar plano vazio com mensagem
   if (BASE_CONHECIMENTO.length === 0) {
     return {
-      dia: diaNumero,
+      dia: diaSemana,
+      nomeDia: nomesDias[diaSemana],
       cafe_manha: [],
       almoco: [],
       lanche_tarde: [],
@@ -351,12 +358,6 @@ export function montarDia(
     }
   }
 
-  // Nomes dos dias da semana
-  const nomesDias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
-  
-  // Garantir que diaNumero está no range 0-6
-  const diaSemana = diaNumero >= 0 && diaNumero <= 6 ? diaNumero : diaNumero % 7
-
   const plano: PlanoDia = {
     dia: diaSemana,
     nomeDia: nomesDias[diaSemana],
@@ -475,7 +476,7 @@ export function montarPlanoSemanal(
         // Adicionar mais itens para tornar o almoço de domingo mais especial
         const itensAlmoco = buscarItens('almoco', condicao)
         const itensAdicionais = itensAlmoco
-          .filter(item => !almoco.some(a => a.nome === item.nome))
+          .filter(item => !almoco.some((a: ItemAlimentar) => a.nome === item.nome))
           .slice(0, 4 - almoco.length)
         
         for (const item of itensAdicionais) {
