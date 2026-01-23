@@ -7,9 +7,10 @@ interface MetaAguaProps {
   dadosUsuario?: DadosUsuarioAgua
   className?: string
   compacto?: boolean // Modo compacto e discreto
+  sidebar?: boolean // Modo para sidebar (ainda mais compacto)
 }
 
-export default function MetaAgua({ dadosUsuario, className = '', compacto = false }: MetaAguaProps) {
+export default function MetaAgua({ dadosUsuario, className = '', compacto = false, sidebar = false }: MetaAguaProps) {
   const [consumidoHoje, setConsumidoHoje] = useState(0)
   const [meta, setMeta] = useState(2000) // Default 2L
   const [carregando, setCarregando] = useState(true)
@@ -111,7 +112,121 @@ export default function MetaAgua({ dadosUsuario, className = '', compacto = fals
     )
   }
 
-  // Modo compacto e discreto
+  // Modo sidebar (mais compacto e moderno)
+  if (sidebar) {
+    return (
+      <div className={`bg-gradient-to-br from-dark-card/60 to-dark-secondary/40 border border-cyan-500/20 rounded-xl p-3 sm:p-4 ${className}`}
+        style={{
+          boxShadow: '0 4px 16px rgba(6, 182, 212, 0.15)'
+        }}
+      >
+        <div className="text-center mb-3">
+          <h3 className="text-sm font-bold text-cyan-400 mb-1.5 tracking-tight">
+            💧 Hidratação Diária
+          </h3>
+          <p className="text-xs text-text-secondary font-medium">
+            {formatarAgua(consumidoHoje)} / {formatarAgua(meta)}
+          </p>
+        </div>
+
+        {/* Copo moderno e compacto */}
+        <div className="relative mb-3">
+          <div className="mx-auto w-20 h-40 bg-dark-card/30 border-2 border-cyan-500/30 rounded-b-2xl overflow-hidden relative backdrop-blur-sm"
+            style={{
+              boxShadow: '0 4px 12px rgba(6, 182, 212, 0.2), inset 0 0 20px rgba(6, 182, 212, 0.1)'
+            }}
+          >
+            {/* Água dentro do copo com efeito moderno */}
+            <div
+              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-600 via-cyan-500 to-cyan-400 transition-all duration-700 ease-out"
+              style={{
+                height: `${progresso}%`,
+                boxShadow: progresso > 0 
+                  ? '0 -4px 16px rgba(6, 182, 212, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.1)' 
+                  : 'none',
+              }}
+            >
+              {/* Efeito de ondas na superfície */}
+              {progresso > 0 && (
+                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-cyan-300/60 to-transparent animate-pulse" />
+              )}
+            </div>
+
+            {/* Indicador de progresso moderno */}
+            <div className="absolute top-1.5 left-1.5 right-1.5 text-center pointer-events-none">
+              <div className="text-sm font-bold text-cyan-300 drop-shadow-lg">
+                {progresso}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mensagem motivacional compacta */}
+        {progresso >= 100 && (
+          <div className="text-center mb-2">
+            <p className="text-xs font-semibold text-cyan-400">🎉 Meta atingida!</p>
+          </div>
+        )}
+
+        {/* Botões modernos e compactos */}
+        <div className="grid grid-cols-3 gap-1.5">
+          {[200, 300, 500].map((ml) => (
+            <button
+              key={ml}
+              onClick={() => adicionarAgua(ml)}
+              disabled={adicionando || consumidoHoje >= meta}
+              className="px-2 py-2 bg-dark-card/50 border border-cyan-500/20 rounded-lg text-xs font-semibold text-cyan-300 hover:border-cyan-400/60 hover:bg-cyan-500/10 hover:text-cyan-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed touch-manipulation"
+              style={{
+                boxShadow: '0 2px 8px rgba(6, 182, 212, 0.1)'
+              }}
+            >
+              +{ml}
+            </button>
+          ))}
+        </div>
+
+        {/* Input customizado compacto */}
+        {falta > 0 && (
+          <div className="mt-2 flex gap-1.5">
+            <input
+              type="number"
+              min="0"
+              max={falta}
+              step="50"
+              placeholder="ml"
+              className="flex-1 px-2 py-1.5 bg-dark-card/50 border border-cyan-500/20 rounded-lg text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  const input = e.currentTarget
+                  const quantidade = parseInt(input.value)
+                  if (quantidade > 0 && quantidade <= falta) {
+                    adicionarAgua(quantidade)
+                    input.value = ''
+                  }
+                }
+              }}
+            />
+            <button
+              onClick={(e) => {
+                const input = e.currentTarget.previousElementSibling as HTMLInputElement
+                const quantidade = parseInt(input.value)
+                if (quantidade > 0 && quantidade <= falta) {
+                  adicionarAgua(quantidade)
+                  input.value = ''
+                }
+              }}
+              disabled={adicionando || consumidoHoje >= meta}
+              className="px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-cyan-500 text-white rounded-lg text-xs font-semibold hover:from-cyan-500 hover:to-cyan-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed touch-manipulation"
+            >
+              +
+            </button>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Modo compacto e discreto (para Home)
   if (compacto) {
     return (
       <div className={`bg-dark-secondary/50 border border-dark-border/50 rounded-lg p-3 sm:p-4 ${className}`}>

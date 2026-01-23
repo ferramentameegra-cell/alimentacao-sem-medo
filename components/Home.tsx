@@ -10,8 +10,6 @@ import DiaSemanaSelector from './DiaSemanaSelector'
 import VisualizarRefeicaoDia from './VisualizarRefeicaoDia'
 import ListaCompras from './ListaCompras'
 import BarraProgressoCardapio from './BarraProgressoCardapio'
-import MetaAgua from './MetaAgua'
-import { DadosUsuarioAgua } from '@/lib/calculadora_agua'
 
 interface CardapioSalvo {
   id: string
@@ -41,7 +39,6 @@ export default function Home() {
   const [gerandoCardapio, setGerandoCardapio] = useState(false)
   const [progressoGeracao, setProgressoGeracao] = useState(0)
   const [etapaGeracao, setEtapaGeracao] = useState('')
-  const [dadosUsuarioAgua, setDadosUsuarioAgua] = useState<DadosUsuarioAgua | undefined>(undefined)
 
   // Carregar cardápios da conta e gerar automaticamente se necessário
   useEffect(() => {
@@ -237,38 +234,6 @@ export default function Home() {
         
         const cardapioParaUsar = cardapioSemana || maisRecente
         setCardapioAtual(cardapioParaUsar)
-        
-        // Carregar dados do usuário do último cardápio para calcular meta de água
-        if (cardapiosExistentes.length > 0) {
-          const ultimoCardapio = cardapiosExistentes.sort((a: CardapioSalvo, b: CardapioSalvo) => 
-            new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
-          )[0]
-          
-          // Buscar dados completos do cardápio incluindo dadosUsuario
-          try {
-            const cardapioResponse = await fetch(`/api/cardapios/${ultimoCardapio.id}`, {
-              headers: {
-                'X-Session-Id': sessionId || '',
-                'X-User-Email': localStorage.getItem('userEmail') || '',
-              },
-            })
-            
-            if (cardapioResponse.ok) {
-              const cardapioData = await cardapioResponse.json()
-              if (cardapioData.dadosUsuario) {
-                setDadosUsuarioAgua({
-                  peso: cardapioData.dadosUsuario.peso,
-                  altura: cardapioData.dadosUsuario.altura,
-                  idade: cardapioData.dadosUsuario.idade,
-                  sexo: cardapioData.dadosUsuario.sexo,
-                  rotina: cardapioData.dadosUsuario.rotina,
-                })
-              }
-            }
-          } catch (error) {
-            console.error('Erro ao carregar dados do usuário:', error)
-          }
-        }
         
         console.log('Cardápio atual definido:', cardapioParaUsar?.id || 'nenhum')
       } catch (error) {
@@ -488,24 +453,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seletor de dias da semana com Meta de Água ao lado */}
+      {/* Seletor de dias da semana */}
       <section className="mb-8 lg:mb-12 max-w-full">
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start lg:items-start">
-          <div className="flex-1 w-full lg:w-auto">
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-4 lg:mb-8 tracking-tight">
-              Selecione o dia da semana
-            </h2>
-            <DiaSemanaSelector 
-              selectedDay={selectedDay}
-              onSelectDay={setSelectedDay}
-            />
-          </div>
-          
-          {/* Meta de Água - compacta e discreta ao lado */}
-          <div className="w-full lg:w-80 flex-shrink-0">
-            <MetaAgua dadosUsuario={dadosUsuarioAgua} compacto />
-          </div>
-        </div>
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-4 lg:mb-8 tracking-tight">
+          Selecione o dia da semana
+        </h2>
+        <DiaSemanaSelector 
+          selectedDay={selectedDay}
+          onSelectDay={setSelectedDay}
+        />
       </section>
 
       {/* Carrossel de refeições do dia selecionado - estilo Netflix */}

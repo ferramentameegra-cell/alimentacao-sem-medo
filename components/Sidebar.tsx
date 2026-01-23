@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import GenioLampada from './GenioLampada'
+import MetaAgua from './MetaAgua'
+import { DadosUsuarioAgua } from '@/lib/calculadora_agua'
 
 export default function Sidebar() {
   const router = useRouter()
@@ -12,6 +14,7 @@ export default function Sidebar() {
   const [genioAberto, setGenioAberto] = useState(false)
   const [temCardapio, setTemCardapio] = useState(false)
   const [sidebarAberta, setSidebarAberta] = useState(false)
+  const [dadosUsuarioAgua, setDadosUsuarioAgua] = useState<DadosUsuarioAgua | undefined>(undefined)
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -46,6 +49,49 @@ export default function Sidebar() {
             // Verificar se tem cardápios
             if (data.conta.cardapios && data.conta.cardapios.length > 0) {
               setTemCardapio(true)
+              
+              // Carregar dados do usuário do último cardápio para meta de água
+              try {
+                const cardapiosResponse = await fetch('/api/cardapios', {
+                  headers: {
+                    'X-Session-Id': sessionId || '',
+                    'X-User-Email': userEmail || '',
+                  },
+                })
+                
+                if (cardapiosResponse.ok) {
+                  const cardapiosData = await cardapiosResponse.json()
+                  if (cardapiosData.cardapios && cardapiosData.cardapios.length > 0) {
+                    // Pegar o último cardápio
+                    const ultimoCardapio = cardapiosData.cardapios.sort((a: any, b: any) => 
+                      new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
+                    )[0]
+                    
+                    // Buscar dados completos do cardápio
+                    const cardapioResponse = await fetch(`/api/cardapios/${ultimoCardapio.id}`, {
+                      headers: {
+                        'X-Session-Id': sessionId || '',
+                        'X-User-Email': userEmail || '',
+                      },
+                    })
+                    
+                    if (cardapioResponse.ok) {
+                      const cardapioData = await cardapioResponse.json()
+                      if (cardapioData.cardapio?.dadosUsuario) {
+                        setDadosUsuarioAgua({
+                          peso: cardapioData.cardapio.dadosUsuario.peso,
+                          altura: cardapioData.cardapio.dadosUsuario.altura,
+                          idade: cardapioData.cardapio.dadosUsuario.idade,
+                          sexo: cardapioData.cardapio.dadosUsuario.sexo,
+                          rotina: cardapioData.cardapio.dadosUsuario.rotina,
+                        })
+                      }
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error('Erro ao carregar dados do usuário para meta de água:', error)
+              }
             } else {
               setTemCardapio(false)
             }
@@ -348,21 +394,10 @@ export default function Sidebar() {
         <p className="text-base lg:text-lg text-text-primary font-semibold">3 meses cuidando da alimentação</p>
       </div>
 
-      {/* Botão "Como você está hoje?" - Gênio da Lâmpada */}
-      <button 
-        onClick={() => setGenioAberto(true)}
-        className="w-full mb-6 lg:mb-8 p-4 lg:p-5 bg-gradient-to-br from-neon-pink via-neon-purple to-neon-cyan hover:from-neon-cyan hover:via-neon-purple hover:to-neon-pink text-white rounded-lg text-sm lg:text-base font-bold transition-all duration-300 tracking-tight touch-manipulation"
-        style={{
-          boxShadow: '0 6px 24px rgba(199, 125, 255, 0.4)'
-        }}
-      >
-        <span className="flex items-center justify-center gap-2">
-          🧞 Como você está hoje?
-        </span>
-      </button>
-
-      {/* Componente Gênio da Lâmpada */}
-      <GenioLampada isOpen={genioAberto} onClose={() => setGenioAberto(false)} />
+      {/* Meta de Água - Interface moderna e compacta */}
+      <div className="mb-6 lg:mb-8">
+        <MetaAgua dadosUsuario={dadosUsuarioAgua} compacto sidebar />
+      </div>
 
       {/* Selo discreto */}
       <div className="mb-6 pt-6 border-t border-dark-border">
