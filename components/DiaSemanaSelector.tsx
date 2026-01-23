@@ -22,7 +22,7 @@ export default function DiaSemanaSelector({ selectedDay, onSelectDay }: DiaSeman
   const diaAtual = dataBrasilia.getDay()
 
   return (
-    <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-2 px-2">
+    <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-2 px-2 snap-x snap-mandatory">
       {diasSemana.map((dia) => {
         const isToday = dia.numero === diaAtual
         const isSelected = dia.numero === selectedDay
@@ -31,10 +31,10 @@ export default function DiaSemanaSelector({ selectedDay, onSelectDay }: DiaSeman
           <button
             key={dia.numero}
             onClick={() => onSelectDay(dia.numero)}
-            className={`flex-shrink-0 px-6 py-4 rounded-xl border transition-all duration-300 ${
+            className={`flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 rounded-xl border transition-all duration-300 touch-manipulation snap-center min-w-[100px] sm:min-w-[120px] ${
               isSelected
                 ? 'border-neon-purple/60 bg-gradient-to-br from-dark-card to-dark-tertiary shadow-neon-purple scale-105'
-                : 'border-dark-border bg-dark-card hover:border-lilac/40 hover:scale-102'
+                : 'border-dark-border bg-dark-card active:border-lilac/40 active:scale-102'
             } ${isToday && !isSelected ? 'border-neon-cyan/40' : ''}`}
             style={{
               boxShadow: isSelected 
@@ -45,10 +45,10 @@ export default function DiaSemanaSelector({ selectedDay, onSelectDay }: DiaSeman
             }}
           >
             <div className="text-center">
-              <div className={`text-sm font-semibold mb-1 ${isToday ? 'text-neon-cyan' : 'text-text-secondary'}`}>
+              <div className={`text-xs sm:text-sm font-semibold mb-1 ${isToday ? 'text-neon-cyan' : 'text-text-secondary'}`}>
                 {isToday ? 'Hoje' : dia.abreviacao}
               </div>
-              <div className={`text-lg font-bold ${isSelected ? 'text-neon-purple' : 'text-text-primary'}`}>
+              <div className={`text-base sm:text-lg font-bold ${isSelected ? 'text-neon-purple' : 'text-text-primary'}`}>
                 {dia.nome}
               </div>
             </div>

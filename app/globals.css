@@ -43,6 +43,16 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Otimizações mobile */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Responsividade de fonte base */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
 }
 
 /* Container principal com margens adequadas */
@@ -274,4 +284,69 @@ h3 {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Otimizações Mobile */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Melhorar scroll horizontal no mobile */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .snap-center {
+    scroll-snap-align: center;
+  }
+  
+  .snap-x {
+    scroll-snap-type: x mandatory;
+  }
+  
+  .snap-mandatory {
+    scroll-snap-type: mandatory;
+  }
+}
+
+/* Ajustes de tamanho de fonte responsivo */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  p, span, div, a, button, input, textarea, label {
+    font-size: 16px;
+  }
+}
+
+/* Melhorar área de toque em botões mobile */
+@media (max-width: 768px) {
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevenir zoom em inputs no iOS */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }

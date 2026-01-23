@@ -263,7 +263,7 @@ export default function Home() {
   }, [selectedWeek, cardapios])
 
   return (
-    <div className="min-h-screen px-12 py-14 max-w-full overflow-x-hidden w-full relative">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-14 max-w-full overflow-x-hidden w-full relative">
       {/* Barra de progresso para geração automática */}
       <BarraProgressoCardapio
         progresso={progressoGeracao}
@@ -278,9 +278,9 @@ export default function Home() {
       {/* Espaçamento para a barra de progresso quando estiver visível */}
       {gerandoCardapio && <div className="h-24" />}
       {/* Header */}
-      <div className="mb-12 max-w-full">
+      <div className="mb-8 lg:mb-12 max-w-full">
         <h1 
-          className="text-6xl font-normal mb-4"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal mb-3 lg:mb-4"
           style={{ 
             color: '#FFFFFF',
             fontFamily: 'var(--font-roketto)',
@@ -291,21 +291,21 @@ export default function Home() {
         >
           Alimentação Sem Medo
         </h1>
-        <p className="text-xl text-text-secondary font-light">
+        <p className="text-base sm:text-lg lg:text-xl text-text-secondary font-light">
           Seu espaço seguro para comer sem medo
         </p>
       </div>
 
       {/* Carrossel de semanas - estilo Netflix */}
-      <section className="mb-16 max-w-full">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-text-primary tracking-tight">
+      <section className="mb-10 lg:mb-16 max-w-full">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 lg:mb-8 gap-4">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary tracking-tight">
             Seu cardápio deste mês
           </h2>
           {cardapios.length > 0 && (
             <button
               onClick={() => setMostrarListaCompras(true)}
-              className="px-6 py-3 bg-gradient-to-r from-neon-cyan to-neon-purple hover:from-neon-purple hover:to-neon-cyan text-white rounded-lg text-base font-bold transition-all duration-300 flex items-center gap-2"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-neon-cyan to-neon-purple hover:from-neon-purple hover:to-neon-cyan text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 flex items-center gap-2 touch-manipulation whitespace-nowrap"
               style={{
                 boxShadow: '0 4px 16px rgba(0, 240, 255, 0.3)'
               }}
@@ -314,7 +314,7 @@ export default function Home() {
             </button>
           )}
         </div>
-        <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide -mx-2 px-2">
+        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 scrollbar-hide -mx-2 px-2 snap-x snap-mandatory">
           {[1, 2, 3, 4].map((week) => (
             <div
               key={week}
@@ -431,10 +431,10 @@ export default function Home() {
                   setCardapioVisualizar(cardapioSemana.id)
                 }
               }}
-              className={`flex-shrink-0 w-80 h-56 rounded-xl border p-8 cursor-pointer transition-all duration-300 ${
+              className={`flex-shrink-0 w-64 sm:w-72 lg:w-80 h-48 sm:h-52 lg:h-56 rounded-xl border p-4 sm:p-6 lg:p-8 cursor-pointer transition-all duration-300 touch-manipulation snap-center ${
                 selectedWeek === week
                   ? 'border-neon-purple/60 bg-gradient-to-br from-dark-card to-dark-tertiary shadow-neon-purple scale-105'
-                  : 'border-dark-border bg-dark-card hover:border-lilac/40 hover:scale-102'
+                  : 'border-dark-border bg-dark-card hover:border-lilac/40 active:scale-102'
               }`}
               style={{
                 boxShadow: selectedWeek === week 
@@ -442,10 +442,10 @@ export default function Home() {
                   : '0 4px 16px rgba(0, 0, 0, 0.3)'
               }}
             >
-              <h3 className="text-2xl font-bold text-text-primary mb-3 tracking-tight">
+              <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-2 lg:mb-3 tracking-tight">
                 Semana {week}
               </h3>
-              <p className="text-base text-text-secondary font-light">
+              <p className="text-sm sm:text-base text-text-secondary font-light">
                 {cardapios.find(c => c.semana === week) ? 'Cardápio disponível' : 'Cardápio completo'}
               </p>
             </div>
@@ -454,8 +454,8 @@ export default function Home() {
       </section>
 
       {/* Seletor de dias da semana */}
-      <section className="mb-12 max-w-full">
-        <h2 className="text-3xl font-bold text-text-primary mb-8 tracking-tight">
+      <section className="mb-8 lg:mb-12 max-w-full">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-4 lg:mb-8 tracking-tight">
           Selecione o dia da semana
         </h2>
         <DiaSemanaSelector 
@@ -465,14 +465,14 @@ export default function Home() {
       </section>
 
       {/* Carrossel de refeições do dia selecionado - estilo Netflix */}
-      <section className="mb-16 max-w-full">
-        <h2 className="text-3xl font-bold text-text-primary mb-10 tracking-tight">
+      <section className="mb-10 lg:mb-16 max-w-full">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-6 lg:mb-10 tracking-tight">
           {(() => {
             const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
             return dias[selectedDay] || 'Hoje'
           })()}
         </h2>
-        <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide -mx-2 px-2">
+        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 scrollbar-hide -mx-2 px-2 snap-x snap-mandatory">
           <MealCard
             meal="Café da manhã"
             time="07:00"

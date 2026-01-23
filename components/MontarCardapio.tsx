@@ -775,7 +775,7 @@ export default function MontarCardapio() {
       case 1:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-bold text-text-primary mb-10 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-6 lg:mb-10 tracking-tight">
               Qual é a sua idade?
             </h2>
             <input
@@ -784,7 +784,7 @@ export default function MontarCardapio() {
               max="120"
               value={dados.idade || ''}
               onChange={(e) => setDados({ ...dados, idade: parseInt(e.target.value) || null })}
-              className="w-full px-8 py-6 bg-dark-card border border-dark-border rounded-lg text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-dark-card border border-dark-border rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
               placeholder="Ex: 58"
               autoFocus
               style={{
@@ -797,7 +797,7 @@ export default function MontarCardapio() {
       case 2:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-semibold text-text-primary mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
               Qual é o seu peso atual (kg)?
             </h2>
             <input
@@ -807,7 +807,7 @@ export default function MontarCardapio() {
               max="200"
               value={dados.peso || ''}
               onChange={(e) => setDados({ ...dados, peso: parseFloat(e.target.value) || null })}
-              className="w-full px-8 py-6 bg-dark-card border border-dark-border rounded-lg text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-dark-card border border-dark-border rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
               placeholder="Ex: 70.5"
               autoFocus
             />
@@ -817,7 +817,7 @@ export default function MontarCardapio() {
       case 3:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-semibold text-text-primary mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
               Qual é a sua altura (cm)?
             </h2>
             <input
@@ -826,7 +826,7 @@ export default function MontarCardapio() {
               max="250"
               value={dados.altura || ''}
               onChange={(e) => setDados({ ...dados, altura: parseInt(e.target.value) || null })}
-              className="w-full px-8 py-6 bg-dark-card border border-dark-border rounded-lg text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-dark-card border border-dark-border rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
               placeholder="Ex: 165"
               autoFocus
             />
@@ -836,20 +836,20 @@ export default function MontarCardapio() {
       case 4:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-semibold text-text-primary mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
               Qual é o seu sexo?
             </h2>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               <button
                 type="button"
                 onClick={() => {
                   setDados({ ...dados, sexo: 'M' })
                   setTimeout(proximoPasso, 300)
                 }}
-                className={`p-8 rounded-xl border transition-all duration-300 ${
+                className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.sexo === 'M'
                     ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary hover:border-lilac/40'
+                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
                 }`}
                 style={dados.sexo === 'M' ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -857,7 +857,7 @@ export default function MontarCardapio() {
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                 }}
               >
-                <span className="text-2xl font-semibold text-text-primary">Masculino</span>
+                <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-text-primary">Masculino</span>
               </button>
               <button
                 type="button"
@@ -865,10 +865,10 @@ export default function MontarCardapio() {
                   setDados({ ...dados, sexo: 'F' })
                   setTimeout(proximoPasso, 300)
                 }}
-                className={`p-8 rounded-xl border transition-all duration-300 ${
+                className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.sexo === 'F'
                     ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary hover:border-lilac/40'
+                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
                 }`}
                 style={dados.sexo === 'F' ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -876,7 +876,7 @@ export default function MontarCardapio() {
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                 }}
               >
-                <span className="text-2xl font-semibold text-text-primary">Feminino</span>
+                <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-text-primary">Feminino</span>
               </button>
             </div>
           </div>
@@ -885,10 +885,10 @@ export default function MontarCardapio() {
       case 5:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-semibold text-text-primary mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
               Como é a sua rotina diária?
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[
                 { valor: 'sedentaria', label: 'Sedentária' },
                 { valor: 'levemente_ativa', label: 'Levemente ativa' },
@@ -902,10 +902,10 @@ export default function MontarCardapio() {
                     setDados({ ...dados, rotina: opcao.valor as any })
                     setTimeout(proximoPasso, 300)
                   }}
-                  className={`w-full p-5 rounded-xl border transition-all duration-300 text-left ${
+                  className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation ${
                     dados.rotina === opcao.valor
                       ? 'border-lilac/60 bg-dark-card'
-                      : 'border-dark-border bg-dark-secondary hover:border-lilac/40'
+                      : 'border-dark-border bg-dark-secondary active:border-lilac/40'
                   }`}
                   style={dados.rotina === opcao.valor ? {
                     boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -913,7 +913,7 @@ export default function MontarCardapio() {
                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                   }}
                 >
-                  <span className="text-xl font-medium text-text-primary">{opcao.label}</span>
+                  <span className="text-base sm:text-lg lg:text-xl font-medium text-text-primary">{opcao.label}</span>
                 </button>
               ))}
             </div>
@@ -923,10 +923,10 @@ export default function MontarCardapio() {
       case 6:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-semibold text-text-primary mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
               Qual condição digestiva você deseja tratar?
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[
                 { valor: 'azia', label: 'Azia' },
                 { valor: 'refluxo', label: 'Refluxo' },
@@ -939,10 +939,10 @@ export default function MontarCardapio() {
                     setDados({ ...dados, condicao_digestiva: opcao.valor as any })
                     setTimeout(proximoPasso, 300)
                   }}
-                  className={`w-full p-5 rounded-xl border transition-all duration-300 text-left ${
+                  className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation ${
                     dados.condicao_digestiva === opcao.valor
                       ? 'border-neon-cyan/60 bg-dark-card'
-                      : 'border-dark-border bg-dark-secondary hover:border-neon-cyan/40'
+                      : 'border-dark-border bg-dark-secondary active:border-neon-cyan/40'
                   }`}
                   style={dados.condicao_digestiva === opcao.valor ? {
                     boxShadow: '0 4px 20px rgba(0, 240, 255, 0.3)'
@@ -950,7 +950,7 @@ export default function MontarCardapio() {
                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                   }}
                 >
-                  <span className="text-xl font-medium text-text-primary">{opcao.label}</span>
+                  <span className="text-base sm:text-lg lg:text-xl font-medium text-text-primary">{opcao.label}</span>
                 </button>
               ))}
             </div>
@@ -960,10 +960,10 @@ export default function MontarCardapio() {
       case 7:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-semibold text-text-primary mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
               Qual é o seu principal objetivo?
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[
                 { valor: 'conforto', label: 'Conforto digestivo' },
                 { valor: 'manutencao', label: 'Manutenção do peso' },
@@ -976,10 +976,10 @@ export default function MontarCardapio() {
                     setDados({ ...dados, objetivo: opcao.valor as any })
                     setTimeout(proximoPasso, 300)
                   }}
-                  className={`w-full p-5 rounded-xl border transition-all duration-300 text-left ${
+                  className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation ${
                     dados.objetivo === opcao.valor
                       ? 'border-lilac/60 bg-dark-card'
-                      : 'border-dark-border bg-dark-secondary hover:border-lilac/40'
+                      : 'border-dark-border bg-dark-secondary active:border-lilac/40'
                   }`}
                   style={dados.objetivo === opcao.valor ? {
                     boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -987,7 +987,7 @@ export default function MontarCardapio() {
                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                   }}
                 >
-                  <span className="text-xl font-medium text-text-primary">{opcao.label}</span>
+                  <span className="text-base sm:text-lg lg:text-xl font-medium text-text-primary">{opcao.label}</span>
                 </button>
               ))}
             </div>
@@ -997,19 +997,19 @@ export default function MontarCardapio() {
       case 8:
         return (
           <div className="space-y-4">
-            <h2 className="text-3xl font-semibold text-text-primary mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
               Quantos dias de cardápio você deseja gerar?
             </h2>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               <button
                 type="button"
                 onClick={() => {
                   setDados({ ...dados, dias_cardapio: 1 })
                 }}
-                className={`p-8 rounded-xl border transition-all duration-300 ${
+                className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.dias_cardapio === 1
                     ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary hover:border-lilac/40'
+                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
                 }`}
                 style={dados.dias_cardapio === 1 ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -1017,17 +1017,17 @@ export default function MontarCardapio() {
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                 }}
               >
-                <span className="text-2xl font-semibold text-text-primary">1 dia</span>
+                <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-text-primary">1 dia</span>
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setDados({ ...dados, dias_cardapio: 7 })
                 }}
-                className={`p-8 rounded-xl border transition-all duration-300 ${
+                className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.dias_cardapio === 7
                     ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary hover:border-lilac/40'
+                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
                 }`}
                 style={dados.dias_cardapio === 7 ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -1035,7 +1035,7 @@ export default function MontarCardapio() {
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                 }}
               >
-                <span className="text-2xl font-semibold text-text-primary">7 dias</span>
+                <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-text-primary">7 dias</span>
               </button>
             </div>
           </div>
@@ -1061,7 +1061,7 @@ export default function MontarCardapio() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-12 relative">
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-12 relative">
       {/* Barra de progresso no topo - só mostrar se não estiver mostrando planos */}
       {!mostrarPlanos && (
         <BarraProgressoCardapio
@@ -1080,18 +1080,18 @@ export default function MontarCardapio() {
       {/* Espaçamento para a barra de progresso quando estiver visível */}
       {carregando && <div className="h-24" />}
       {/* Header */}
-      <div className="mb-12 text-center">
-        <h1 className="text-5xl font-extrabold mb-6 tracking-tight">
+      <div className="mb-8 lg:mb-12 text-center">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 lg:mb-6 tracking-tight">
           Montar meu Cardápio
         </h1>
-        <div className="flex items-center justify-center gap-3 mt-8 mb-5">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mt-6 lg:mt-8 mb-4 lg:mb-5">
           {Array.from({ length: totalPassos }).map((_, i) => (
             <div
               key={i}
-              className={`h-2.5 rounded-full transition-all duration-300 ${
+              className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
                 i + 1 <= passoAtual
-                  ? 'bg-neon-purple w-12'
-                  : 'bg-dark-border w-2.5'
+                  ? 'bg-neon-purple w-8 sm:w-12'
+                  : 'bg-dark-border w-2 sm:w-2.5'
               }`}
               style={i + 1 <= passoAtual ? {
                 boxShadow: '0 0 12px rgba(199, 125, 255, 0.5)'
@@ -1099,7 +1099,7 @@ export default function MontarCardapio() {
             />
           ))}
         </div>
-        <p className="text-lg text-text-secondary font-light">
+        <p className="text-base sm:text-lg text-text-secondary font-light">
           Passo {passoAtual} de {totalPassos}
         </p>
       </div>
@@ -1153,45 +1153,45 @@ export default function MontarCardapio() {
           )}
 
           {/* Planos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {/* PLANO 1 - Inteligente */}
-            <div className="bg-dark-secondary border-2 border-dark-border rounded-2xl p-10 transition-all duration-300 hover:border-lilac/40"
+            <div className="bg-dark-secondary border-2 border-dark-border rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-300 hover:border-lilac/40"
               style={{
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
               }}
             >
-              <div className="mb-8">
-                <h2 className="text-3xl font-bold text-text-primary mb-3 tracking-tight">
+              <div className="mb-6 lg:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-3 tracking-tight">
                   Plano Inteligente
                 </h2>
-                <div className="flex items-baseline gap-2 mb-6">
-                  <span className="text-5xl font-extrabold text-neon-cyan">R$ 67</span>
-                  <span className="text-xl text-text-secondary">/mês</span>
+                <div className="flex items-baseline gap-2 mb-4 lg:mb-6">
+                  <span className="text-4xl sm:text-5xl font-extrabold text-neon-cyan">R$ 67</span>
+                  <span className="text-lg sm:text-xl text-text-secondary">/mês</span>
                 </div>
               </div>
 
-              <ul className="space-y-4 mb-10">
+              <ul className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-cyan">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Geração automática de cardápios semanais personalizados
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-cyan">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Perfil evolutivo do paciente
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-cyan">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Ajustes automáticos do cardápio
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-cyan">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Acesso total à plataforma
                   </span>
                 </li>
@@ -1199,68 +1199,66 @@ export default function MontarCardapio() {
 
               <button
                 onClick={() => {
-                  // Redirecionar para criar conta (que depois redireciona para planos)
                   router.push('/criar-conta?plano=1')
                 }}
-                className="w-full py-5 px-6 bg-dark-card border-2 border-lilac/40 hover:border-lilac/60 text-white rounded-xl text-xl font-bold transition-all duration-300"
+                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-dark-card border-2 border-lilac/40 hover:border-lilac/60 text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation"
               >
                 Assinar Plano Inteligente
               </button>
             </div>
 
             {/* PLANO 2 - Acompanhado (Premium) */}
-            <div className="bg-gradient-to-br from-dark-secondary to-dark-tertiary border-2 border-neon-pink/40 rounded-2xl p-10 relative transition-all duration-300 hover:border-neon-pink/60"
+            <div className="bg-gradient-to-br from-dark-secondary to-dark-tertiary border-2 border-neon-pink/40 rounded-2xl p-6 sm:p-8 lg:p-10 relative transition-all duration-300 hover:border-neon-pink/60 lg:scale-105"
               style={{
-                boxShadow: '0 8px 32px rgba(255, 107, 157, 0.2)',
-                transform: 'scale(1.02)'
+                boxShadow: '0 8px 32px rgba(255, 107, 157, 0.2)'
               }}
             >
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="px-6 py-2 bg-gradient-to-r from-neon-pink to-lilac rounded-full shadow-neon-pink glow-pink">
-                  <span className="text-sm font-bold text-white uppercase tracking-wider">
+              <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
+                <div className="px-4 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-neon-pink to-lilac rounded-full shadow-neon-pink glow-pink">
+                  <span className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
                     ⭐ Premium
                   </span>
                 </div>
               </div>
 
-              <div className="mb-8 mt-4">
-                <h2 className="text-3xl font-bold text-text-primary mb-3 tracking-tight">
+              <div className="mb-6 lg:mb-8 mt-3 sm:mt-4">
+                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-3 tracking-tight">
                   Plano Acompanhado
                 </h2>
-                <div className="flex items-baseline gap-2 mb-6">
-                  <span className="text-5xl font-extrabold text-neon-pink">R$ 157</span>
-                  <span className="text-xl text-text-secondary">/mês</span>
+                <div className="flex items-baseline gap-2 mb-4 lg:mb-6">
+                  <span className="text-4xl sm:text-5xl font-extrabold text-neon-pink">R$ 157</span>
+                  <span className="text-lg sm:text-xl text-text-secondary">/mês</span>
                 </div>
               </div>
 
-              <ul className="space-y-4 mb-10">
+              <ul className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-pink">✓</span>
-                  <span className="text-lg text-text-primary leading-relaxed font-medium">
+                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-base sm:text-lg text-text-primary leading-relaxed font-medium">
                     <strong>Tudo do Plano Inteligente +</strong>
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-pink">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Acompanhamento direto com a nutricionista
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-pink">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Ajustes manuais no plano alimentar
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-pink">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Atendimento via WhatsApp
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-2xl text-neon-pink">✓</span>
-                  <span className="text-lg text-text-secondary leading-relaxed">
+                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Área de acompanhamento individual
                   </span>
                 </li>
@@ -1268,10 +1266,9 @@ export default function MontarCardapio() {
 
               <button
                 onClick={() => {
-                  // Redirecionar para criar conta (que depois redireciona para planos)
                   router.push('/criar-conta?plano=2')
                 }}
-                className="w-full py-5 px-6 bg-gradient-to-r from-neon-pink to-lilac hover:from-lilac hover:to-neon-pink text-white rounded-xl text-xl font-bold transition-all duration-300 shadow-neon-pink hover:shadow-large glow-pink"
+                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-neon-pink to-lilac hover:from-lilac hover:to-neon-pink text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-neon-pink hover:shadow-large glow-pink touch-manipulation"
                 style={{
                   boxShadow: '0 6px 24px rgba(255, 107, 157, 0.4)'
                 }}
@@ -1282,12 +1279,12 @@ export default function MontarCardapio() {
           </div>
 
           {/* Formulário de Login */}
-          <div className="bg-dark-secondary border-2 border-dark-border rounded-2xl p-10"
+          <div className="bg-dark-secondary border-2 border-dark-border rounded-2xl p-6 sm:p-8 lg:p-10"
             style={{
               boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
             }}
           >
-            <h3 className="text-2xl font-bold text-text-primary mb-6 text-center">
+            <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-4 lg:mb-6 text-center">
               Já tem uma conta? Faça login
             </h3>
             <LoginForm 
@@ -1363,7 +1360,7 @@ export default function MontarCardapio() {
       ) : !mostrarPlanos && (
         <>
           {/* Pergunta */}
-          <div className="bg-dark-secondary border border-dark-border rounded-xl p-12 mb-10 transition-all duration-300"
+          <div className="bg-dark-secondary border border-dark-border rounded-xl p-6 sm:p-8 lg:p-12 mb-6 lg:mb-10 transition-all duration-300"
             style={{
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
             }}
@@ -1372,11 +1369,11 @@ export default function MontarCardapio() {
           </div>
 
           {/* Navegação */}
-          <div className="flex justify-between gap-4">
+          <div className="flex justify-between gap-3 sm:gap-4">
             <button
               onClick={passoAnterior}
               disabled={passoAtual === 1}
-              className="px-8 py-4 bg-dark-card border border-dark-border rounded-lg text-base font-semibold text-text-secondary hover:border-lilac/60 hover:text-lilac transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-dark-card border border-dark-border rounded-lg text-sm sm:text-base font-semibold text-text-secondary hover:border-lilac/60 hover:text-lilac transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
               style={{
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
               }}
@@ -1388,7 +1385,7 @@ export default function MontarCardapio() {
               <button
                 onClick={proximoPasso}
                 disabled={!podeAvancar()}
-                className="px-8 py-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 style={{
                   boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
                 }}
@@ -1406,7 +1403,7 @@ export default function MontarCardapio() {
                   handleGerarCardapio()
                 }}
                 disabled={!podeAvancar() || carregando}
-                className="px-8 py-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 style={{
                   boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
                 }}

@@ -11,6 +11,7 @@ export default function Sidebar() {
   const [carregando, setCarregando] = useState(true)
   const [genioAberto, setGenioAberto] = useState(false)
   const [temCardapio, setTemCardapio] = useState(false)
+  const [sidebarAberta, setSidebarAberta] = useState(false)
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -184,7 +185,7 @@ export default function Sidebar() {
 
   if (carregando) {
     return (
-      <aside className="fixed left-0 top-0 h-screen w-80 bg-dark-secondary/95 backdrop-blur-sm border-r border-dark-border shadow-2xl p-8 overflow-y-auto z-20"
+      <aside className="fixed left-0 top-0 h-screen w-80 bg-dark-secondary/95 backdrop-blur-sm border-r border-dark-border shadow-2xl p-8 overflow-y-auto z-50 lg:z-20 transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0"
         style={{
           background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)'
         }}
@@ -216,31 +217,78 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-80 bg-dark-secondary/95 backdrop-blur-sm border-r border-dark-border shadow-2xl p-8 overflow-y-auto z-20"
-      style={{
-        background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)'
-      }}
-    >
+    <>
+      {/* Overlay para mobile */}
+      {sidebarAberta && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setSidebarAberta(false)}
+        />
+      )}
+
+      {/* Botão hambúrguer para mobile */}
+      <button
+        onClick={() => setSidebarAberta(!sidebarAberta)}
+        className="fixed top-4 left-4 z-50 lg:hidden p-3 bg-dark-card border border-lilac/40 rounded-lg text-text-primary hover:bg-dark-secondary transition-all"
+        style={{
+          boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
+        }}
+        aria-label="Menu"
+      >
+        {sidebarAberta ? (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+      </button>
+
+      <aside className={`fixed left-0 top-0 h-screen w-80 bg-dark-secondary/95 backdrop-blur-sm border-r border-dark-border shadow-2xl p-4 sm:p-6 lg:p-8 overflow-y-auto z-50 lg:z-20 transform transition-transform duration-300 ease-in-out ${
+        sidebarAberta ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}
+        style={{
+          background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)'
+        }}
+      >
+      {/* Botão fechar para mobile */}
+      <div className="flex justify-end mb-4 lg:hidden">
+        <button
+          onClick={() => setSidebarAberta(false)}
+          className="p-2 text-text-secondary hover:text-text-primary transition-colors"
+          aria-label="Fechar menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
       {/* Informações do usuário */}
-      <div className="mb-10">
-        <div className="w-32 h-32 rounded-full bg-dark-card border-2 border-lilac/40 flex items-center justify-center mb-6 transition-all duration-300 hover:border-neon-purple/60 hover:scale-105"
+      <div className="mb-6 lg:mb-10">
+        <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-dark-card border-2 border-lilac/40 flex items-center justify-center mb-4 lg:mb-6 transition-all duration-300 hover:border-neon-purple/60 hover:scale-105 mx-auto lg:mx-0"
           style={{
             boxShadow: '0 4px 20px rgba(199, 125, 255, 0.2)'
           }}
         >
-          <span className="text-5xl">👤</span>
+          <span className="text-4xl lg:text-5xl">👤</span>
         </div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2 tracking-tight">Minha Conta</h2>
-        <p className="text-lg text-text-secondary font-light">{email}</p>
+        <h2 className="text-xl lg:text-2xl font-bold text-text-primary mb-2 tracking-tight text-center lg:text-left">Minha Conta</h2>
+        <p className="text-base lg:text-lg text-text-secondary font-light text-center lg:text-left">{email}</p>
       </div>
 
       {/* Meus cardápios */}
-      <div className="mb-10">
-        <h3 className="text-xl font-bold text-text-primary mb-6 tracking-tight">Meus cardápios</h3>
-        <div className="space-y-3">
+      <div className="mb-6 lg:mb-10">
+        <h3 className="text-lg lg:text-xl font-bold text-text-primary mb-4 lg:mb-6 tracking-tight">Meus cardápios</h3>
+        <div className="space-y-2 lg:space-y-3">
           <div 
-            onClick={() => router.push('/montar-cardapio')}
-            className={`p-5 bg-dark-card rounded-xl border card-hover cursor-pointer transition-all duration-300 ${
+            onClick={() => {
+              router.push('/montar-cardapio')
+              setSidebarAberta(false)
+            }}
+            className={`p-4 lg:p-5 bg-dark-card rounded-xl border card-hover cursor-pointer transition-all duration-300 touch-manipulation ${
               pathname === '/montar-cardapio'
                 ? 'border-lilac/60'
                 : 'border-lilac/20 hover:border-lilac/50'
@@ -249,58 +297,61 @@ export default function Sidebar() {
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}
           >
-            <p className="text-base text-neon-purple font-bold mb-1.5 tracking-tight">
+            <p className="text-sm lg:text-base text-neon-purple font-bold mb-1 lg:mb-1.5 tracking-tight">
               {temCardapio ? 'Refazer meu Cardápio' : 'Montar meu Cardápio'}
             </p>
-            <p className="text-sm text-text-secondary font-light">
+            <p className="text-xs lg:text-sm text-text-secondary font-light">
               {temCardapio ? 'Criar novo cardápio personalizado' : 'Criar cardápio personalizado'}
             </p>
           </div>
           {pathname === '/montar-cardapio' && (
             <div 
-              onClick={() => router.push('/')}
-              className="p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/40"
+              onClick={() => {
+                router.push('/')
+                setSidebarAberta(false)
+              }}
+              className="p-4 lg:p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/40 touch-manipulation"
               style={{
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
               }}
             >
-              <p className="text-base text-text-primary font-bold mb-1.5 tracking-tight">← Voltar à Home</p>
-              <p className="text-sm text-text-secondary font-light">Ver todas as informações</p>
+              <p className="text-sm lg:text-base text-text-primary font-bold mb-1 lg:mb-1.5 tracking-tight">← Voltar à Home</p>
+              <p className="text-xs lg:text-sm text-text-secondary font-light">Ver todas as informações</p>
             </div>
           )}
-          <div className="p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/30"
+          <div className="p-4 lg:p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/30 touch-manipulation"
             style={{
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}
           >
-            <p className="text-base text-text-primary font-bold mb-1.5 tracking-tight">Semana atual</p>
-            <p className="text-sm text-text-secondary font-light">Semana 1 de 4</p>
+            <p className="text-sm lg:text-base text-text-primary font-bold mb-1 lg:mb-1.5 tracking-tight">Semana atual</p>
+            <p className="text-xs lg:text-sm text-text-secondary font-light">Semana 1 de 4</p>
           </div>
-          <div className="p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/30"
+          <div className="p-4 lg:p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/30 touch-manipulation"
             style={{
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}
           >
-            <p className="text-base text-text-primary font-bold mb-1.5 tracking-tight">Histórico mensal</p>
-            <p className="text-sm text-text-secondary font-light">Ver todos os meses</p>
+            <p className="text-sm lg:text-base text-text-primary font-bold mb-1 lg:mb-1.5 tracking-tight">Histórico mensal</p>
+            <p className="text-xs lg:text-sm text-text-secondary font-light">Ver todos os meses</p>
           </div>
         </div>
       </div>
 
       {/* Tempo de constância */}
-      <div className="mb-8 p-6 bg-dark-card rounded-xl border border-lilac/20 transition-all duration-300 hover:border-lilac/40"
+      <div className="mb-6 lg:mb-8 p-4 lg:p-6 bg-dark-card rounded-xl border border-lilac/20 transition-all duration-300 hover:border-lilac/40"
         style={{
           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
         }}
       >
-        <p className="text-sm text-lilac font-semibold mb-3 tracking-wide">✨ Constância</p>
-        <p className="text-lg text-text-primary font-semibold">3 meses cuidando da alimentação</p>
+        <p className="text-xs lg:text-sm text-lilac font-semibold mb-2 lg:mb-3 tracking-wide">✨ Constância</p>
+        <p className="text-base lg:text-lg text-text-primary font-semibold">3 meses cuidando da alimentação</p>
       </div>
 
       {/* Botão "Como você está hoje?" - Gênio da Lâmpada */}
       <button 
         onClick={() => setGenioAberto(true)}
-        className="w-full mb-8 p-5 bg-gradient-to-br from-neon-pink via-neon-purple to-neon-cyan hover:from-neon-cyan hover:via-neon-purple hover:to-neon-pink text-white rounded-lg text-base font-bold transition-all duration-300 tracking-tight"
+        className="w-full mb-6 lg:mb-8 p-4 lg:p-5 bg-gradient-to-br from-neon-pink via-neon-purple to-neon-cyan hover:from-neon-cyan hover:via-neon-purple hover:to-neon-pink text-white rounded-lg text-sm lg:text-base font-bold transition-all duration-300 tracking-tight touch-manipulation"
         style={{
           boxShadow: '0 6px 24px rgba(199, 125, 255, 0.4)'
         }}
@@ -322,11 +373,11 @@ export default function Sidebar() {
       </div>
 
       {/* Login / Logout */}
-      <div className="mb-6">
+      <div className="mb-4 lg:mb-6">
         {email && email !== 'Visitante' ? (
           <button 
             onClick={handleLogout}
-            className="w-full p-4 bg-gradient-to-r from-neon-pink to-lilac hover:from-lilac hover:to-neon-pink text-white rounded-lg text-base font-bold transition-all duration-300 shadow-neon-pink hover:shadow-large glow-pink"
+            className="w-full p-3 lg:p-4 bg-gradient-to-r from-neon-pink to-lilac hover:from-lilac hover:to-neon-pink text-white rounded-lg text-sm lg:text-base font-bold transition-all duration-300 shadow-neon-pink hover:shadow-large glow-pink touch-manipulation"
             style={{
               boxShadow: '0 4px 16px rgba(255, 107, 157, 0.3)'
             }}
@@ -335,8 +386,11 @@ export default function Sidebar() {
           </button>
         ) : (
           <button 
-            onClick={() => router.push('/criar-conta')}
-            className="w-full p-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-base font-bold transition-all duration-300 shadow-neon-purple hover:shadow-large glow-purple"
+            onClick={() => {
+              router.push('/criar-conta')
+              setSidebarAberta(false)
+            }}
+            className="w-full p-3 lg:p-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-sm lg:text-base font-bold transition-all duration-300 shadow-neon-purple hover:shadow-large glow-purple touch-manipulation"
             style={{
               boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
             }}
@@ -350,6 +404,7 @@ export default function Sidebar() {
       <div className="space-y-1">
         <button 
           onClick={async () => {
+            setSidebarAberta(false)
             // Verificar se tem plano antes de redirecionar
             const sessionIdCheck = localStorage.getItem('sessionId')
             const userEmailCheck = localStorage.getItem('userEmail')
@@ -402,15 +457,17 @@ export default function Sidebar() {
             
             // Se não tem plano ou não conseguiu verificar, redirecionar
             router.push('/planos')
+            setSidebarAberta(false)
           }}
-          className="w-full text-left p-3 text-base text-text-secondary hover:text-neon-cyan hover:bg-dark-card transition-all rounded-lg"
+          className="w-full text-left p-2 lg:p-3 text-sm lg:text-base text-text-secondary hover:text-neon-cyan hover:bg-dark-card transition-all rounded-lg touch-manipulation"
         >
           Meu Plano
         </button>
-        <button className="w-full text-left p-3 text-base text-text-secondary hover:text-neon-cyan hover:bg-dark-card transition-all rounded-lg">
+        <button className="w-full text-left p-2 lg:p-3 text-sm lg:text-base text-text-secondary hover:text-neon-cyan hover:bg-dark-card transition-all rounded-lg touch-manipulation">
           Texto maior
         </button>
       </div>
     </aside>
+    </>
   )
 }

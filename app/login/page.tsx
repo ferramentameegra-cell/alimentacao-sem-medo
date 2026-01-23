@@ -76,11 +76,11 @@ export default function LoginPage() {
     <div className="min-h-screen bg-dark-bg relative overflow-hidden flex items-center justify-center">
       <IntestineBackground />
       
-      <div className="relative z-10 w-full max-w-md px-6">
+      <div className="relative z-10 w-full max-w-md px-4 sm:px-6">
         {/* Logo */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 sm:mb-12">
           <h1 
-            className="text-5xl font-normal mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-normal mb-3 sm:mb-4"
             style={{ 
               color: '#FFFFFF',
               fontFamily: 'var(--font-roketto)',
@@ -91,13 +91,13 @@ export default function LoginPage() {
           >
             Alimentação Sem Medo
           </h1>
-          <p className="text-xl text-text-secondary">
+          <p className="text-base sm:text-lg lg:text-xl text-text-secondary">
             Seu espaço seguro para comer sem medo
           </p>
         </div>
 
         {/* Formulário de Login */}
-        <div className="bg-dark-secondary/95 backdrop-blur-sm border border-dark-border rounded-xl p-12 shadow-2xl"
+        <div className="bg-dark-secondary/95 backdrop-blur-sm border border-dark-border rounded-xl p-6 sm:p-8 lg:p-12 shadow-2xl"
           style={{
             background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.95) 0%, rgba(14, 11, 20, 0.95) 100%)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
@@ -149,7 +149,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={carregando}
-              className="w-full py-4 px-6 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-lg font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 px-6 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-base sm:text-lg font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
               style={{
                 boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
               }}

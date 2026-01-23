@@ -11,6 +11,8 @@ const rokettoFont = localFont({
 export const metadata: Metadata = {
   title: 'Alimentação Sem Medo',
   description: 'Serviço contínuo de tranquilidade alimentar para quem tem medo de comer',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
+  themeColor: '#0E0B14',
 }
 
 export default function RootLayout({
@@ -20,6 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="theme-color" content="#0E0B14" />
+      </head>
       <body className={rokettoFont.variable}>{children}</body>
     </html>
   )
