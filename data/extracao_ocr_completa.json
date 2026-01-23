@@ -1,0 +1,24 @@
+{
+  "total_paginas": 2,
+  "paginas": [
+    {
+      "numero": 1,
+      "texto_completo": "- by DO PLANETA INTESTINO\no PARA DOENÇAS\nil DIGESTIVAS E INTESTINAIS\no, DR. FERNANDO LEMOS SG\n(peso a, A\na ú E E",
+      "ocr_aplicado": true,
+      "erro": null
+    },
+    {
+      "numero": 2,
+      "texto_completo": "Caro(a) leitor(a),\n\nE com grande satisfação que o(a) recebemos neste Guia\nEssencial: Alimentação para Doenças Digestivas e\nIntestinais. Em um mundo onde a busca por bem-estar e\nqualidade de vida é constante, entendemos que a saúde\ndigestiva e intestinal desempenha um papel central e\nmuitas vezes subestimado. Para milhões de pessoas, à\nrotina é marcada por desafios impostos por condições\nque afetam diretamente o sistema digestório,\nimpactando não apenas o físico, mas também o\nemocional e social.\n\nEste Livro Digital foi cuidadosamente elaborado para ser\nseu companheiro de confiança nessa jornada. Não se\ntrata apenas de uma compilação de informações, mas\nde um recurso prático e abrangente, desenhado para\noferecer clareza e soluções concretas. Nosso objetivo é\ndescomplicar o manejo de 14 das mais prevalentes\ndoenças digestivas e intestinais, fornecendo um\nentendimento aprofundado sobre cada uma delas e, o\nmais importante, oferecendo cardápios semanais\ndetalhados de segunda-feira a domingo, pensados para\nauxiliar no alívio dos sintomas e na promoção de uma\nvida mais equilibrada.\n\nAcreditamos que o conhecimento é a chave para o\nempoderamento, e uma alimentação adequada é uma\ndas ferramentas mais poderosas para o controle e a\nmelhoria de quadros digestivos. Prepare-se para explorar\num conteúdo rico, completo e organizado, que o(a)\nguiará na descoberta de como a cozinha pode ser uma\naliada fundamental na sua saúde e bem-estar.\nBem-vindo(a) a um novo capítulo de cuidado e\nautoconhecimento.",
+      "ocr_aplicado": true,
+      "erro": null
+    }
+  ],
+  "metadados": {
+    "metodo": "OCR (Tesseract)",
+    "idioma": "por",
+    "resolucao": 300,
+    "total_caracteres": 1617,
+    "paginas_com_texto": 2
+  }
+}
