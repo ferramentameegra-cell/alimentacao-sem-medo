@@ -272,12 +272,16 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Botão hambúrguer para mobile */}
+      {/* Botão hambúrguer para mobile - com safe area */}
       <button
         onClick={() => setSidebarAberta(!sidebarAberta)}
-        className="fixed top-4 left-4 z-50 lg:hidden p-3 bg-dark-card border border-lilac/40 rounded-lg text-text-primary hover:bg-dark-secondary transition-all"
+        className="fixed z-50 lg:hidden p-3 bg-dark-card border border-lilac/40 rounded-lg text-text-primary hover:bg-dark-secondary transition-all touch-manipulation"
         style={{
-          boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
+          top: 'max(1rem, env(safe-area-inset-top, 1rem))',
+          left: 'max(1rem, env(safe-area-inset-left, 1rem))',
+          boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)',
+          minWidth: '44px',
+          minHeight: '44px'
         }}
         aria-label="Menu"
       >
@@ -296,7 +300,11 @@ export default function Sidebar() {
         sidebarAberta ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}
         style={{
-          background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)'
+          background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)',
+          height: '-webkit-fill-available', /* iOS Safari */
+          paddingTop: 'max(1rem, env(safe-area-inset-top, 0))',
+          paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0))',
+          maxWidth: 'calc(100vw - env(safe-area-inset-left, 0) - env(safe-area-inset-right, 0))'
         }}
       >
       {/* Botão fechar para mobile */}

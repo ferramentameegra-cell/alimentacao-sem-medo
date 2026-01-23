@@ -189,7 +189,14 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
   if (!cardapioId) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in p-3 sm:p-4"
+      style={{
+        paddingTop: 'max(1rem, env(safe-area-inset-top, 1rem))',
+        paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))',
+        paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0.75rem))',
+        paddingRight: 'max(0.75rem, env(safe-area-inset-right, 0.75rem))'
+      }}
+    >
       {/* Barra de progresso para geração automática */}
       <BarraProgressoCardapio
         progresso={progressoGeracao}
@@ -199,14 +206,16 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
           setGerandoCardapio(false)
         }}
       />
-      <div className="relative w-full max-w-4xl h-[90vh] max-h-[800px] bg-dark-secondary/98 backdrop-blur-sm border border-lilac/30 rounded-xl flex flex-col overflow-hidden animate-genio-appear"
+      <div className="relative w-full max-w-4xl bg-dark-secondary/98 backdrop-blur-sm border border-lilac/30 rounded-xl flex flex-col overflow-hidden animate-genio-appear"
         style={{
           background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(199, 125, 255, 0.2)'
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(199, 125, 255, 0.2)',
+          maxHeight: 'calc(100vh - 2rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0))',
+          height: 'auto'
         }}
       >
         {/* Header */}
-        <div className="p-8 border-b border-dark-border">
+        <div className="p-4 sm:p-6 md:p-8 border-b border-dark-border flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <h2 className="text-3xl font-bold text-text-primary mb-2 tracking-tight">
@@ -249,7 +258,11 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
         </div>
 
         {/* Conteúdo */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8"
+          style={{
+            WebkitOverflowScrolling: 'touch' // Smooth scrolling iOS
+          }}
+        >
           {carregando ? (
             <div className="text-center py-20">
               <div className="text-xl text-neon-cyan mb-6 font-semibold">Carregando cardápio...</div>
@@ -284,7 +297,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
               </div>
             </div>
           ) : cardapio ? (
-            <div className="bg-dark-card border border-dark-border rounded-xl p-10"
+            <div className="bg-dark-card border border-dark-border rounded-xl p-4 sm:p-6 md:p-8 lg:p-10"
               style={{
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
               }}

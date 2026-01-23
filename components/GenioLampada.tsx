@@ -136,11 +136,20 @@ Com essas informações, posso te orientar melhor sobre o cardápio. ✨`
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-2xl h-[80vh] max-h-[700px] bg-dark-secondary/98 backdrop-blur-sm border border-lilac/30 rounded-xl flex flex-col overflow-hidden animate-genio-appear"
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in p-3 sm:p-4"
+      style={{
+        paddingTop: 'max(1rem, env(safe-area-inset-top, 1rem))',
+        paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))',
+        paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0.75rem))',
+        paddingRight: 'max(0.75rem, env(safe-area-inset-right, 0.75rem))'
+      }}
+    >
+      <div className="relative w-full max-w-2xl bg-dark-secondary/98 backdrop-blur-sm border border-lilac/30 rounded-xl flex flex-col overflow-hidden animate-genio-appear"
         style={{
           background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(199, 125, 255, 0.2)'
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(199, 125, 255, 0.2)',
+          maxHeight: 'calc(100vh - 2rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0))',
+          height: 'auto'
         }}
       >
         {/* Header com gênio da lâmpada */}

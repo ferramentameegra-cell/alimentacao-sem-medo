@@ -263,7 +263,18 @@ export default function Home() {
   }, [selectedWeek, cardapios])
 
   return (
-    <div className="min-h-screen px-4 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-14 max-w-full overflow-x-hidden w-full relative">
+    <div className="min-h-screen px-3 sm:px-4 md:px-6 lg:px-12 py-4 sm:py-6 md:py-8 lg:py-14 max-w-full overflow-x-hidden w-full relative"
+      style={{
+        paddingTop: 'max(4.5rem, calc(1rem + env(safe-area-inset-top, 0)))', // Espaço para botão hamburger + safe area
+        paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0))',
+        paddingRight: 'max(0.75rem, env(safe-area-inset-right, 0))',
+        paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0))',
+        minHeight: '-webkit-fill-available', /* iOS Safari */
+        width: '100%',
+        maxWidth: '100vw',
+        boxSizing: 'border-box'
+      }}
+    >
       {/* Barra de progresso para geração automática */}
       <BarraProgressoCardapio
         progresso={progressoGeracao}
