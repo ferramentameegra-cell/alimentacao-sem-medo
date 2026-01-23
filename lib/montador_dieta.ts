@@ -9,6 +9,7 @@ import { ItemAlimentar, buscarItens, BASE_CONHECIMENTO } from './base_conhecimen
 import { calcularFatorAjuste, ajustarQuantidade } from './dados_pdf_validado'
 import { gerarDicaRefeicao } from './gerador_dicas_preparo'
 import { gerarDiaSemRepeticoes } from './rastreador_variacoes'
+import { montarPlanoSemanalInteligente } from './montador_inteligente'
 
 export interface DadosUsuario {
   peso: number // kg
@@ -389,6 +390,19 @@ export function montarPlanoSemanal(
   mes?: number,
   ano?: number
 ): PlanoSemanal {
+  // PRIORIDADE 1: Tentar usar sistema inteligente (lógica nutricional)
+  // Este sistema atua como nutricionista experiente, garantindo coerência nutricional
+  try {
+    const planoInteligente = montarPlanoSemanalInteligente(dadosUsuario, semana, mes, ano)
+    if (planoInteligente) {
+      return planoInteligente
+    }
+  } catch (error) {
+    console.warn('Sistema inteligente falhou, usando fallback:', error)
+  }
+  
+  // PRIORIDADE 2: Fallback para sistema de rastreamento de variações
+  // Garante que sempre há um cardápio, mesmo que não seja o ideal
   const itensUsados = new Set<string>()
   const dias: PlanoDia[] = []
 

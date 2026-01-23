@@ -160,7 +160,12 @@ export async function POST(request: NextRequest) {
         await new Promise(resolve => setTimeout(resolve, 500)) // 0.5 segundos
         controller.close()
       } catch (error: any) {
-        sendProgress(0, `Erro: ${error.message || 'Erro ao montar plano alimentar'}`)
+        // Verificar se é erro de combinações inválidas
+        if (error.message && error.message.includes('combinações válidas')) {
+          sendProgress(0, 'Não há combinações adequadas no PDF para este perfil. Por favor, ajuste seus dados ou entre em contato com suporte.')
+        } else {
+          sendProgress(0, `Erro: ${error.message || 'Erro ao montar plano alimentar'}`)
+        }
         controller.close()
       }
     },
