@@ -6,9 +6,10 @@ import { calcularMetaAgua, formatarAgua, calcularProgresso, DadosUsuarioAgua } f
 interface MetaAguaProps {
   dadosUsuario?: DadosUsuarioAgua
   className?: string
+  compacto?: boolean // Modo compacto e discreto
 }
 
-export default function MetaAgua({ dadosUsuario, className = '' }: MetaAguaProps) {
+export default function MetaAgua({ dadosUsuario, className = '', compacto = false }: MetaAguaProps) {
   const [consumidoHoje, setConsumidoHoje] = useState(0)
   const [meta, setMeta] = useState(2000) // Default 2L
   const [carregando, setCarregando] = useState(true)
@@ -102,14 +103,74 @@ export default function MetaAgua({ dadosUsuario, className = '' }: MetaAguaProps
 
   if (carregando) {
     return (
-      <div className={`bg-dark-secondary border border-dark-border rounded-xl p-6 ${className}`}>
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-4 border-lilac border-t-transparent rounded-full animate-spin" />
+      <div className={`bg-dark-secondary/50 border border-dark-border/50 rounded-lg p-3 ${className}`}>
+        <div className="flex items-center justify-center h-20">
+          <div className="w-5 h-5 border-2 border-cyan-500/50 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     )
   }
 
+  // Modo compacto e discreto
+  if (compacto) {
+    return (
+      <div className={`bg-dark-secondary/50 border border-dark-border/50 rounded-lg p-3 sm:p-4 ${className}`}>
+        <div className="text-center mb-3">
+          <h3 className="text-xs sm:text-sm font-semibold text-text-secondary mb-1">
+            💧 Hidratação
+          </h3>
+          <p className="text-xs text-text-muted">
+            {formatarAgua(consumidoHoje)} / {formatarAgua(meta)}
+          </p>
+        </div>
+
+        {/* Copo compacto */}
+        <div className="relative mb-3">
+          <div className="mx-auto w-16 sm:w-20 h-32 sm:h-40 bg-dark-card/50 border-2 border-dark-border/50 rounded-b-2xl overflow-hidden relative"
+            style={{
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+            }}
+          >
+            {/* Água dentro do copo */}
+            <div
+              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-600/80 via-cyan-500/80 to-cyan-400/80 transition-all duration-500 ease-out"
+              style={{
+                height: `${progresso}%`,
+                boxShadow: progresso > 0 ? '0 -2px 10px rgba(6, 182, 212, 0.3)' : 'none',
+              }}
+            >
+              {progresso > 0 && (
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-b from-cyan-300/40 to-transparent" />
+              )}
+            </div>
+
+            {/* Indicador de progresso compacto */}
+            <div className="absolute top-1 left-1 right-1 text-center pointer-events-none">
+              <div className="text-xs sm:text-sm font-bold text-text-primary/90 drop-shadow">
+                {progresso}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Botões compactos */}
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+          {[200, 300, 500].map((ml) => (
+            <button
+              key={ml}
+              onClick={() => adicionarAgua(ml)}
+              disabled={adicionando || consumidoHoje >= meta}
+              className="px-2 py-1.5 sm:py-2 bg-dark-card/50 border border-dark-border/50 rounded text-xs font-medium text-text-secondary hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-text-primary transition-all disabled:opacity-30 disabled:cursor-not-allowed touch-manipulation"
+            >
+              +{ml}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Modo completo (original)
   return (
     <div className={`bg-dark-secondary border border-dark-border rounded-xl p-4 sm:p-6 ${className}`}>
       <div className="text-center mb-4 sm:mb-6">

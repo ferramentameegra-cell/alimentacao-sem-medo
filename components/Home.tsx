@@ -488,25 +488,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Meta de Água */}
+      {/* Seletor de dias da semana com Meta de Água ao lado */}
       <section className="mb-8 lg:mb-12 max-w-full">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-4 lg:mb-8 tracking-tight">
-          Hidratação Diária
-        </h2>
-        <div className="max-w-md mx-auto">
-          <MetaAgua dadosUsuario={dadosUsuarioAgua} />
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start lg:items-start">
+          <div className="flex-1 w-full lg:w-auto">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-4 lg:mb-8 tracking-tight">
+              Selecione o dia da semana
+            </h2>
+            <DiaSemanaSelector 
+              selectedDay={selectedDay}
+              onSelectDay={setSelectedDay}
+            />
+          </div>
+          
+          {/* Meta de Água - compacta e discreta ao lado */}
+          <div className="w-full lg:w-80 flex-shrink-0">
+            <MetaAgua dadosUsuario={dadosUsuarioAgua} compacto />
+          </div>
         </div>
-      </section>
-
-      {/* Seletor de dias da semana */}
-      <section className="mb-8 lg:mb-12 max-w-full">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-4 lg:mb-8 tracking-tight">
-          Selecione o dia da semana
-        </h2>
-        <DiaSemanaSelector 
-          selectedDay={selectedDay}
-          onSelectDay={setSelectedDay}
-        />
       </section>
 
       {/* Carrossel de refeições do dia selecionado - estilo Netflix */}
