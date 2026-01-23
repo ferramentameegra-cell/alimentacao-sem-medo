@@ -25,6 +25,53 @@ export interface DadosUsuario {
   }
   condicao_digestiva: 'azia' | 'refluxo' | 'ambos'
   objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso'
+  
+  // Restrições alimentares (intolerâncias e alergias)
+  restricoes?: {
+    intolerancia_lactose?: boolean
+    intolerancia_gluten?: boolean
+    intolerancia_proteina_leite?: boolean
+    intolerancia_frutose?: boolean
+    intolerancia_histamina?: boolean
+    intolerancia_soja?: boolean
+    alergia_ovos?: boolean
+    alergia_oleaginosas?: boolean
+    alergia_frutos_mar?: boolean
+    outras_restricoes?: string // Campo aberto
+  }
+  
+  // Tipo de alimentação
+  tipo_alimentacao?: 
+    | 'onivoro'
+    | 'vegetariano'
+    | 'ovolactovegetariano'
+    | 'vegano'
+    | 'pescetariano'
+    | 'low_carb'
+    | 'cetogenica'
+    | 'sem_ultraprocessados'
+    | 'anti_inflamatoria'
+  
+  // Condições de saúde
+  condicoes_saude?: {
+    diabetes?: 'tipo1' | 'tipo2' | false
+    resistencia_insulina?: boolean
+    hipotireoidismo?: boolean
+    hipertireoidismo?: boolean
+    sop?: boolean
+    hipertensao?: boolean
+    colesterol_alto?: boolean
+    problemas_gastrointestinais?: string[] // gastrite, refluxo, intestino_irritavel
+    nenhuma?: boolean
+  }
+  
+  // Preferências e aversões
+  preferencias?: {
+    alimentos_nao_gosta?: string[] // Campo aberto
+    alimentos_preferidos?: string[] // Campo aberto
+    frequencia_refeicoes?: 3 | 4 | 5 | 6
+    preferencia_preparo?: 'rapido' | 'elaborado' | 'indiferente'
+  }
 }
 
 export interface PlanoDia {

@@ -72,7 +72,33 @@ export async function POST(request: NextRequest) {
         await new Promise(resolve => setTimeout(resolve, 500)) // 0.5 segundos
 
         // Ler dados do body
-        const dadosUsuario: DadosUsuario = await request.json()
+        let dadosUsuario: DadosUsuario = await request.json()
+        
+        // Carregar restrições do perfil se disponíveis
+        try {
+          const restricoesResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/perfil/restricoes`, {
+            headers: {
+              'X-Session-Id': sessionId || '',
+              'X-User-Email': userEmail || '',
+            },
+          })
+          
+          if (restricoesResponse.ok) {
+            const restricoesData = await restricoesResponse.json()
+            if (restricoesData.restricoes) {
+              // Mesclar restrições do perfil com dados do usuário
+              dadosUsuario = {
+                ...dadosUsuario,
+                restricoes: restricoesData.restricoes.restricoes,
+                tipo_alimentacao: restricoesData.restricoes.tipo_alimentacao,
+                condicoes_saude: restricoesData.restricoes.condicoes_saude,
+                preferencias: restricoesData.restricoes.preferencias,
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('Erro ao carregar restrições do perfil, usando apenas dados do formulário:', error)
+        }
 
         // Validar dados
         if (!dadosUsuario.peso || !dadosUsuario.altura || !dadosUsuario.idade) {

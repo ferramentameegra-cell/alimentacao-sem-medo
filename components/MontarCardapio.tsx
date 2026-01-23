@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import BarraProgressoCardapio from './BarraProgressoCardapio'
+import FormularioRestricoes, { RestricoesCompletas } from './FormularioRestricoes'
 
 // Componente de Login inline
 function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
@@ -142,6 +143,8 @@ export default function MontarCardapio() {
   const [mostrarPlanos, setMostrarPlanos] = useState(false)
   const [cardapioPronto, setCardapioPronto] = useState(false)
   const [temPlano, setTemPlano] = useState(false)
+  const [restricoes, setRestricoes] = useState<RestricoesCompletas | null>(null)
+  const [mostrarFormularioRestricoes, setMostrarFormularioRestricoes] = useState(false)
 
   const totalPassos = 8
 
@@ -228,6 +231,9 @@ export default function MontarCardapio() {
   const proximoPasso = () => {
     if (passoAtual < totalPassos) {
       setPassoAtual(passoAtual + 1)
+    } else if (passoAtual === totalPassos) {
+      // Após o último passo do formulário básico, mostrar formulário de restrições
+      setMostrarFormularioRestricoes(true)
     }
   }
 
@@ -521,6 +527,13 @@ export default function MontarCardapio() {
         },
         condicao_digestiva: dados.condicao_digestiva,
         objetivo: dados.objetivo,
+        // Incluir restrições se disponíveis
+        ...(restricoes && {
+          restricoes: restricoes.restricoes,
+          tipo_alimentacao: restricoes.tipo_alimentacao,
+          condicoes_saude: restricoes.condicoes_saude,
+          preferencias: restricoes.preferencias,
+        }),
       }
 
       // Usar API com streaming para progresso em tempo real
@@ -1357,7 +1370,7 @@ export default function MontarCardapio() {
             />
           </div>
         </div>
-      ) : !mostrarPlanos && (
+      ) : !mostrarPlanos && !mostrarFormularioRestricoes && (
         <>
           {/* Pergunta */}
           <div className="bg-dark-secondary border border-dark-border rounded-xl p-6 sm:p-8 lg:p-12 mb-6 lg:mb-10 transition-all duration-300"
@@ -1396,11 +1409,8 @@ export default function MontarCardapio() {
               <button
                 onClick={(e) => {
                   e.preventDefault()
-                  console.log('Botão Gerar Cardápio clicado!')
-                  console.log('Dados atuais:', dados)
-                  console.log('Pode avançar?', podeAvancar())
-                  console.log('Carregando?', carregando)
-                  handleGerarCardapio()
+                  // Ao clicar em "Gerar Cardápio", mostrar formulário de restrições primeiro
+                  setMostrarFormularioRestricoes(true)
                 }}
                 disabled={!podeAvancar() || carregando}
                 className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
@@ -1408,11 +1418,24 @@ export default function MontarCardapio() {
                   boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
                 }}
               >
-                {carregando ? 'Gerando...' : 'Gerar Cardápio'}
+                Continuar
               </button>
             )}
           </div>
         </>
+      )}
+
+      {/* Formulário de Restrições - Passo obrigatório antes da geração */}
+      {mostrarFormularioRestricoes && !mostrarPlanos && (
+        <FormularioRestricoes
+          onCompleto={(restricoesCompletas) => {
+            setRestricoes(restricoesCompletas)
+            setMostrarFormularioRestricoes(false)
+            // Após completar restrições, gerar cardápio automaticamente
+            handleGerarCardapio()
+          }}
+          dadosIniciais={restricoes || undefined}
+        />
       )}
 
     </div>

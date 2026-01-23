@@ -12,6 +12,7 @@ import { calcularFatorAjuste, ajustarQuantidade } from './dados_pdf_validado'
 import { gerarDicaRefeicao } from './gerador_dicas_preparo'
 import { DadosUsuario, PlanoDia, PlanoSemanal } from './montador_dieta'
 import { selecionarMelhorCombinacao, avaliarCoerenciaRefeicao } from './sistema_coerencia'
+import { filtrarItensPorRestricoes, priorizarItensPreferidos } from './filtro_restricoes'
 
 /**
  * Monta um dia de cardápio usando lógica nutricional inteligente
@@ -41,10 +42,22 @@ function montarDiaInteligente(
   const diaSemana = diaNumero >= 0 && diaNumero <= 6 ? diaNumero : diaNumero % 7
   
   // Buscar itens disponíveis do PDF
-  const cafeManhaDisponiveis = buscarItens('cafe_manha', condicao)
-  const almocoDisponiveis = buscarItens('almoco', condicao)
-  const lancheTardeDisponiveis = buscarItens('lanche_tarde', condicao)
-  const jantarDisponiveis = buscarItens('jantar', condicao)
+  let cafeManhaDisponiveis = buscarItens('cafe_manha', condicao)
+  let almocoDisponiveis = buscarItens('almoco', condicao)
+  let lancheTardeDisponiveis = buscarItens('lanche_tarde', condicao)
+  let jantarDisponiveis = buscarItens('jantar', condicao)
+  
+  // Filtrar por restrições alimentares
+  cafeManhaDisponiveis = filtrarItensPorRestricoes(cafeManhaDisponiveis, dadosUsuario)
+  almocoDisponiveis = filtrarItensPorRestricoes(almocoDisponiveis, dadosUsuario)
+  lancheTardeDisponiveis = filtrarItensPorRestricoes(lancheTardeDisponiveis, dadosUsuario)
+  jantarDisponiveis = filtrarItensPorRestricoes(jantarDisponiveis, dadosUsuario)
+  
+  // Priorizar itens preferidos
+  cafeManhaDisponiveis = priorizarItensPreferidos(cafeManhaDisponiveis, dadosUsuario)
+  almocoDisponiveis = priorizarItensPreferidos(almocoDisponiveis, dadosUsuario)
+  lancheTardeDisponiveis = priorizarItensPreferidos(lancheTardeDisponiveis, dadosUsuario)
+  jantarDisponiveis = priorizarItensPreferidos(jantarDisponiveis, dadosUsuario)
   
   // Verificar se há itens suficientes
   if (cafeManhaDisponiveis.length === 0 || almocoDisponiveis.length === 0 || 
