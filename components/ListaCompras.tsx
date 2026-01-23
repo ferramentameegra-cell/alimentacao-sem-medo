@@ -19,9 +19,9 @@ interface ListaComprasProps {
 }
 
 export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) {
-  const [selectedWeek, setSelectedWeek] = useState<number | 'mes'>(1)
+  const [selectedWeek, setSelectedWeek] = useState<number | 'mes'>(1) // Por padrão, mostrar semana 1
   const [listasPorSemana, setListasPorSemana] = useState<Map<number, any[]>>(new Map())
-  const [listaMes, setListaMes] = useState<any[]>([])
+  const [listaMes, setListaMes] = useState<any[]>([]) // Lista consolidada do mês (ingredientes somados)
   const [carregando, setCarregando] = useState(true)
   const [progresso, setProgresso] = useState(0)
   const [etapaAtual, setEtapaAtual] = useState('Sua lista de compras está sendo calculada...')
@@ -155,9 +155,10 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
         setEtapaAtual('Somando quantidades do mês completo...')
         await new Promise(resolve => setTimeout(resolve, 300))
 
-        // Gerar lista do mês combinando todas as semanas
+        // Gerar lista consolidada do mês (ingredientes repetidos somados)
         const todasListas = Array.from(listas.values())
         if (todasListas.length > 0) {
+          // Combinar todas as semanas e somar ingredientes iguais
           const listaCompleta = combinarListasCompras(todasListas)
           setListaMes(listaCompleta)
         } else {
@@ -176,7 +177,10 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
           if (primeiraSemana) {
             setSelectedWeek(primeiraSemana)
           } else if (listas.size === 0) {
-            setSelectedWeek('mes')
+            // Se não há semanas, manter seleção atual ou mudar para 'mes' se não houver dados
+            if (listaMes.length === 0) {
+              setSelectedWeek('mes')
+            }
           }
         }
       } catch (error: any) {
@@ -195,24 +199,29 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
   }, [cardapios])
 
   const copiarLista = () => {
-    let listaParaCopiar: any[] = []
+    let textoParaCopiar = ''
     let titulo = ''
 
     if (selectedWeek === 'mes') {
-      listaParaCopiar = listaMes
-      titulo = 'MÊS COMPLETO'
+      // Para mês completo, copiar lista consolidada
+      if (listaMes.length === 0) {
+        alert('Nenhum item encontrado para copiar.')
+        return
+      }
+      textoParaCopiar = formatarListaCompras(listaMes, 'MÊS COMPLETO (CONSOLIDADO)')
+      titulo = 'Mês Completo (Consolidado)'
     } else {
-      listaParaCopiar = listasPorSemana.get(selectedWeek) || []
-      titulo = `SEMANA ${selectedWeek}`
+      // Para semana específica, copiar apenas aquela semana
+      const listaSemana = listasPorSemana.get(selectedWeek) || []
+      if (listaSemana.length === 0) {
+        alert('Nenhum item encontrado para copiar.')
+        return
+      }
+      textoParaCopiar = formatarListaCompras(listaSemana, `SEMANA ${selectedWeek}`)
+      titulo = `Semana ${selectedWeek}`
     }
 
-    if (listaParaCopiar.length === 0) {
-      alert('Nenhum item encontrado para copiar.')
-      return
-    }
-
-    const texto = formatarListaCompras(listaParaCopiar, titulo)
-    navigator.clipboard.writeText(texto).then(() => {
+    navigator.clipboard.writeText(textoParaCopiar).then(() => {
       alert(`✅ Lista de compras da ${titulo.toLowerCase()} copiada para a área de transferência!`)
     }).catch(() => {
       alert('Erro ao copiar lista. Tente novamente.')
@@ -220,12 +229,16 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
   }
 
   // Obter lista atual baseada na seleção
-  const listaAtual = selectedWeek === 'mes' 
-    ? listaMes 
-    : (listasPorSemana.get(selectedWeek) || [])
+  // Se for 'mes', mostrar todas as semanas separadas + lista consolidada
+  // Se for semana específica, mostrar apenas aquela semana
   
   // Verificar quais semanas têm dados
   const semanasDisponiveis = Array.from(listasPorSemana.keys()).sort((a, b) => a - b)
+  
+  // Lista atual para exibição
+  const listaAtual = selectedWeek === 'mes' 
+    ? listaMes // Lista consolidada (ingredientes somados de todas as semanas)
+    : (listasPorSemana.get(selectedWeek) || [])
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in p-4">
@@ -359,58 +372,161 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                 <p className="text-base text-neon-pink font-semibold">{erro}</p>
               </div>
             </div>
-          ) : listaAtual.length > 0 ? (
-            <div className="space-y-3">
-              {/* Título e descrição */}
-              <div className="mb-6 pb-4 border-b border-dark-border">
-                <h3 className="text-2xl font-bold text-text-primary mb-2">
-                  {selectedWeek === 'mes' 
-                    ? '📅 Lista de Compras do Mês Completo' 
-                    : `📋 Lista de Compras - Semana ${selectedWeek}`}
-                </h3>
-                <p className="text-sm text-text-secondary">
-                  {selectedWeek === 'mes' 
-                    ? `Total de ${listaAtual.length} itens únicos somados de todas as semanas do mês`
-                    : `${listaAtual.length} itens necessários para a semana ${selectedWeek}`}
-                </p>
-              </div>
+          ) : listaAtual.length > 0 || (selectedWeek === 'mes' && semanasDisponiveis.length > 0) ? (
+            <div className="space-y-6">
+              {selectedWeek === 'mes' ? (
+                <>
+                  {/* MÊS COMPLETO: Mostrar todas as semanas separadas + lista consolidada */}
+                  
+                  {/* Título */}
+                  <div className="mb-6 pb-4 border-b border-dark-border">
+                    <h3 className="text-2xl font-bold text-text-primary mb-2">
+                      📅 Lista de Compras do Mês Completo
+                    </h3>
+                    <p className="text-sm text-text-secondary">
+                      Ingredientes organizados por semana e lista consolidada final
+                    </p>
+                  </div>
 
-              {/* Lista de itens - melhorada */}
-              <div className="grid gap-3">
-                {listaAtual.map((item, index) => (
-                  <div
-                    key={`${item.nome}-${index}`}
-                    className="flex items-center justify-between p-4 bg-dark-card border border-dark-border rounded-xl hover:border-lilac/50 hover:bg-dark-secondary/50 transition-all duration-300 group"
-                    style={{
-                      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)'
-                    }}
-                  >
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                      {/* Número do item */}
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple/20 to-lilac/10 border border-neon-purple/30 flex items-center justify-center">
-                        <span className="text-sm font-bold text-neon-purple">{index + 1}</span>
+                  {/* Lista de cada semana separadamente */}
+                  {semanasDisponiveis.map((semana) => {
+                    const listaSemana = listasPorSemana.get(semana) || []
+                    if (listaSemana.length === 0) return null
+                    
+                    return (
+                      <div key={semana} className="mb-8">
+                        <div className="mb-4 pb-3 border-b border-dark-border/50">
+                          <h4 className="text-xl font-bold text-neon-purple mb-1">
+                            📋 Semana {semana}
+                          </h4>
+                          <p className="text-xs text-text-secondary">
+                            {listaSemana.length} itens únicos (quantidades já somadas)
+                          </p>
+                        </div>
+                        
+                        <div className="grid gap-3">
+                          {listaSemana.map((item, index) => (
+                            <div
+                              key={`semana-${semana}-${item.nome}-${index}`}
+                              className="flex items-center justify-between p-4 bg-dark-card border border-dark-border rounded-xl hover:border-lilac/50 hover:bg-dark-secondary/50 transition-all duration-300"
+                              style={{
+                                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)'
+                              }}
+                            >
+                              <div className="flex items-center gap-4 flex-1 min-w-0">
+                                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-neon-purple/20 to-lilac/10 border border-neon-purple/30 flex items-center justify-center">
+                                  <span className="text-xs font-bold text-neon-purple">{index + 1}</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="text-sm font-semibold text-text-primary mb-1 truncate">
+                                    {item.nome}
+                                  </h3>
+                                  <p className="text-xs text-text-secondary">
+                                    {item.ocorrencias} {item.ocorrencias === 1 ? 'vez' : 'vezes'} na semana
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex-shrink-0 ml-4 text-right">
+                                <p className="text-base font-bold text-neon-cyan">
+                                  {item.quantidadeTotal}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      
-                      {/* Nome e informações */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-semibold text-text-primary mb-1 truncate">
-                          {item.nome}
-                        </h3>
+                    )
+                  })}
+
+                  {/* Lista consolidada do mês (ingredientes somados) */}
+                  {listaMes.length > 0 && (
+                    <div className="mt-8 pt-6 border-t-2 border-neon-cyan/30">
+                      <div className="mb-4 pb-3 border-b border-neon-cyan/20">
+                        <h4 className="text-xl font-bold text-neon-cyan mb-1">
+                          🛒 Lista Consolidada do Mês
+                        </h4>
                         <p className="text-xs text-text-secondary">
-                          {item.ocorrencias} {item.ocorrencias === 1 ? 'vez' : 'vezes'} {selectedWeek === 'mes' ? 'no mês' : 'na semana'}
+                          {listaMes.length} itens únicos com quantidades somadas de todas as semanas
                         </p>
                       </div>
+                      
+                      <div className="grid gap-3">
+                        {listaMes.map((item, index) => (
+                          <div
+                            key={`mes-${item.nome}-${index}`}
+                            className="flex items-center justify-between p-4 bg-gradient-to-r from-dark-card to-dark-secondary border-2 border-neon-cyan/30 rounded-xl hover:border-neon-cyan/60 hover:bg-dark-secondary transition-all duration-300"
+                            style={{
+                              boxShadow: '0 4px 16px rgba(0, 240, 255, 0.2)'
+                            }}
+                          >
+                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-neon-cyan/20 to-neon-purple/10 border border-neon-cyan/40 flex items-center justify-center">
+                                <span className="text-sm font-bold text-neon-cyan">{index + 1}</span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-base font-semibold text-text-primary mb-1 truncate">
+                                  {item.nome}
+                                </h3>
+                                <p className="text-xs text-text-secondary">
+                                  {item.ocorrencias} {item.ocorrencias === 1 ? 'vez' : 'vezes'} no mês (total somado)
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex-shrink-0 ml-4 text-right">
+                              <p className="text-lg font-bold text-neon-cyan">
+                                {item.quantidadeTotal}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    
-                    {/* Quantidade - destacada */}
-                    <div className="flex-shrink-0 ml-4 text-right">
-                      <p className="text-lg font-bold text-neon-cyan">
-                        {item.quantidadeTotal}
-                      </p>
-                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* SEMANA ESPECÍFICA: Mostrar apenas a semana selecionada */}
+                  <div className="mb-6 pb-4 border-b border-dark-border">
+                    <h3 className="text-2xl font-bold text-text-primary mb-2">
+                      📋 Lista de Compras - Semana {selectedWeek}
+                    </h3>
+                    <p className="text-sm text-text-secondary">
+                      {listaAtual.length} itens únicos (quantidades já somadas da semana)
+                    </p>
                   </div>
-                ))}
-              </div>
+
+                  <div className="grid gap-3">
+                    {listaAtual.map((item, index) => (
+                      <div
+                        key={`${item.nome}-${index}`}
+                        className="flex items-center justify-between p-4 bg-dark-card border border-dark-border rounded-xl hover:border-lilac/50 hover:bg-dark-secondary/50 transition-all duration-300 group"
+                        style={{
+                          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)'
+                        }}
+                      >
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple/20 to-lilac/10 border border-neon-purple/30 flex items-center justify-center">
+                            <span className="text-sm font-bold text-neon-purple">{index + 1}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-text-primary mb-1 truncate">
+                              {item.nome}
+                            </h3>
+                            <p className="text-xs text-text-secondary">
+                              {item.ocorrencias} {item.ocorrencias === 1 ? 'vez' : 'vezes'} na semana
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex-shrink-0 ml-4 text-right">
+                          <p className="text-lg font-bold text-neon-cyan">
+                            {item.quantidadeTotal}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <div className="text-center py-20">
@@ -424,7 +540,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
               </p>
               <p className="text-sm text-text-muted">
                 {semanasDisponiveis.length > 0 
-                  ? `Tente selecionar uma das semanas disponíveis: ${semanasDisponiveis.join(', ')}`
+                  ? `Tente selecionar uma das semanas disponíveis: ${semanasDisponiveis.join(', ')} ou clique em "Mês Completo"`
                   : 'Gere cardápios primeiro para ver sua lista de compras.'}
               </p>
             </div>
@@ -432,7 +548,8 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
         </div>
 
         {/* Footer com botão de copiar */}
-        {listaAtual.length > 0 && (
+        {((selectedWeek === 'mes' && (listaMes.length > 0 || semanasDisponiveis.length > 0)) || 
+          (selectedWeek !== 'mes' && listaAtual.length > 0)) && (
           <div className="p-5 border-t border-dark-border bg-dark-card/50">
             <button
               onClick={copiarLista}
@@ -442,7 +559,11 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
               }}
             >
               <span>📋</span>
-              <span>Copiar Lista de Compras {selectedWeek === 'mes' ? 'do Mês' : `da Semana ${selectedWeek}`}</span>
+              <span>
+                {selectedWeek === 'mes' 
+                  ? 'Copiar Lista Consolidada do Mês' 
+                  : `Copiar Lista da Semana ${selectedWeek}`}
+              </span>
             </button>
           </div>
         )}
