@@ -33,7 +33,18 @@ export interface RestricoesCompletas {
     sop?: boolean
     hipertensao?: boolean
     colesterol_alto?: boolean
-    problemas_gastrointestinais?: string[]
+    problemas_gastrointestinais?: (
+      | 'azia_refluxo'
+      | 'constipacao_intestinal'
+      | 'diarreia'
+      | 'dor_abdominal'
+      | 'sindrome_intestino_irritavel'
+      | 'diverticulos_intestinais'
+      | 'gases_abdome_distendido'
+      | 'retocolite_doenca_crohn'
+      | 'disbiose'
+      | 'ma_digestao'
+    )[]
     nenhuma?: boolean
   }
   preferencias: {
@@ -95,7 +106,19 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
   
   const [alimentoNaoGosta, setAlimentoNaoGosta] = useState('')
   const [alimentoPreferido, setAlimentoPreferido] = useState('')
-  const [problemaGastro, setProblemaGastro] = useState('')
+  // Lista de condições gastrointestinais disponíveis
+  const condicoesGI = [
+    { key: 'azia_refluxo', label: 'Azia e Refluxo' },
+    { key: 'constipacao_intestinal', label: 'Constipação Intestinal' },
+    { key: 'diarreia', label: 'Diarréia' },
+    { key: 'dor_abdominal', label: 'Dor Abdominal' },
+    { key: 'sindrome_intestino_irritavel', label: 'Síndrome do Intestino Irritável' },
+    { key: 'diverticulos_intestinais', label: 'Divertículos Intestinais' },
+    { key: 'gases_abdome_distendido', label: 'Gases e Abdome Distendido' },
+    { key: 'retocolite_doenca_crohn', label: 'Retocolite ou Doença de Crohn' },
+    { key: 'disbiose', label: 'Disbiose' },
+    { key: 'ma_digestao', label: 'Má Digestão' },
+  ] as const
 
   // Carregar dados salvos do perfil
   useEffect(() => {
@@ -217,21 +240,19 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
     }))
   }
 
-  const adicionarProblemaGastro = () => {
-    if (problemaGastro.trim()) {
-      setCondicoesSaude(prev => ({
+  const toggleCondicaoGI = (condicaoKey: typeof condicoesGI[number]['key']) => {
+    setCondicoesSaude(prev => {
+      const problemasAtuais = prev.problemas_gastrointestinais || []
+      const jaExiste = problemasAtuais.includes(condicaoKey)
+      
+      return {
         ...prev,
-        problemas_gastrointestinais: [...(prev.problemas_gastrointestinais || []), problemaGastro.trim()]
-      }))
-      setProblemaGastro('')
-    }
-  }
-
-  const removerProblemaGastro = (index: number) => {
-    setCondicoesSaude(prev => ({
-      ...prev,
-      problemas_gastrointestinais: prev.problemas_gastrointestinais?.filter((_, i) => i !== index) || []
-    }))
+        problemas_gastrointestinais: jaExiste
+          ? problemasAtuais.filter(c => c !== condicaoKey)
+          : [...problemasAtuais, condicaoKey],
+        nenhuma: false // Se selecionar alguma condição, desmarcar "nenhuma"
+      }
+    })
   }
 
   const toggleRestricao = (key: keyof typeof restricoes) => {
@@ -464,42 +485,30 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
             ))}
 
             <div className="mt-6">
-              <label className="block text-base sm:text-lg font-semibold text-text-primary mb-3">
-                Problemas gastrointestinais (gastrite, refluxo, intestino irritável, etc.)
+              <label className="block text-base sm:text-lg font-semibold text-text-primary mb-4">
+                Problemas gastrointestinais
               </label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="text"
-                  value={problemaGastro}
-                  onChange={(e) => setProblemaGastro(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && adicionarProblemaGastro()}
-                  placeholder="Digite o problema..."
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-dark-card border border-dark-border rounded-lg text-base sm:text-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20"
-                />
-                <button
-                  type="button"
-                  onClick={adicionarProblemaGastro}
-                  className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac text-white rounded-lg font-semibold hover:from-lilac hover:to-neon-purple transition-all touch-manipulation"
-                >
-                  Adicionar
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {condicoesSaude.problemas_gastrointestinais?.map((problema, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-3 sm:px-4 py-2 bg-dark-card border border-dark-border rounded-lg text-sm sm:text-base text-text-primary"
-                  >
-                    {problema}
-                    <button
-                      type="button"
-                      onClick={() => removerProblemaGastro(index)}
-                      className="ml-2 text-neon-pink hover:text-neon-pink/80"
+              <p className="text-sm sm:text-base text-text-secondary mb-4">
+                Selecione todas as condições que se aplicam a você. Você pode selecionar múltiplas opções.
+              </p>
+              <div className="space-y-3 sm:space-y-4">
+                {condicoesGI.map(({ key, label }) => {
+                  const estaSelecionada = condicoesSaude.problemas_gastrointestinais?.includes(key) || false
+                  return (
+                    <label
+                      key={key}
+                      className="flex items-center p-4 sm:p-5 bg-dark-card rounded-lg cursor-pointer hover:bg-dark-card/80 transition-colors touch-manipulation"
                     >
-                      ×
-                    </button>
-                  </span>
-                ))}
+                      <input
+                        type="checkbox"
+                        checked={estaSelecionada}
+                        onChange={() => toggleCondicaoGI(key)}
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border rounded focus:ring-2 focus:ring-lilac/50"
+                      />
+                      <span className="ml-4 text-base sm:text-lg text-text-primary">{label}</span>
+                    </label>
+                  )
+                })}
               </div>
             </div>
           </div>

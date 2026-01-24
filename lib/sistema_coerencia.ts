@@ -163,7 +163,11 @@ export function avaliarCoerenciaRefeicao(
       c.item.nome.toLowerCase().includes('caldo')
     )
     
-    if (!temSopaCreme && dadosUsuario.objetivo === 'conforto') {
+    const objetivoConforto = dadosUsuario.objetivo === 'conforto' || 
+                            dadosUsuario.objetivo === 'equilibrar_microbiota' ||
+                            dadosUsuario.objetivo === 'melhorar_funcionamento'
+    
+    if (!temSopaCreme && objetivoConforto) {
       pontuacao -= 25
       problemas.push('Para conforto digestivo, jantar deveria ser sopa/creme')
     } else if (temSopaCreme) {
@@ -196,7 +200,11 @@ export function avaliarCoerenciaRefeicao(
     if (dadosUsuario.objetivo === 'leve_perda_peso') {
       return c.adequadoPara.emagrecimento
     }
-    if (dadosUsuario.objetivo === 'conforto') {
+    const objetivoConforto = dadosUsuario.objetivo === 'conforto' || 
+                            dadosUsuario.objetivo === 'equilibrar_microbiota' ||
+                            dadosUsuario.objetivo === 'melhorar_funcionamento'
+    
+    if (objetivoConforto) {
       return c.adequadoPara.confortoDigestivo
     }
     return c.adequadoPara.manutencao

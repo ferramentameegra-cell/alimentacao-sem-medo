@@ -117,7 +117,7 @@ interface DadosFormulario {
   sexo: 'M' | 'F' | null
   rotina: 'sedentaria' | 'levemente_ativa' | 'moderadamente_ativa' | 'ativa' | null
   condicao_digestiva: 'azia' | 'refluxo' | 'ambos' | null
-  objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso' | null
+  objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso' | 'equilibrar_microbiota' | 'melhorar_funcionamento' | null
   dias_cardapio: 1 | 7 | null
 }
 
@@ -981,6 +981,8 @@ export default function MontarCardapio() {
                 { valor: 'conforto', label: 'Conforto digestivo' },
                 { valor: 'manutencao', label: 'Manutenção do peso' },
                 { valor: 'leve_perda_peso', label: 'Leve perda de peso' },
+                { valor: 'equilibrar_microbiota', label: 'Equilibrar a Microbiota Intestinal' },
+                { valor: 'melhorar_funcionamento', label: 'Melhorar o funcionamento intestinal' },
               ].map((opcao) => (
                 <button
                   key={opcao.valor}

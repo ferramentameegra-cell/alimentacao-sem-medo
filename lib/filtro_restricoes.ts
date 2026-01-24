@@ -197,6 +197,67 @@ export function itemCompativelComRestricoes(
       // Priorizar alimentos com menos gordura saturada
       // Não excluir completamente, mas marcar para priorização
     }
+    
+    // Problemas gastrointestinais específicos
+    if (dadosUsuario.condicoes_saude.problemas_gastrointestinais && 
+        dadosUsuario.condicoes_saude.problemas_gastrointestinais.length > 0) {
+      
+      const problemasGI = dadosUsuario.condicoes_saude.problemas_gastrointestinais
+      
+      // Azia e Refluxo: evitar alimentos ácidos, picantes, gordurosos
+      if (problemasGI.includes('azia_refluxo')) {
+        if (nomeLower.includes('tomate') || nomeLower.includes('cítrico') ||
+            nomeLower.includes('limão') || nomeLower.includes('laranja') ||
+            nomeLower.includes('pimenta') || nomeLower.includes('picante') ||
+            nomeLower.includes('fritura') || nomeLower.includes('gorduroso')) {
+          return false
+        }
+      }
+      
+      // Constipação Intestinal: priorizar fibras, evitar alimentos constipantes
+      if (problemasGI.includes('constipacao_intestinal')) {
+        if (nomeLower.includes('banana verde') || nomeLower.includes('maçã sem casca') ||
+            nomeLower.includes('chá preto') || nomeLower.includes('cacau em pó')) {
+          // Evitar alimentos que podem piorar constipação
+          // Mas não excluir completamente, apenas priorizar os ricos em fibra
+        }
+      }
+      
+      // Diarréia: evitar alimentos laxantes e ricos em fibra insolúvel
+      if (problemasGI.includes('diarreia')) {
+        if (nomeLower.includes('ameixa') || nomeLower.includes('kiwi') ||
+            nomeLower.includes('mamão') || nomeLower.includes('laxante')) {
+          return false
+        }
+      }
+      
+      // Síndrome do Intestino Irritável: evitar FODMAPs altos
+      if (problemasGI.includes('sindrome_intestino_irritavel')) {
+        if (nomeLower.includes('cebola') || nomeLower.includes('alho') ||
+            nomeLower.includes('feijão') || nomeLower.includes('lentilha') ||
+            nomeLower.includes('trigo') || nomeLower.includes('leite')) {
+          // Evitar FODMAPs altos, mas não excluir completamente
+          // Priorizar versões low-FODMAP
+        }
+      }
+      
+      // Gases e Abdome Distendido: evitar alimentos fermentáveis
+      if (problemasGI.includes('gases_abdome_distendido')) {
+        if (nomeLower.includes('feijão') || nomeLower.includes('repolho') ||
+            nomeLower.includes('brócolis') || nomeLower.includes('brocolis') ||
+            nomeLower.includes('couve-flor') || nomeLower.includes('couve flor')) {
+          // Evitar alimentos que causam gases, mas não excluir completamente
+        }
+      }
+      
+      // Má Digestão: evitar alimentos muito gordurosos e pesados
+      if (problemasGI.includes('ma_digestao')) {
+        if (nomeLower.includes('fritura') || nomeLower.includes('gorduroso') ||
+            nomeLower.includes('embutido') || nomeLower.includes('enlatado')) {
+          return false
+        }
+      }
+    }
   }
   
   // Verificar alimentos que o usuário não gosta

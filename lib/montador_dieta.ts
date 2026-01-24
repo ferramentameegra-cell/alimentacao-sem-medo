@@ -24,7 +24,7 @@ export interface DadosUsuario {
     jantar: string
   }
   condicao_digestiva: 'azia' | 'refluxo' | 'ambos'
-  objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso'
+  objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso' | 'equilibrar_microbiota' | 'melhorar_funcionamento'
   
   // Restrições alimentares (intolerâncias e alergias)
   restricoes?: {
@@ -61,7 +61,18 @@ export interface DadosUsuario {
     sop?: boolean
     hipertensao?: boolean
     colesterol_alto?: boolean
-    problemas_gastrointestinais?: string[] // gastrite, refluxo, intestino_irritavel
+    problemas_gastrointestinais?: (
+      | 'azia_refluxo'
+      | 'constipacao_intestinal'
+      | 'diarreia'
+      | 'dor_abdominal'
+      | 'sindrome_intestino_irritavel'
+      | 'diverticulos_intestinais'
+      | 'gases_abdome_distendido'
+      | 'retocolite_doenca_crohn'
+      | 'disbiose'
+      | 'ma_digestao'
+    )[]
     nenhuma?: boolean
   }
   

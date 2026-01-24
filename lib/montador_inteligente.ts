@@ -31,11 +31,31 @@ function montarDiaInteligente(
     return null
   }
   
-  const condicao = dadosUsuario.condicao_digestiva === 'ambos' 
-    ? 'azia_refluxo' 
-    : dadosUsuario.condicao_digestiva === 'azia'
-    ? 'azia_refluxo'
-    : 'azia_refluxo'
+  // Determinar condição digestiva baseada em condicao_digestiva ou problemas_gastrointestinais
+  let condicao = 'azia_refluxo' // padrão
+  
+  if (dadosUsuario.condicao_digestiva) {
+    condicao = dadosUsuario.condicao_digestiva === 'ambos' 
+      ? 'azia_refluxo' 
+      : dadosUsuario.condicao_digestiva === 'azia'
+      ? 'azia_refluxo'
+      : 'azia_refluxo'
+  } else if (dadosUsuario.condicoes_saude?.problemas_gastrointestinais && 
+             dadosUsuario.condicoes_saude.problemas_gastrointestinais.length > 0) {
+    // Se tem condições GI específicas, usar a primeira como referência
+    const primeiraCondicao = dadosUsuario.condicoes_saude.problemas_gastrointestinais[0]
+    
+    // Mapear condições GI para condição digestiva do PDF
+    if (primeiraCondicao === 'azia_refluxo') {
+      condicao = 'azia_refluxo'
+    } else if (primeiraCondicao === 'constipacao_intestinal') {
+      condicao = 'intestino_preso'
+    } else if (primeiraCondicao === 'sindrome_intestino_irritavel') {
+      condicao = 'sii'
+    } else {
+      condicao = 'azia_refluxo' // padrão para outras condições
+    }
+  }
   
   // Nomes dos dias da semana
   const nomesDias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
@@ -216,7 +236,15 @@ function montarDiaInteligente(
   
   // Montar jantar (1-2 itens, leve - preferencialmente sopa/creme)
   let quantidadeJantar = 1
-  if (dadosUsuario.objetivo === 'conforto' || dadosUsuario.condicao_digestiva === 'azia' || dadosUsuario.condicao_digestiva === 'ambos') {
+  // Priorizar refeições leves para conforto digestivo ou condições GI
+  const temCondicaoGI = dadosUsuario.condicoes_saude?.problemas_gastrointestinais && 
+                        dadosUsuario.condicoes_saude.problemas_gastrointestinais.length > 0
+  const objetivoConforto = dadosUsuario.objetivo === 'conforto' || 
+                          dadosUsuario.objetivo === 'equilibrar_microbiota' ||
+                          dadosUsuario.objetivo === 'melhorar_funcionamento'
+  
+  if (objetivoConforto || dadosUsuario.condicao_digestiva === 'azia' || 
+      dadosUsuario.condicao_digestiva === 'ambos' || temCondicaoGI) {
     // Priorizar sopas/cremes para conforto digestivo
     const sopasCremes = jantarDisponiveis.filter(i =>
       i.nome.toLowerCase().includes('sopa') ||
