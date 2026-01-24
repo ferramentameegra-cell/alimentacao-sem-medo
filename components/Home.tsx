@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import MealCard from './MealCard'
 import SocialProof from './SocialProof'
 import DrFernandoCard from './DrFernandoCard'
@@ -456,9 +457,15 @@ export default function Home() {
               <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-2 lg:mb-3 tracking-tight">
                 Semana {week}
               </h3>
-              <p className="text-sm sm:text-base text-text-secondary font-light">
-                {cardapios.find(c => c.semana === week) ? 'Cardápio disponível' : 'Cardápio completo'}
-              </p>
+              <div className="relative w-full h-32 sm:h-36 lg:h-40 rounded-lg overflow-hidden">
+                <Image
+                  src={`/imagens/${week}.png`}
+                  alt={`Semana ${week}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 288px, 320px"
+                />
+              </div>
             </div>
           ))}
         </div>
