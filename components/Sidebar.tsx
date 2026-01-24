@@ -17,6 +17,8 @@ export default function Sidebar() {
   const [dadosUsuarioAgua, setDadosUsuarioAgua] = useState<DadosUsuarioAgua | undefined>(undefined)
 
   useEffect(() => {
+    let mounted = true
+    
     const carregarDados = async () => {
       try {
         const sessionId = localStorage.getItem('sessionId')
@@ -97,6 +99,7 @@ export default function Sidebar() {
             }
             
             setEmail(data.conta.email || 'Visitante')
+            setCarregando(false)
           } else {
             // Tentar reautenticar se tiver email
             if (userEmail) {
@@ -129,6 +132,7 @@ export default function Sidebar() {
             localStorage.removeItem('userEmail')
             setEmail('Visitante')
             setTemCardapio(false)
+            setCarregando(false)
           }
         } else {
           // Tentar reautenticar se tiver email
@@ -191,14 +195,31 @@ export default function Sidebar() {
             // Ignorar
           }
         }
-        setEmail('Visitante')
-        setTemCardapio(false)
+        if (mounted) {
+          setEmail('Visitante')
+          setTemCardapio(false)
+          setCarregando(false)
+        }
       } finally {
-        setCarregando(false)
+        if (mounted) {
+          setCarregando(false)
+        }
       }
     }
 
     carregarDados()
+    
+    // Timeout de segurança para garantir que o carregamento termine
+    const timeoutId = setTimeout(() => {
+      if (mounted) {
+        setCarregando(false)
+      }
+    }, 3000) // 3 segundos máximo
+    
+    return () => {
+      mounted = false
+      clearTimeout(timeoutId)
+    }
     
     // Escutar eventos de storage para atualizar quando login acontecer ou cardápio for criado
     const handleStorageChange = () => {
@@ -231,31 +252,21 @@ export default function Sidebar() {
 
   if (carregando) {
     return (
-      <aside className="fixed left-0 top-0 h-screen w-80 bg-dark-secondary/95 backdrop-blur-sm border-r border-dark-border shadow-2xl p-8 overflow-y-auto z-50 lg:z-20 transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0"
+      <aside
+        className="fixed left-0 top-0 h-screen w-80 p-8 overflow-y-auto z-50 lg:z-20 transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 border-r"
         style={{
-          background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)'
+          background: 'rgba(15, 46, 43, 0.85)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderColor: 'rgba(255, 255, 255, 0.05)'
         }}
       >
         <div className="flex flex-col items-center justify-center h-full">
-          <div className="text-xl text-neon-cyan mb-4 font-semibold">Carregando...</div>
+          <div className="text-xl text-accent-primary mb-4 font-semibold">Carregando...</div>
           <div className="flex gap-3">
-            <div className="w-3 h-3 bg-neon-purple rounded-full animate-bounce"
-              style={{
-                boxShadow: '0 0 12px rgba(199, 125, 255, 0.6)'
-              }}
-            />
-            <div className="w-3 h-3 bg-neon-cyan rounded-full animate-bounce"
-              style={{
-                boxShadow: '0 0 12px rgba(0, 240, 255, 0.6)',
-                animationDelay: '0.2s'
-              }}
-            />
-            <div className="w-3 h-3 bg-neon-purple rounded-full animate-bounce"
-              style={{
-                boxShadow: '0 0 12px rgba(199, 125, 255, 0.6)',
-                animationDelay: '0.4s'
-              }}
-            />
+            <div className="w-3 h-3 bg-accent-primary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)' }} />
+            <div className="w-3 h-3 bg-accent-secondary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(79, 107, 88, 0.4)', animationDelay: '0.2s' }} />
+            <div className="w-3 h-3 bg-accent-primary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)', animationDelay: '0.4s' }} />
           </div>
         </div>
       </aside>
@@ -275,11 +286,13 @@ export default function Sidebar() {
       {/* Botão hambúrguer para mobile - com safe area */}
       <button
         onClick={() => setSidebarAberta(!sidebarAberta)}
-        className="fixed z-50 lg:hidden p-3 bg-dark-card border border-lilac/40 rounded-lg text-text-primary hover:bg-dark-secondary transition-all touch-manipulation"
+        className="fixed z-50 lg:hidden p-3 rounded-lg text-text-primary transition-all touch-manipulation hover:-translate-y-px"
         style={{
           top: 'max(1rem, env(safe-area-inset-top, 1rem))',
           left: 'max(1rem, env(safe-area-inset-left, 1rem))',
-          boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)',
+          background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+          border: '1px solid rgba(110, 143, 61, 0.25)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
           minWidth: '44px',
           minHeight: '44px'
         }}
@@ -296,12 +309,16 @@ export default function Sidebar() {
         )}
       </button>
 
-      <aside className={`fixed left-0 top-0 h-screen w-80 bg-dark-secondary/95 backdrop-blur-sm border-r border-dark-border shadow-2xl p-4 sm:p-6 lg:p-8 overflow-y-auto z-50 lg:z-20 transform transition-transform duration-300 ease-in-out ${
-        sidebarAberta ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}
+      <aside
+        className={`fixed left-0 top-0 h-screen w-80 p-4 sm:p-6 lg:p-8 overflow-y-auto z-50 lg:z-20 transform transition-transform duration-300 ease-in-out ${
+          sidebarAberta ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
         style={{
-          background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)',
-          height: '-webkit-fill-available', /* iOS Safari */
+          background: 'rgba(15, 46, 43, 0.85)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+          height: '-webkit-fill-available',
           paddingTop: 'max(1rem, env(safe-area-inset-top, 0))',
           paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0))',
           maxWidth: 'calc(100vw - env(safe-area-inset-left, 0) - env(safe-area-inset-right, 0))'
@@ -321,10 +338,13 @@ export default function Sidebar() {
       </div>
 
       {/* Informações do usuário */}
-      <div className="mb-6 lg:mb-10">
-        <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-dark-card border-2 border-lilac/40 flex items-center justify-center mb-4 lg:mb-6 transition-all duration-300 hover:border-neon-purple/60 hover:scale-105 mx-auto lg:mx-0"
+      <div className="mb-6 lg:mb-10 pb-6 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
+        <div
+          className="w-24 h-24 lg:w-32 lg:h-32 rounded-full flex items-center justify-center mb-4 lg:mb-6 transition-all duration-300 hover:scale-105 mx-auto lg:mx-0"
           style={{
-            boxShadow: '0 4px 20px rgba(199, 125, 255, 0.2)'
+            background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+            border: '1px solid rgba(110, 143, 61, 0.25)',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
           }}
         >
           <span className="text-4xl lg:text-5xl">👤</span>
@@ -334,24 +354,26 @@ export default function Sidebar() {
       </div>
 
       {/* Meus cardápios */}
-      <div className="mb-6 lg:mb-10">
+      <div className="mb-6 lg:mb-10 pb-6 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
         <h3 className="text-lg lg:text-xl font-bold text-text-primary mb-4 lg:mb-6 tracking-tight">Meus cardápios</h3>
         <div className="space-y-2 lg:space-y-3">
-          <div 
+          <div
             onClick={() => {
               router.push('/montar-cardapio')
               setSidebarAberta(false)
             }}
-            className={`p-4 lg:p-5 bg-dark-card rounded-xl border card-hover cursor-pointer transition-all duration-300 touch-manipulation ${
-              pathname === '/montar-cardapio'
-                ? 'border-lilac/60'
-                : 'border-lilac/20 hover:border-lilac/50'
+            className={`p-4 lg:p-5 rounded-xl border card-hover cursor-pointer transition-all duration-300 touch-manipulation ${
+              pathname === '/montar-cardapio' ? 'card-active' : ''
             }`}
             style={{
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+              background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+              borderColor: pathname === '/montar-cardapio' ? 'rgba(110, 143, 61, 0.4)' : 'rgba(110, 143, 61, 0.25)',
+              boxShadow: pathname === '/montar-cardapio'
+                ? '0 0 0 1px rgba(110, 143, 61, 0.4), 0 0 25px rgba(110, 143, 61, 0.25), 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+                : '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
             }}
           >
-            <p className="text-sm lg:text-base text-neon-purple font-bold mb-1 lg:mb-1.5 tracking-tight">
+            <p className="text-sm lg:text-base text-accent-primary font-bold mb-1 lg:mb-1.5 tracking-tight">
               {temCardapio ? 'Refazer meu Cardápio' : 'Montar meu Cardápio'}
             </p>
             <p className="text-xs lg:text-sm text-text-secondary font-light">
@@ -359,46 +381,54 @@ export default function Sidebar() {
             </p>
           </div>
           {pathname === '/montar-cardapio' && (
-            <div 
-              onClick={() => {
-                router.push('/')
-                setSidebarAberta(false)
-              }}
-              className="p-4 lg:p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/40 touch-manipulation"
+            <div
+              onClick={() => { router.push('/'); setSidebarAberta(false) }}
+              className="p-4 lg:p-5 rounded-xl border card-hover cursor-pointer transition-all duration-300 touch-manipulation"
               style={{
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                border: '1px solid rgba(110, 143, 61, 0.25)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               }}
             >
               <p className="text-sm lg:text-base text-text-primary font-bold mb-1 lg:mb-1.5 tracking-tight">← Voltar à Home</p>
-              <p className="text-xs lg:text-sm text-text-secondary font-light">Ver todas as informações</p>
+              <p className="text-xs lg:text-sm text-text-secondary/90 font-light">Ver todas as informações</p>
             </div>
           )}
-          <div className="p-4 lg:p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/30 touch-manipulation"
+          <div
+            className="p-4 lg:p-5 rounded-xl border card-hover cursor-pointer transition-all duration-300 touch-manipulation"
             style={{
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+              background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+              border: '1px solid rgba(110, 143, 61, 0.25)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
             }}
           >
             <p className="text-sm lg:text-base text-text-primary font-bold mb-1 lg:mb-1.5 tracking-tight">Semana atual</p>
-            <p className="text-xs lg:text-sm text-text-secondary font-light">Semana 1 de 4</p>
+            <p className="text-xs lg:text-sm text-text-secondary/90 font-light">Semana 1 de 4</p>
           </div>
-          <div className="p-4 lg:p-5 bg-dark-card rounded-xl border border-dark-border card-hover cursor-pointer transition-all duration-300 hover:border-lilac/30 touch-manipulation"
+          <div
+            className="p-4 lg:p-5 rounded-xl border card-hover cursor-pointer transition-all duration-300 touch-manipulation"
             style={{
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+              background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+              border: '1px solid rgba(110, 143, 61, 0.25)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
             }}
           >
             <p className="text-sm lg:text-base text-text-primary font-bold mb-1 lg:mb-1.5 tracking-tight">Histórico mensal</p>
-            <p className="text-xs lg:text-sm text-text-secondary font-light">Ver todos os meses</p>
+            <p className="text-xs lg:text-sm text-text-secondary/90 font-light">Ver todos os meses</p>
           </div>
         </div>
       </div>
 
       {/* Tempo de constância */}
-      <div className="mb-6 lg:mb-8 p-4 lg:p-6 bg-dark-card rounded-xl border border-lilac/20 transition-all duration-300 hover:border-lilac/40"
+      <div
+        className="mb-6 lg:mb-8 p-4 lg:p-6 rounded-xl border transition-all duration-300 card-hover"
         style={{
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
+          background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+          border: '1px solid rgba(110, 143, 61, 0.25)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
         }}
       >
-        <p className="text-xs lg:text-sm text-lilac font-semibold mb-2 lg:mb-3 tracking-wide">✨ Constância</p>
+        <p className="text-xs lg:text-sm text-accent-primary font-semibold mb-2 lg:mb-3 tracking-wide">✨ Constância</p>
         <p className="text-base lg:text-lg text-text-primary font-semibold">3 meses cuidando da alimentação</p>
       </div>
 
@@ -408,34 +438,35 @@ export default function Sidebar() {
       </div>
 
       {/* Selo discreto */}
-      <div className="mb-6 pt-6 border-t border-dark-border">
-        <p className="text-xs text-text-soft text-center leading-relaxed">
+      <div className="mb-6 pt-6 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
+        <p className="text-xs text-text-secondary/80 text-center leading-relaxed">
           Baseado nos cardápios do<br />
-          <span className="text-neon-purple font-medium">Dr. Fernando Lemos</span>
+          <span className="text-accent-primary font-medium">Dr. Fernando Lemos</span>
         </p>
       </div>
 
       {/* Login / Logout */}
-      <div className="mb-4 lg:mb-6">
+      <div className="mb-4 lg:mb-6 pb-4 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
         {email && email !== 'Visitante' ? (
-          <button 
+          <button
             onClick={handleLogout}
-            className="w-full p-3 lg:p-4 bg-gradient-to-r from-neon-pink to-lilac hover:from-lilac hover:to-neon-pink text-white rounded-lg text-sm lg:text-base font-bold transition-all duration-300 shadow-neon-pink hover:shadow-large glow-pink touch-manipulation"
+            className="w-full p-3 lg:p-4 rounded-lg text-sm lg:text-base font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
             style={{
-              boxShadow: '0 4px 16px rgba(255, 107, 157, 0.3)'
+              background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+              color: '#E9EFEA',
+              boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
             }}
           >
             Sair
           </button>
         ) : (
-          <button 
-            onClick={() => {
-              router.push('/criar-conta')
-              setSidebarAberta(false)
-            }}
-            className="w-full p-3 lg:p-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-sm lg:text-base font-bold transition-all duration-300 shadow-neon-purple hover:shadow-large glow-purple touch-manipulation"
+          <button
+            onClick={() => { router.push('/criar-conta'); setSidebarAberta(false) }}
+            className="w-full p-3 lg:p-4 rounded-lg text-sm lg:text-base font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
             style={{
-              boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
+              background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+              color: '#E9EFEA',
+              boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
             }}
           >
             Criar Conta / Entrar
@@ -502,11 +533,11 @@ export default function Sidebar() {
             router.push('/planos')
             setSidebarAberta(false)
           }}
-          className="w-full text-left p-2 lg:p-3 text-sm lg:text-base text-text-secondary hover:text-neon-cyan hover:bg-dark-card transition-all rounded-lg touch-manipulation"
+          className="w-full text-left p-2 lg:p-3 text-sm lg:text-base text-text-secondary/90 hover:text-accent-primary transition-all rounded-lg touch-manipulation"
         >
           Meu Plano
         </button>
-        <button className="w-full text-left p-2 lg:p-3 text-sm lg:text-base text-text-secondary hover:text-neon-cyan hover:bg-dark-card transition-all rounded-lg touch-manipulation">
+        <button className="w-full text-left p-2 lg:p-3 text-sm lg:text-base text-text-secondary/90 hover:text-accent-primary transition-all rounded-lg touch-manipulation">
           Texto maior
         </button>
       </div>

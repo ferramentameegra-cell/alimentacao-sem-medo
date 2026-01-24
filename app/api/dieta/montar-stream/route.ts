@@ -88,10 +88,16 @@ export async function POST(request: NextRequest) {
           return
         }
 
-        if (!dadosUsuario.condicao_digestiva) {
-          sendProgress(0, 'Erro: Condição digestiva é obrigatória')
+        const temCondicao = !!dadosUsuario.condicao_digestiva ||
+          (Array.isArray(dadosUsuario.condicoes_saude?.problemas_gastrointestinais) &&
+            dadosUsuario.condicoes_saude.problemas_gastrointestinais.length > 0)
+        if (!temCondicao) {
+          sendProgress(0, 'Erro: Selecione pelo menos uma condição digestiva')
           controller.close()
           return
+        }
+        if (!dadosUsuario.condicao_digestiva && dadosUsuario.condicoes_saude?.problemas_gastrointestinais?.length) {
+          dadosUsuario.condicao_digestiva = 'azia'
         }
 
         sendProgress(20, 'Consultando base de conhecimento do Planeta Intestino...')

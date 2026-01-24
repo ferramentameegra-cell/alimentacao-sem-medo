@@ -54,7 +54,7 @@ function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-5 py-4 bg-dark-card border border-dark-border rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+          className="w-full px-5 py-4 bg-bg-secondary border border-accent-secondary/30 rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
           placeholder="seu@email.com"
           style={{
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
@@ -72,7 +72,7 @@ function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           required
-          className="w-full px-5 py-4 bg-dark-card border border-dark-border rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+          className="w-full px-5 py-4 bg-bg-secondary border border-accent-secondary/30 rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
           placeholder="••••••••"
           style={{
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
@@ -81,15 +81,15 @@ function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
       </div>
 
       {erro && (
-        <div className="p-4 bg-dark-card border-2 border-neon-pink/30 rounded-xl">
-          <p className="text-base text-neon-pink font-medium">{erro}</p>
+        <div className="p-4 bg-bg-secondary border-2 border-accent-primary/30 rounded-xl">
+          <p className="text-base text-accent-primary font-medium">{erro}</p>
         </div>
       )}
 
       <button
         type="submit"
         disabled={carregando}
-        className="w-full py-4 px-6 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-lg font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-4 px-6 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-lg text-lg font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
         }}
@@ -101,7 +101,7 @@ function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
         <button
           type="button"
           onClick={() => router.push('/criar-conta')}
-          className="text-base text-neon-cyan hover:text-lilac font-medium transition-colors"
+          className="text-base text-accent-primary hover:text-accent-primary/80 font-medium transition-colors"
         >
           Não tem conta? Criar conta
         </button>
@@ -110,13 +110,38 @@ function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
   )
 }
 
+type ProblemaGI =
+  | 'azia_refluxo'
+  | 'constipacao_intestinal'
+  | 'diarreia'
+  | 'dor_abdominal'
+  | 'sindrome_intestino_irritavel'
+  | 'diverticulos_intestinais'
+  | 'gases_abdome_distendido'
+  | 'retocolite_doenca_crohn'
+  | 'disbiose'
+  | 'ma_digestao'
+
+const OPCOES_GI: { key: ProblemaGI; label: string }[] = [
+  { key: 'azia_refluxo', label: 'Azia e Refluxo' },
+  { key: 'constipacao_intestinal', label: 'Constipação Intestinal' },
+  { key: 'diarreia', label: 'Diarréia' },
+  { key: 'dor_abdominal', label: 'Dor Abdominal' },
+  { key: 'sindrome_intestino_irritavel', label: 'Síndrome do Intestino Irritável' },
+  { key: 'diverticulos_intestinais', label: 'Divertículos Intestinais' },
+  { key: 'gases_abdome_distendido', label: 'Gases e Abdome Distendido' },
+  { key: 'retocolite_doenca_crohn', label: 'Retocolite ou Doença de Crohn' },
+  { key: 'disbiose', label: 'Disbiose' },
+  { key: 'ma_digestao', label: 'Má Digestão' },
+]
+
 interface DadosFormulario {
   idade: number | null
   peso: number | null
   altura: number | null
   sexo: 'M' | 'F' | null
   rotina: 'sedentaria' | 'levemente_ativa' | 'moderadamente_ativa' | 'ativa' | null
-  condicao_digestiva: 'azia' | 'refluxo' | 'ambos' | null
+  problemas_gastrointestinais: ProblemaGI[]
   objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso' | 'equilibrar_microbiota' | 'melhorar_funcionamento' | null
   dias_cardapio: 1 | 7 | null
 }
@@ -130,7 +155,7 @@ export default function MontarCardapio() {
     altura: null,
     sexo: null,
     rotina: null,
-    condicao_digestiva: null,
+    problemas_gastrointestinais: [],
     objetivo: null,
     dias_cardapio: null,
   })
@@ -185,15 +210,18 @@ export default function MontarCardapio() {
         // Se tem plano e dados pendentes, gerar automaticamente
         if (temPlano) {
           const dadosAPI = JSON.parse(dadosPendentes)
-          
-          // Restaurar dados no estado
+          const gi = Array.isArray(dadosAPI.problemas_gastrointestinais)
+            ? dadosAPI.problemas_gastrointestinais
+            : dadosAPI.condicao_digestiva
+              ? ['azia_refluxo' as const]
+              : []
           setDados({
             idade: dadosAPI.idade,
             peso: dadosAPI.peso,
             altura: dadosAPI.altura,
             sexo: dadosAPI.sexo,
             rotina: dadosAPI.rotina,
-            condicao_digestiva: dadosAPI.condicao_digestiva,
+            problemas_gastrointestinais: gi,
             objetivo: dadosAPI.objetivo,
             dias_cardapio: dadosAPI.dias_cardapio,
           })
@@ -205,15 +233,17 @@ export default function MontarCardapio() {
           // Disparar geração automaticamente
           await gerarCardapioComDados(dadosAPI, sessionId)
         } else {
-          // Se não tem plano, restaurar dados mas manter no formulário
           const dadosAPI = JSON.parse(dadosPendentes)
+          const gi = Array.isArray(dadosAPI.problemas_gastrointestinais)
+            ? dadosAPI.problemas_gastrointestinais
+            : dadosAPI.condicao_digestiva ? ['azia_refluxo' as const] : []
           setDados({
             idade: dadosAPI.idade,
             peso: dadosAPI.peso,
             altura: dadosAPI.altura,
             sexo: dadosAPI.sexo,
             rotina: dadosAPI.rotina,
-            condicao_digestiva: dadosAPI.condicao_digestiva,
+            problemas_gastrointestinais: gi,
             objetivo: dadosAPI.objetivo,
             dias_cardapio: dadosAPI.dias_cardapio,
           })
@@ -254,7 +284,9 @@ export default function MontarCardapio() {
       // Limpar dados pendentes
       localStorage.removeItem('dadosCardapioPendente')
 
-      // Converter dados para formato da API se necessário
+      const gi = Array.isArray(dadosAPI.problemas_gastrointestinais)
+        ? dadosAPI.problemas_gastrointestinais
+        : dadosAPI.condicao_digestiva ? ['azia_refluxo'] : []
       const dadosFormatados = {
         idade: dadosAPI.idade,
         peso: dadosAPI.peso,
@@ -269,8 +301,9 @@ export default function MontarCardapio() {
           lanche_tarde: '16:00',
           jantar: '19:00',
         },
-        condicao_digestiva: dadosAPI.condicao_digestiva,
+        condicao_digestiva: gi.length ? 'azia' : (dadosAPI.condicao_digestiva || 'azia'),
         objetivo: dadosAPI.objetivo,
+        condicoes_saude: { problemas_gastrointestinais: gi },
       }
 
       // Verificar e reautenticar se necessário
@@ -418,11 +451,13 @@ export default function MontarCardapio() {
   const handleGerarCardapio = async () => {
     setErro('')
     
-    // Validar se todos os dados estão preenchidos
     if (!dados.idade || !dados.peso || !dados.altura || !dados.sexo || 
-        !dados.rotina || !dados.condicao_digestiva || !dados.objetivo || 
-        !dados.dias_cardapio) {
+        !dados.rotina || !dados.objetivo || !dados.dias_cardapio) {
       setErro('Por favor, preencha todos os campos antes de gerar o cardápio.')
+      return
+    }
+    if (!dados.problemas_gastrointestinais?.length) {
+      setErro('Selecione pelo menos uma condição digestiva.')
       return
     }
 
@@ -492,7 +527,7 @@ export default function MontarCardapio() {
         altura: dados.altura,
         sexo: dados.sexo,
         rotina: dados.rotina,
-        condicao_digestiva: dados.condicao_digestiva,
+        problemas_gastrointestinais: dados.problemas_gastrointestinais,
         objetivo: dados.objetivo,
         dias_cardapio: dados.dias_cardapio,
       }))
@@ -525,13 +560,15 @@ export default function MontarCardapio() {
           lanche_tarde: '16:00',
           jantar: '19:00',
         },
-        condicao_digestiva: dados.condicao_digestiva,
+        condicao_digestiva: 'azia',
         objetivo: dados.objetivo,
-        // Incluir restrições se disponíveis
+        condicoes_saude: {
+          ...(restricoes?.condicoes_saude || {}),
+          problemas_gastrointestinais: dados.problemas_gastrointestinais,
+        },
         ...(restricoes && {
           restricoes: restricoes.restricoes,
           tipo_alimentacao: restricoes.tipo_alimentacao,
-          condicoes_saude: restricoes.condicoes_saude,
           preferencias: restricoes.preferencias,
         }),
       }
@@ -797,7 +834,7 @@ export default function MontarCardapio() {
               max="120"
               value={dados.idade || ''}
               onChange={(e) => setDados({ ...dados, idade: parseInt(e.target.value) || null })}
-              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-dark-card border border-dark-border rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-bg-secondary border border-accent-secondary/30 rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
               placeholder="Ex: 58"
               autoFocus
               style={{
@@ -820,7 +857,7 @@ export default function MontarCardapio() {
               max="200"
               value={dados.peso || ''}
               onChange={(e) => setDados({ ...dados, peso: parseFloat(e.target.value) || null })}
-              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-dark-card border border-dark-border rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-bg-secondary border border-accent-secondary/30 rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
               placeholder="Ex: 70.5"
               autoFocus
             />
@@ -839,7 +876,7 @@ export default function MontarCardapio() {
               max="250"
               value={dados.altura || ''}
               onChange={(e) => setDados({ ...dados, altura: parseInt(e.target.value) || null })}
-              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-dark-card border border-dark-border rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+              className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 bg-bg-secondary border border-accent-secondary/30 rounded-lg text-xl sm:text-2xl text-text-primary text-center focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
               placeholder="Ex: 165"
               autoFocus
             />
@@ -861,8 +898,8 @@ export default function MontarCardapio() {
                 }}
                 className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.sexo === 'M'
-                    ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
+                    ? 'border-accent-primary/60 bg-bg-secondary'
+                    : 'border-accent-secondary/30 bg-bg-secondary active:border-accent-primary/40'
                 }`}
                 style={dados.sexo === 'M' ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -880,8 +917,8 @@ export default function MontarCardapio() {
                 }}
                 className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.sexo === 'F'
-                    ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
+                    ? 'border-accent-primary/60 bg-bg-secondary'
+                    : 'border-accent-secondary/30 bg-bg-secondary active:border-accent-primary/40'
                 }`}
                 style={dados.sexo === 'F' ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -917,8 +954,8 @@ export default function MontarCardapio() {
                   }}
                   className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation ${
                     dados.rotina === opcao.valor
-                      ? 'border-lilac/60 bg-dark-card'
-                      : 'border-dark-border bg-dark-secondary active:border-lilac/40'
+                      ? 'border-accent-primary/60 bg-bg-secondary'
+                      : 'border-accent-secondary/30 bg-bg-secondary active:border-accent-primary/40'
                   }`}
                   style={dados.rotina === opcao.valor ? {
                     boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -936,36 +973,50 @@ export default function MontarCardapio() {
       case 6:
         return (
           <div className="space-y-4">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-6 lg:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-2 lg:mb-3">
               Qual condição digestiva você deseja tratar?
             </h2>
+            <p className="text-base sm:text-lg text-text-secondary/90 mb-6 lg:mb-8">
+              Selecione todas as condições que se aplicam a você. Você pode selecionar múltiplas opções.
+            </p>
             <div className="space-y-3 sm:space-y-4">
-              {[
-                { valor: 'azia', label: 'Azia' },
-                { valor: 'refluxo', label: 'Refluxo' },
-                { valor: 'ambos', label: 'Azia + Refluxo' },
-              ].map((opcao) => (
-                <button
-                  key={opcao.valor}
-                  type="button"
-                  onClick={() => {
-                    setDados({ ...dados, condicao_digestiva: opcao.valor as any })
-                    setTimeout(proximoPasso, 300)
-                  }}
-                  className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation ${
-                    dados.condicao_digestiva === opcao.valor
-                      ? 'border-neon-cyan/60 bg-dark-card'
-                      : 'border-dark-border bg-dark-secondary active:border-neon-cyan/40'
-                  }`}
-                  style={dados.condicao_digestiva === opcao.valor ? {
-                    boxShadow: '0 4px 20px rgba(0, 240, 255, 0.3)'
-                  } : {
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-                  }}
-                >
-                  <span className="text-base sm:text-lg lg:text-xl font-medium text-text-primary">{opcao.label}</span>
-                </button>
-              ))}
+              {OPCOES_GI.map((opcao) => {
+                const selecionada = dados.problemas_gastrointestinais?.includes(opcao.key) ?? false
+                return (
+                  <button
+                    key={opcao.key}
+                    type="button"
+                    onClick={() => {
+                      const atuais = dados.problemas_gastrointestinais ?? []
+                      const next = selecionada
+                        ? atuais.filter((k) => k !== opcao.key)
+                        : [...atuais, opcao.key]
+                      setDados({ ...dados, problemas_gastrointestinais: next })
+                    }}
+                    className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation flex items-center gap-3 ${
+                      selecionada
+                        ? 'border-accent-primary/60 bg-bg-secondary'
+                        : 'border-accent-secondary/30 bg-bg-secondary hover:border-accent-primary/40'
+                    }`}
+                    style={selecionada ? {
+                      boxShadow: '0 4px 20px rgba(110, 143, 61, 0.3)'
+                    } : {
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                    }}
+                  >
+                    <span
+                      className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center text-sm ${
+                        selecionada
+                          ? 'bg-accent-primary border-accent-primary text-white'
+                          : 'border-accent-secondary/50'
+                      }`}
+                    >
+                      {selecionada ? '✓' : ''}
+                    </span>
+                    <span className="text-base sm:text-lg lg:text-xl font-medium text-text-primary">{opcao.label}</span>
+                  </button>
+                )
+              })}
             </div>
           </div>
         )
@@ -993,8 +1044,8 @@ export default function MontarCardapio() {
                   }}
                   className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation ${
                     dados.objetivo === opcao.valor
-                      ? 'border-lilac/60 bg-dark-card'
-                      : 'border-dark-border bg-dark-secondary active:border-lilac/40'
+                      ? 'border-accent-primary/60 bg-bg-secondary'
+                      : 'border-accent-secondary/30 bg-bg-secondary active:border-accent-primary/40'
                   }`}
                   style={dados.objetivo === opcao.valor ? {
                     boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -1023,8 +1074,8 @@ export default function MontarCardapio() {
                 }}
                 className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.dias_cardapio === 1
-                    ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
+                    ? 'border-accent-primary/60 bg-bg-secondary'
+                    : 'border-accent-secondary/30 bg-bg-secondary active:border-accent-primary/40'
                 }`}
                 style={dados.dias_cardapio === 1 ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -1041,8 +1092,8 @@ export default function MontarCardapio() {
                 }}
                 className={`p-4 sm:p-6 lg:p-8 rounded-xl border transition-all duration-300 touch-manipulation ${
                   dados.dias_cardapio === 7
-                    ? 'border-lilac/60 bg-dark-card'
-                    : 'border-dark-border bg-dark-secondary active:border-lilac/40'
+                    ? 'border-accent-primary/60 bg-bg-secondary'
+                    : 'border-accent-secondary/30 bg-bg-secondary active:border-accent-primary/40'
                 }`}
                 style={dados.dias_cardapio === 7 ? {
                   boxShadow: '0 4px 20px rgba(199, 125, 255, 0.3)'
@@ -1068,7 +1119,7 @@ export default function MontarCardapio() {
       case 3: return dados.altura !== null && dados.altura! > 0
       case 4: return dados.sexo !== null
       case 5: return dados.rotina !== null
-      case 6: return dados.condicao_digestiva !== null
+      case 6: return (dados.problemas_gastrointestinais?.length ?? 0) > 0
       case 7: return dados.objetivo !== null
       case 8: return dados.dias_cardapio !== null
       default: return false
@@ -1105,8 +1156,8 @@ export default function MontarCardapio() {
               key={i}
               className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
                 i + 1 <= passoAtual
-                  ? 'bg-neon-purple w-8 sm:w-12'
-                  : 'bg-dark-border w-2 sm:w-2.5'
+                  ? 'bg-accent-primary w-8 sm:w-12'
+                  : 'bg-accent-secondary/30 w-2 sm:w-2.5'
               }`}
               style={i + 1 <= passoAtual ? {
                 boxShadow: '0 0 12px rgba(199, 125, 255, 0.5)'
@@ -1121,12 +1172,12 @@ export default function MontarCardapio() {
 
       {/* Mensagem de erro - apenas para erros que não sejam de sessão */}
       {erro && !erro.includes('Sessão') && !erro.includes('sessão') && (
-        <div className="mb-6 p-6 bg-dark-card border border-neon-pink/40 rounded-xl"
+        <div className="mb-6 p-6 bg-bg-secondary border border-accent-primary/40 rounded-xl"
           style={{
-            boxShadow: '0 4px 16px rgba(255, 107, 157, 0.2)'
+            boxShadow: '0 4px 16px rgba(110, 143, 61, 0.2)'
           }}
         >
-          <p className="text-base text-neon-pink font-semibold">{erro}</p>
+          <p className="text-base text-accent-primary font-semibold">{erro}</p>
         </div>
       )}
 
@@ -1135,7 +1186,7 @@ export default function MontarCardapio() {
         <div className="mb-12 space-y-8">
           {/* Mensagem de parabéns (só se cardápio foi gerado) */}
           {cardapioPronto && (
-            <div className="bg-gradient-to-br from-dark-secondary to-dark-tertiary border-2 border-neon-purple/60 rounded-2xl p-12 text-center"
+            <div className="bg-gradient-to-br from-bg-secondary to-dark-tertiary border-2 border-accent-primary/60 rounded-2xl p-12 text-center"
               style={{
                 boxShadow: '0 8px 32px rgba(199, 125, 255, 0.4)'
               }}
@@ -1152,7 +1203,7 @@ export default function MontarCardapio() {
 
           {/* Mensagem quando não tem sessão */}
           {!cardapioPronto && (
-            <div className="bg-gradient-to-br from-dark-secondary to-dark-tertiary border-2 border-neon-purple/60 rounded-2xl p-12 text-center"
+            <div className="bg-gradient-to-br from-bg-secondary to-dark-tertiary border-2 border-accent-primary/60 rounded-2xl p-12 text-center"
               style={{
                 boxShadow: '0 8px 32px rgba(199, 125, 255, 0.4)'
               }}
@@ -1170,7 +1221,7 @@ export default function MontarCardapio() {
           {/* Planos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {/* PLANO 1 - Inteligente */}
-            <div className="bg-dark-secondary border-2 border-dark-border rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-300 hover:border-lilac/40"
+            <div className="bg-bg-secondary border-2 border-accent-secondary/30 rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-300 hover:border-accent-primary/40"
               style={{
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
               }}
@@ -1180,32 +1231,32 @@ export default function MontarCardapio() {
                   Plano Inteligente
                 </h2>
                 <div className="flex items-baseline gap-2 mb-4 lg:mb-6">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-neon-cyan">R$ 67</span>
+                  <span className="text-4xl sm:text-5xl font-extrabold text-accent-primary">R$ 67</span>
                   <span className="text-lg sm:text-xl text-text-secondary">/mês</span>
                 </div>
               </div>
 
               <ul className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Geração automática de cardápios semanais personalizados
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Perfil evolutivo do paciente
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Ajustes automáticos do cardápio
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Acesso total à plataforma
                   </span>
@@ -1216,20 +1267,20 @@ export default function MontarCardapio() {
                 onClick={() => {
                   router.push('/criar-conta?plano=1')
                 }}
-                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-dark-card border-2 border-lilac/40 hover:border-lilac/60 text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation"
+                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-bg-secondary border-2 border-accent-primary/40 hover:border-accent-primary/60 text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation"
               >
                 Assinar Plano Inteligente
               </button>
             </div>
 
             {/* PLANO 2 - Acompanhado (Premium) */}
-            <div className="bg-gradient-to-br from-dark-secondary to-dark-tertiary border-2 border-neon-pink/40 rounded-2xl p-6 sm:p-8 lg:p-10 relative transition-all duration-300 hover:border-neon-pink/60 lg:scale-105"
+            <div className="bg-gradient-to-br from-bg-secondary to-dark-tertiary border-2 border-accent-primary/40 rounded-2xl p-6 sm:p-8 lg:p-10 relative transition-all duration-300 hover:border-accent-primary/60 lg:scale-105"
               style={{
                 boxShadow: '0 8px 32px rgba(255, 107, 157, 0.2)'
               }}
             >
               <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                <div className="px-4 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-neon-pink to-lilac rounded-full shadow-neon-pink glow-pink">
+                <div className="px-4 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-accent-primary to-accent-primary/80 rounded-full shadow-lg">
                   <span className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
                     ⭐ Premium
                   </span>
@@ -1241,38 +1292,38 @@ export default function MontarCardapio() {
                   Plano Acompanhado
                 </h2>
                 <div className="flex items-baseline gap-2 mb-4 lg:mb-6">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-neon-pink">R$ 157</span>
+                  <span className="text-4xl sm:text-5xl font-extrabold text-accent-primary">R$ 157</span>
                   <span className="text-lg sm:text-xl text-text-secondary">/mês</span>
                 </div>
               </div>
 
               <ul className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-primary leading-relaxed font-medium">
                     <strong>Tudo do Plano Inteligente +</strong>
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Acompanhamento direto com a nutricionista
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Ajustes manuais no plano alimentar
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Atendimento via WhatsApp
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Área de acompanhamento individual
                   </span>
@@ -1283,7 +1334,7 @@ export default function MontarCardapio() {
                 onClick={() => {
                   router.push('/criar-conta?plano=2')
                 }}
-                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-neon-pink to-lilac hover:from-lilac hover:to-neon-pink text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-neon-pink hover:shadow-large glow-pink touch-manipulation"
+                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl touch-manipulation"
                 style={{
                   boxShadow: '0 6px 24px rgba(255, 107, 157, 0.4)'
                 }}
@@ -1294,7 +1345,7 @@ export default function MontarCardapio() {
           </div>
 
           {/* Formulário de Login */}
-          <div className="bg-dark-secondary border-2 border-dark-border rounded-2xl p-6 sm:p-8 lg:p-10"
+          <div className="bg-bg-secondary border-2 border-accent-secondary/30 rounded-2xl p-6 sm:p-8 lg:p-10"
             style={{
               boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
             }}
@@ -1350,21 +1401,21 @@ export default function MontarCardapio() {
 
       {/* Mostrar loading enquanto verifica dados pendentes */}
       {verificandoDadosPendentes ? (
-        <div className="bg-dark-secondary border border-dark-border rounded-xl p-12 mb-10 text-center">
-          <div className="text-xl text-neon-cyan mb-4 font-semibold">Verificando dados...</div>
+        <div className="bg-bg-secondary border border-accent-secondary/30 rounded-xl p-12 mb-10 text-center">
+          <div className="text-xl text-accent-primary mb-4 font-semibold">Verificando dados...</div>
           <div className="flex justify-center gap-3">
-            <div className="w-4 h-4 bg-neon-purple rounded-full animate-bounce"
+            <div className="w-4 h-4 bg-accent-primary rounded-full animate-bounce"
               style={{
                 boxShadow: '0 0 12px rgba(199, 125, 255, 0.6)'
               }}
             />
-            <div className="w-4 h-4 bg-neon-cyan rounded-full animate-bounce"
+            <div className="w-4 h-4 bg-accent-secondary rounded-full animate-bounce"
               style={{
                 boxShadow: '0 0 12px rgba(0, 240, 255, 0.6)',
                 animationDelay: '0.2s'
               }}
             />
-            <div className="w-4 h-4 bg-neon-purple rounded-full animate-bounce"
+            <div className="w-4 h-4 bg-accent-primary rounded-full animate-bounce"
               style={{
                 boxShadow: '0 0 12px rgba(199, 125, 255, 0.6)',
                 animationDelay: '0.4s'
@@ -1375,7 +1426,7 @@ export default function MontarCardapio() {
       ) : !mostrarPlanos && !mostrarFormularioRestricoes && (
         <>
           {/* Pergunta */}
-          <div className="bg-dark-secondary border border-dark-border rounded-xl p-6 sm:p-8 lg:p-12 mb-6 lg:mb-10 transition-all duration-300"
+          <div className="bg-bg-secondary border border-accent-secondary/30 rounded-xl p-6 sm:p-8 lg:p-12 mb-6 lg:mb-10 transition-all duration-300"
             style={{
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
             }}
@@ -1388,7 +1439,7 @@ export default function MontarCardapio() {
             <button
               onClick={passoAnterior}
               disabled={passoAtual === 1}
-              className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-dark-card border border-dark-border rounded-lg text-sm sm:text-base font-semibold text-text-secondary hover:border-lilac/60 hover:text-lilac transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+              className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-bg-secondary border border-accent-secondary/30 rounded-lg text-sm sm:text-base font-semibold text-text-secondary hover:border-accent-primary/60 hover:text-accent-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
               style={{
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
               }}
@@ -1400,9 +1451,9 @@ export default function MontarCardapio() {
               <button
                 onClick={proximoPasso}
                 disabled={!podeAvancar()}
-                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 style={{
-                  boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
+                  boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
                 }}
               >
                 Próximo
@@ -1415,9 +1466,9 @@ export default function MontarCardapio() {
                   setMostrarFormularioRestricoes(true)
                 }}
                 disabled={!podeAvancar() || carregando}
-                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 style={{
-                  boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
+                  boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
                 }}
               >
                 Continuar

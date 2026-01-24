@@ -38,9 +38,12 @@ export default function BarraProgressoCardapio({
   return (
     <>
       {/* Barra de progresso fixa no topo */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-dark-secondary/95 backdrop-blur-md border-b border-lilac/30 shadow-lg animate-fade-in"
+      <div
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b animate-fade-in"
         style={{
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
+          background: 'rgba(15, 46, 43, 0.9)',
+          borderColor: 'rgba(255, 255, 255, 0.05)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -48,18 +51,18 @@ export default function BarraProgressoCardapio({
             {/* Ícone animado */}
             <div className="flex-shrink-0">
               {cardapioPronto ? (
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center animate-pulse"
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent-primary to-accent-primary/80 flex items-center justify-center animate-pulse"
                   style={{
-                    boxShadow: '0 0 20px rgba(0, 240, 255, 0.6)'
+                    boxShadow: '0 0 20px rgba(110, 143, 61, 0.6)'
                   }}
                 >
                   <span className="text-2xl">✨</span>
                 </div>
               ) : (
-                <div className="w-12 h-12 rounded-full bg-dark-card border-2 border-neon-purple/60 flex items-center justify-center animate-spin"
+                <div className="w-12 h-12 rounded-full bg-bg-secondary border-2 border-accent-primary/60 flex items-center justify-center animate-spin"
                   style={{
                     animationDuration: '2s',
-                    boxShadow: '0 0 15px rgba(199, 125, 255, 0.4)'
+                    boxShadow: '0 0 15px rgba(110, 143, 61, 0.4)'
                   }}
                 >
                   <span className="text-xl">🍽️</span>
@@ -77,20 +80,20 @@ export default function BarraProgressoCardapio({
                     ? '✨ Seu cardápio está quase pronto...'
                     : etapa || 'Preparando seu cardápio...'}
                 </p>
-                <span className="text-base font-bold text-neon-purple">
+                <span className="text-base font-bold text-accent-primary">
                   {Math.round(progresso)}%
                 </span>
               </div>
               
               {/* Barra de progresso */}
-              <div className="w-full h-2.5 bg-dark-card rounded-full overflow-hidden border border-dark-border">
+              <div className="w-full h-2.5 bg-bg-secondary rounded-full overflow-hidden border border-accent-secondary/30">
                 <div 
-                  className="h-full bg-gradient-to-r from-neon-purple via-lilac to-neon-cyan transition-all duration-500 ease-out relative overflow-hidden"
+                  className="h-full bg-gradient-to-r from-accent-primary to-accent-primary/80 transition-all duration-500 ease-out relative overflow-hidden"
                   style={{ width: `${progresso}%` }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
                   {cardapioPronto && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-cyan animate-pulse" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent-secondary via-accent-primary to-accent-secondary animate-pulse opacity-80" />
                   )}
                 </div>
               </div>
@@ -110,10 +113,10 @@ export default function BarraProgressoCardapio({
                 left: `${Math.random() * 100}%`,
                 top: '-10px',
                 backgroundColor: [
-                  '#C77DFF', // neon-purple
-                  '#00F0FF', // neon-cyan
-                  '#FF6B9D', // neon-pink
-                  '#9D7FC7', // lilac
+                  '#6E8F3D', // accent-primary
+                  '#4F6B58', // accent-secondary
+                  '#7FA04A', // accent-primary light
+                  '#5A7A6A', // accent-secondary light
                 ][Math.floor(Math.random() * 4)],
                 animationDelay: `${Math.random() * 2}s`,
                 animationDuration: `${2 + Math.random() * 2}s`,

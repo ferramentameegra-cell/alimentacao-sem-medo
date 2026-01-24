@@ -249,15 +249,15 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
         paddingRight: 'max(0.75rem, env(safe-area-inset-right, 0.75rem))'
       }}
     >
-      <div className="relative w-full max-w-5xl max-h-[calc(100vh-env(safe-area-inset-top,0)-env(safe-area-inset-bottom,0)-2rem)] bg-dark-secondary/98 backdrop-blur-sm border border-lilac/30 rounded-2xl flex flex-col overflow-hidden animate-genio-appear"
+      <div className="relative w-full max-w-5xl max-h-[calc(100vh-env(safe-area-inset-top,0)-env(safe-area-inset-bottom,0)-2rem)] bg-bg-secondary/98 backdrop-blur-sm border border-accent-primary/30 rounded-2xl flex flex-col overflow-hidden animate-genio-appear"
         style={{
           background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(199, 125, 255, 0.2)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(110, 143, 61, 0.2)',
           maxHeight: 'calc(100vh - 2rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0))'
         }}
       >
         {/* Header */}
-        <div className="p-6 border-b border-dark-border bg-dark-card/50">
+        <div className="p-6 border-b border-accent-secondary/30 bg-bg-secondary/50">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold text-text-primary mb-1 tracking-tight">
@@ -269,7 +269,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
             </div>
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-dark-card hover:bg-dark-tertiary border border-dark-border text-text-secondary hover:text-neon-pink hover:border-neon-pink/50 transition-all duration-300 flex items-center justify-center flex-shrink-0"
+              className="w-10 h-10 rounded-full bg-bg-secondary hover:bg-dark-tertiary border border-accent-secondary/30 text-text-secondary hover:text-accent-primary hover:border-accent-primary/50 transition-all duration-300 flex items-center justify-center flex-shrink-0"
             >
               ✕
             </button>
@@ -277,7 +277,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
         </div>
 
         {/* Abas de semanas - melhorado */}
-        <div className="px-6 pt-4 pb-3 border-b border-dark-border bg-dark-card/30">
+        <div className="px-6 pt-4 pb-3 border-b border-accent-secondary/30 bg-bg-secondary/30">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {[1, 2, 3, 4].map((week) => {
               const temDados = listasPorSemana.has(week)
@@ -290,10 +290,10 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                   disabled={!temDados}
                   className={`flex-shrink-0 px-5 py-2.5 rounded-lg border transition-all duration-300 ${
                     estaSelecionada
-                      ? 'border-neon-purple/80 bg-gradient-to-br from-neon-purple/20 to-lilac/10 shadow-neon-purple'
+                      ? 'border-accent-primary/80 bg-gradient-to-br from-accent-primary/20 to-accent-primary/10 shadow-lg'
                       : temDados
-                      ? 'border-dark-border bg-dark-card hover:border-lilac/50 hover:bg-dark-secondary'
-                      : 'border-dark-border/50 bg-dark-tertiary/50 opacity-50 cursor-not-allowed'
+                      ? 'border-accent-secondary/30 bg-bg-secondary hover:border-accent-primary/50 hover:bg-bg-secondary'
+                      : 'border-accent-secondary/20 bg-dark-tertiary/50 opacity-50 cursor-not-allowed'
                   }`}
                   style={{
                     boxShadow: estaSelecionada 
@@ -303,7 +303,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                 >
                   <span className={`text-sm font-semibold ${
                     estaSelecionada 
-                      ? 'text-neon-purple' 
+                      ? 'text-accent-primary' 
                       : temDados 
                       ? 'text-text-primary' 
                       : 'text-text-muted'
@@ -322,8 +322,8 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
               onClick={() => setSelectedWeek('mes')}
               className={`flex-shrink-0 px-5 py-2.5 rounded-lg border transition-all duration-300 ${
                 selectedWeek === 'mes'
-                  ? 'border-neon-cyan/80 bg-gradient-to-br from-neon-cyan/20 to-neon-purple/10 shadow-neon-cyan'
-                  : 'border-dark-border bg-dark-card hover:border-neon-cyan/50 hover:bg-dark-secondary'
+                  ? 'border-accent-primary/80 bg-gradient-to-br from-accent-primary/20 to-accent-primary/10 shadow-lg'
+                  : 'border-accent-secondary/30 bg-bg-secondary hover:border-accent-primary/50 hover:bg-bg-secondary'
               }`}
               style={{
                 boxShadow: selectedWeek === 'mes'
@@ -332,7 +332,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
               }}
             >
               <span className={`text-sm font-semibold ${
-                selectedWeek === 'mes' ? 'text-neon-cyan' : 'text-text-primary'
+                selectedWeek === 'mes' ? 'text-accent-primary' : 'text-text-primary'
               }`}>
                 📅 Mês Completo
                 {listaMes.length > 0 && (
@@ -353,11 +353,11 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
               <div className="mb-8 max-w-md mx-auto">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-semibold text-text-secondary">{etapaAtual}</span>
-                  <span className="text-sm font-bold text-neon-cyan">{progresso}%</span>
+                  <span className="text-sm font-bold text-accent-primary">{progresso}%</span>
                 </div>
-                <div className="w-full h-3 bg-dark-card rounded-full overflow-hidden border border-dark-border">
+                <div className="w-full h-3 bg-bg-secondary rounded-full overflow-hidden border border-accent-secondary/30">
                   <div 
-                    className="h-full bg-gradient-to-r from-neon-purple via-lilac to-neon-cyan transition-all duration-500 ease-out"
+                    className="h-full bg-gradient-to-r from-accent-primary to-accent-primary/80 transition-all duration-500 ease-out"
                     style={{ width: `${progresso}%` }}
                   />
                 </div>
@@ -376,8 +376,8 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
             </div>
           ) : erro ? (
             <div className="text-center py-20">
-              <div className="p-6 bg-dark-card border border-neon-pink/40 rounded-xl inline-block">
-                <p className="text-base text-neon-pink font-semibold">{erro}</p>
+              <div className="p-6 bg-bg-secondary border border-accent-primary/40 rounded-xl inline-block">
+                <p className="text-base text-accent-primary font-semibold">{erro}</p>
               </div>
             </div>
           ) : listaAtual.length > 0 || (selectedWeek === 'mes' && semanasDisponiveis.length > 0) ? (
@@ -387,7 +387,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                   {/* MÊS COMPLETO: Mostrar todas as semanas separadas + lista consolidada */}
                   
                   {/* Título */}
-                  <div className="mb-6 pb-4 border-b border-dark-border">
+                  <div className="mb-6 pb-4 border-b border-accent-secondary/30">
                     <h3 className="text-2xl font-bold text-text-primary mb-2">
                       📅 Lista de Compras do Mês Completo
                     </h3>
@@ -403,8 +403,8 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                     
                     return (
                       <div key={semana} className="mb-8">
-                        <div className="mb-4 pb-3 border-b border-dark-border/50">
-                          <h4 className="text-xl font-bold text-neon-purple mb-1">
+                        <div className="mb-4 pb-3 border-b border-accent-secondary/20">
+                          <h4 className="text-xl font-bold text-accent-primary mb-1">
                             📋 Semana {semana}
                           </h4>
                           <p className="text-xs text-text-secondary">
@@ -416,14 +416,14 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                           {listaSemana.map((item, index) => (
                             <div
                               key={`semana-${semana}-${item.nome}-${index}`}
-                              className="flex items-center justify-between p-4 bg-dark-card border border-dark-border rounded-xl hover:border-lilac/50 hover:bg-dark-secondary/50 transition-all duration-300"
+                              className="flex items-center justify-between p-4 bg-bg-secondary border border-accent-secondary/30 rounded-xl hover:border-accent-primary/50 hover:bg-bg-secondary/50 transition-all duration-300"
                               style={{
                                 boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)'
                               }}
                             >
                               <div className="flex items-center gap-4 flex-1 min-w-0">
-                                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-neon-purple/20 to-lilac/10 border border-neon-purple/30 flex items-center justify-center">
-                                  <span className="text-xs font-bold text-neon-purple">{index + 1}</span>
+                                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-accent-primary/20 to-accent-primary/10 border border-accent-primary/30 flex items-center justify-center">
+                                  <span className="text-xs font-bold text-accent-primary">{index + 1}</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <h3 className="text-sm font-semibold text-text-primary mb-1 truncate">
@@ -435,7 +435,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                                 </div>
                               </div>
                               <div className="flex-shrink-0 ml-4 text-right">
-                                <p className="text-base font-bold text-neon-cyan">
+                                <p className="text-base font-bold text-accent-primary">
                                   {item.quantidadeTotal}
                                 </p>
                               </div>
@@ -448,9 +448,9 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
 
                   {/* Lista consolidada do mês (ingredientes somados) */}
                   {listaMes.length > 0 && (
-                    <div className="mt-8 pt-6 border-t-2 border-neon-cyan/30">
-                      <div className="mb-4 pb-3 border-b border-neon-cyan/20">
-                        <h4 className="text-xl font-bold text-neon-cyan mb-1">
+                    <div className="mt-8 pt-6 border-t-2 border-accent-primary/30">
+                      <div className="mb-4 pb-3 border-b border-accent-primary/20">
+                        <h4 className="text-xl font-bold text-accent-primary mb-1">
                           🛒 Lista Consolidada do Mês
                         </h4>
                         <p className="text-xs text-text-secondary">
@@ -462,14 +462,14 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                         {listaMes.map((item, index) => (
                           <div
                             key={`mes-${item.nome}-${index}`}
-                            className="flex items-center justify-between p-4 bg-gradient-to-r from-dark-card to-dark-secondary border-2 border-neon-cyan/30 rounded-xl hover:border-neon-cyan/60 hover:bg-dark-secondary transition-all duration-300"
+                            className="flex items-center justify-between p-4 bg-gradient-to-r from-bg-secondary to-bg-secondary border-2 border-accent-primary/30 rounded-xl hover:border-accent-primary/60 hover:bg-bg-secondary transition-all duration-300"
                             style={{
-                              boxShadow: '0 4px 16px rgba(0, 240, 255, 0.2)'
+                              boxShadow: '0 4px 16px rgba(110, 143, 61, 0.2)'
                             }}
                           >
                             <div className="flex items-center gap-4 flex-1 min-w-0">
-                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-neon-cyan/20 to-neon-purple/10 border border-neon-cyan/40 flex items-center justify-center">
-                                <span className="text-sm font-bold text-neon-cyan">{index + 1}</span>
+                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-accent-primary/20 to-accent-primary/10 border border-accent-primary/40 flex items-center justify-center">
+                                <span className="text-sm font-bold text-accent-primary">{index + 1}</span>
                               </div>
                               <div className="flex-1 min-w-0">
                                 <h3 className="text-base font-semibold text-text-primary mb-1 truncate">
@@ -481,7 +481,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                               </div>
                             </div>
                             <div className="flex-shrink-0 ml-4 text-right">
-                              <p className="text-lg font-bold text-neon-cyan">
+                              <p className="text-lg font-bold text-accent-primary">
                                 {item.quantidadeTotal}
                               </p>
                             </div>
@@ -494,7 +494,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
               ) : (
                 <>
                   {/* SEMANA ESPECÍFICA: Mostrar apenas a semana selecionada */}
-                  <div className="mb-6 pb-4 border-b border-dark-border">
+                  <div className="mb-6 pb-4 border-b border-accent-secondary/30">
                     <h3 className="text-2xl font-bold text-text-primary mb-2">
                       📋 Lista de Compras - Semana {selectedWeek}
                     </h3>
@@ -507,14 +507,14 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                     {listaAtual.map((item, index) => (
                       <div
                         key={`${item.nome}-${index}`}
-                        className="flex items-center justify-between p-4 bg-dark-card border border-dark-border rounded-xl hover:border-lilac/50 hover:bg-dark-secondary/50 transition-all duration-300 group"
+                        className="flex items-center justify-between p-4 bg-bg-secondary border border-accent-secondary/30 rounded-xl hover:border-accent-primary/50 hover:bg-bg-secondary/50 transition-all duration-300 group"
                         style={{
                           boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)'
                         }}
                       >
                         <div className="flex items-center gap-4 flex-1 min-w-0">
-                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple/20 to-lilac/10 border border-neon-purple/30 flex items-center justify-center">
-                            <span className="text-sm font-bold text-neon-purple">{index + 1}</span>
+                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-accent-primary/20 to-accent-primary/10 border border-accent-primary/30 flex items-center justify-center">
+                            <span className="text-sm font-bold text-accent-primary">{index + 1}</span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="text-base font-semibold text-text-primary mb-1 truncate">
@@ -526,7 +526,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
                           </div>
                         </div>
                         <div className="flex-shrink-0 ml-4 text-right">
-                          <p className="text-lg font-bold text-neon-cyan">
+                          <p className="text-lg font-bold text-accent-primary">
                             {item.quantidadeTotal}
                           </p>
                         </div>
@@ -558,10 +558,10 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
         {/* Footer com botão de copiar */}
         {((selectedWeek === 'mes' && (listaMes.length > 0 || semanasDisponiveis.length > 0)) || 
           (selectedWeek !== 'mes' && listaAtual.length > 0)) && (
-          <div className="p-5 border-t border-dark-border bg-dark-card/50">
+          <div className="p-5 border-t border-accent-secondary/30 bg-bg-secondary/50">
             <button
               onClick={copiarLista}
-              className="w-full py-3.5 px-6 bg-gradient-to-r from-neon-purple via-lilac to-neon-cyan hover:from-neon-cyan hover:via-lilac hover:to-neon-purple text-white rounded-lg text-base font-bold transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full py-3.5 px-6 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-lg text-base font-bold transition-all duration-300 flex items-center justify-center gap-2"
               style={{
                 boxShadow: '0 4px 20px rgba(199, 125, 255, 0.4)'
               }}

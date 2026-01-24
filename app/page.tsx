@@ -8,7 +8,7 @@ export default function Page() {
   // Página principal acessível sem autenticação
   // Login será exigido apenas ao adquirir um plano
   return (
-    <main className="min-h-screen bg-dark-bg relative overflow-x-hidden w-full"
+    <main className="min-h-screen relative overflow-x-hidden w-full"
       style={{
         minHeight: '-webkit-fill-available', /* iOS Safari */
         paddingTop: 'env(safe-area-inset-top, 0)',

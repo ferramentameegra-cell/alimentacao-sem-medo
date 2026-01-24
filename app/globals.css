@@ -5,21 +5,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --dark-bg: #0E0B14;
-  --dark-secondary: #1A1525;
-  --dark-tertiary: #241B2E;
-  --dark-card: #1F1830;
-  --dark-border: #2D2440;
-  --purple-dark: #3D2A5F;
-  --purple-medium: #5A3F7A;
-  --lilac: #9D7FC7;
-  --neon-purple: #C77DFF;
-  --neon-cyan: #00F0FF;
-  --neon-pink: #FF6B9D;
-  --text-primary: #F5F3FF;
-  --text-secondary: #D4C5E8;
-  --text-soft: #B8A5D1;
-  --text-muted: #8B7AA3;
+  /* Nova paleta de cores - Alimentação Sem Medo */
+  --color-bg-primary: #0F2E2B;
+  --color-bg-secondary: #143A36;
+  --color-accent-primary: #6E8F3D;
+  --color-accent-secondary: #4F6B58;
+  --color-bg-light: #F4F6F1;
+  --color-text-primary: #E9EFEA;
+  --color-text-secondary: #B7C6BC;
+  
+  /* Variáveis de compatibilidade (mapeadas para nova paleta) */
+  --dark-bg: var(--color-bg-primary);
+  --dark-secondary: var(--color-bg-secondary);
+  --dark-tertiary: #1A4A45;
+  --dark-card: var(--color-bg-secondary);
+  --dark-border: var(--color-accent-secondary);
+  --petrol: var(--color-bg-secondary);
+  --petrol-dark: var(--color-bg-primary);
+  --petrol-light: #1A4A45;
+  --petrol-accent: var(--color-accent-secondary);
+  /* Verde oliva - saúde intestinal */
+  --olive: var(--color-accent-primary);
+  --olive-dark: #5A7A2F;
+  --olive-light: #7FA04A;
+  --olive-accent: var(--color-accent-primary);
+  /* Bege - comida real */
+  --beige: var(--color-bg-light);
+  --beige-light: #F9FAF7;
+  --beige-warm: #F7F9F4;
+  --beige-soft: var(--color-bg-light);
+  /* Textos */
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-soft: #9FB0A5;
+  --text-muted: #7A8E82;
+  /* Compatibilidade com código existente */
+  --lilac: var(--color-accent-primary);
+  --neon-purple: var(--color-accent-primary);
+  --neon-cyan: var(--color-accent-secondary);
+  --neon-pink: var(--color-accent-primary);
+  --purple-medium: var(--color-bg-secondary);
 }
 
 * {
@@ -29,12 +54,12 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--dark-bg);
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(199, 125, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.02) 0%, transparent 50%);
-  color: var(--text-primary);
+  font-family: var(--font-montserrat-light), system-ui, -apple-system, sans-serif;
+  background:
+    radial-gradient(circle at top center, rgba(110, 143, 61, 0.15), transparent 60%),
+    linear-gradient(160deg, #0F2E2B 0%, #0C2623 40%, #081C1A 100%);
+  background-attachment: fixed;
+  color: var(--color-text-primary);
   font-size: 18px;
   line-height: 1.75;
   min-height: 100vh;
@@ -44,10 +69,8 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Otimizações mobile */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  /* Safe area para iPhone (notch) */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
@@ -74,33 +97,33 @@ main {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--dark-secondary);
+  background: var(--color-bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--purple-medium);
+  background: var(--color-accent-secondary);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neon-purple);
+  background: var(--color-accent-primary);
 }
 
-/* Efeitos neon modernos */
-.glow-blue {
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), 0 0 40px rgba(0, 240, 255, 0.2);
+/* Glow suaves - paleta */
+.glow-olive {
+  box-shadow: 0 0 20px rgba(110, 143, 61, 0.3), 0 0 40px rgba(110, 143, 61, 0.15);
 }
 
-.glow-green {
-  box-shadow: 0 0 20px rgba(184, 255, 57, 0.4), 0 0 40px rgba(184, 255, 57, 0.2);
+.glow-moss {
+  box-shadow: 0 0 20px rgba(79, 107, 88, 0.3), 0 0 40px rgba(79, 107, 88, 0.15);
 }
 
-.glow-cyan {
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), 0 0 40px rgba(0, 240, 255, 0.2);
-}
-
+/* Compatibilidade (paleta) */
+.glow-blue,
+.glow-cyan,
+.glow-pink,
 .glow-purple {
-  box-shadow: 0 0 20px rgba(199, 125, 255, 0.4), 0 0 40px rgba(199, 125, 255, 0.2);
+  box-shadow: 0 0 20px rgba(110, 143, 61, 0.3), 0 0 40px rgba(110, 143, 61, 0.15);
 }
 
 /* Animação de pulso suave */
@@ -213,32 +236,45 @@ main {
 
 /* Acessibilidade - fonte mínima 18px garantida */
 p, span, div, a, button, input, textarea, label {
+  font-family: var(--font-montserrat-light), system-ui, -apple-system, sans-serif;
   font-size: 18px;
   min-height: 1.5em;
 }
 
-/* Tipografia hierárquica clara - Estilo Netflix */
+/* Classes para fontes bold - usar Montserrat Bold */
+.font-bold,
+.font-semibold,
+.font-medium,
+[class*="font-bold"],
+[class*="font-semibold"],
+[class*="font-medium"] {
+  font-family: var(--font-montserrat-bold), system-ui, -apple-system, sans-serif !important;
+}
+
+/* Classes para fontes light - usar Montserrat Light */
+.font-light,
+.font-normal,
+[class*="font-light"],
+[class*="font-normal"] {
+  font-family: var(--font-montserrat-light), system-ui, -apple-system, sans-serif !important;
+}
+
+/* Tipografia hierárquica - Premium Netflix/Apple */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat-bold), system-ui, -apple-system, sans-serif;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
   letter-spacing: -0.03em;
   line-height: 1.2;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 h1 {
   font-size: 3rem;
   font-weight: 800;
   letter-spacing: -0.04em;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--lilac-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Título simples e branco */
-h1 {
-  color: #FFFFFF;
-  -webkit-text-fill-color: #FFFFFF;
+  color: var(--color-text-primary);
+  -webkit-text-fill-color: var(--color-text-primary);
   background: none;
   -webkit-background-clip: unset;
   background-clip: unset;
@@ -256,30 +292,74 @@ h3 {
   letter-spacing: -0.02em;
 }
 
-/* Cards com efeito hover suave - Estilo Netflix */
+/* Cards premium - gradiente, bordas glow, sombra profunda */
+.card-premium {
+  background: linear-gradient(180deg, #143A36 0%, #0F2E2B 100%);
+  border: 1px solid rgba(110, 143, 61, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-premium:hover,
+.card-premium.card-active {
+  box-shadow:
+    0 0 0 1px rgba(110, 143, 61, 0.4),
+    0 0 25px rgba(110, 143, 61, 0.25),
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  border-color: rgba(110, 143, 61, 0.4);
+}
+
 .card-hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
 .card-hover:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(199, 125, 255, 0.25), 0 0 0 1px rgba(199, 125, 255, 0.1);
-  border-color: var(--neon-purple);
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px rgba(110, 143, 61, 0.4),
+    0 0 25px rgba(110, 143, 61, 0.25),
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  border-color: rgba(110, 143, 61, 0.4);
 }
 
-/* Card base estilo Netflix */
+/* Card base estilo Netflix (compatibilidade) */
 .card-netflix {
-  background: var(--dark-card);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, #143A36 0%, #0F2E2B 100%);
+  border: 1px solid rgba(110, 143, 61, 0.25);
   border-radius: 12px;
   overflow: hidden;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-netflix:hover {
-  border-color: rgba(199, 125, 255, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(199, 125, 255, 0.1);
+  box-shadow:
+    0 0 0 1px rgba(110, 143, 61, 0.4),
+    0 0 25px rgba(110, 143, 61, 0.25),
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  border-color: rgba(110, 143, 61, 0.4);
+}
+
+/* Botão Netflix style - gradiente + hover */
+.btn-premium {
+  background: linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%) !important;
+  color: #E9EFEA !important;
+  transition: all 0.25s ease;
+}
+
+.btn-premium:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(110, 143, 61, 0.4) !important;
 }
 
 /* Esconder scrollbar mas manter funcionalidade */

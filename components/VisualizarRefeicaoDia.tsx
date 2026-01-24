@@ -252,80 +252,97 @@ export default function VisualizarRefeicaoDia({
           setGerandoCardapio(false)
         }}
       />
-      <div className="relative w-full max-w-2xl bg-dark-secondary/98 backdrop-blur-sm border border-lilac/30 rounded-xl flex flex-col overflow-hidden animate-genio-appear p-4 sm:p-6 md:p-8"
+      <div
+        className="relative w-full max-w-2xl backdrop-blur-sm rounded-xl flex flex-col overflow-hidden animate-genio-appear p-4 sm:p-6 md:p-8"
         style={{
-          background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(199, 125, 255, 0.2)',
+          background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+          border: '1px solid rgba(110, 143, 61, 0.25)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(110, 143, 61, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
           maxHeight: 'calc(100vh - 2rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0))',
           height: 'auto'
         }}
       >
-        {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-1 tracking-tight">
+              <h2 className="text-2xl font-bold text-text-primary mb-1 tracking-tight" style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.05)' }}>
                 {nomesRefeicoes[tipoRefeicao]}
               </h2>
-              <p className="text-base text-text-secondary font-light">
-                {nomesDias[diaSemana]}
-              </p>
+              <p className="text-base text-text-secondary/90 font-light">{nomesDias[diaSemana]}</p>
             </div>
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-dark-card hover:bg-dark-tertiary border border-dark-border text-text-secondary hover:text-neon-pink hover:border-neon-pink/50 transition-all duration-300 flex items-center justify-center"
+              className="w-10 h-10 rounded-full text-text-secondary hover:text-accent-primary transition-all duration-300 flex items-center justify-center"
+              style={{
+                background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                border: '1px solid rgba(110, 143, 61, 0.25)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+              }}
             >
               ✕
             </button>
           </div>
         </div>
 
-        {/* Conteúdo */}
         <div className="flex-1 overflow-y-auto">
           {carregando ? (
             <div className="text-center py-20">
-              <div className="text-xl text-neon-cyan mb-6 font-semibold">Carregando...</div>
+              <div className="text-xl text-accent-primary mb-6 font-semibold">Carregando...</div>
               <div className="flex justify-center gap-3">
-                <div className="w-4 h-4 bg-neon-purple rounded-full animate-bounce" />
-                <div className="w-4 h-4 bg-neon-cyan rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                <div className="w-4 h-4 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                <div className="w-4 h-4 bg-accent-primary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)' }} />
+                <div className="w-4 h-4 bg-accent-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s', boxShadow: '0 0 12px rgba(79, 107, 88, 0.4)' }} />
+                <div className="w-4 h-4 bg-accent-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s', boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)' }} />
               </div>
             </div>
           ) : erro ? (
             <div className="text-center py-20">
-              <div className="p-6 bg-dark-card border border-neon-pink/40 rounded-xl inline-block">
-                <p className="text-base text-neon-pink font-semibold">{erro}</p>
+              <div
+                className="p-6 rounded-xl inline-block"
+                style={{
+                  background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                  border: '1px solid rgba(110, 143, 61, 0.4)',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+                }}
+              >
+                <p className="text-base text-accent-primary font-semibold">{erro}</p>
               </div>
             </div>
           ) : refeicao && refeicao.itens ? (
-            <div className="bg-dark-card border border-dark-border rounded-xl p-8">
+            <div
+              className="rounded-xl p-8"
+              style={{
+                background: 'linear-gradient(180deg, rgba(20, 58, 54, 0.5) 0%, rgba(15, 46, 43, 0.5) 100%)',
+                border: '1px solid rgba(110, 143, 61, 0.25)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+              }}
+            >
               <div className="space-y-4">
                 {refeicao.itens.length > 0 ? (
                   <>
                     {refeicao.itens.map((item: any, index: number) => (
-                      <div key={index} className="flex items-start gap-4 p-4 bg-dark-secondary rounded-lg border border-dark-border">
+                      <div
+                        key={index}
+                        className="flex items-start gap-4 p-4 rounded-lg"
+                        style={{
+                          background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                          border: '1px solid rgba(110, 143, 61, 0.25)'
+                        }}
+                      >
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-text-primary mb-2">
-                            {item.nome}
-                          </h3>
-                          <p className="text-base text-neon-cyan font-medium">
-                            {item.quantidade}
-                          </p>
+                          <h3 className="text-lg font-semibold text-text-primary mb-2">{item.nome}</h3>
+                          <p className="text-base text-accent-primary font-medium">{item.quantidade}</p>
                         </div>
                       </div>
                     ))}
-                    {/* Exibir dica de preparo se disponível */}
                     {refeicao.dica && (
-                      <div className="mt-4 p-4 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
-                        <div className="text-neon-cyan font-semibold text-sm mb-2">💡 Dica de preparo:</div>
-                        <div className="text-text-secondary italic text-sm">{refeicao.dica}</div>
+                      <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(20, 58, 54, 0.5)', border: '1px solid rgba(110, 143, 61, 0.2)' }}>
+                        <div className="text-accent-primary font-semibold text-sm mb-2">💡 Dica de preparo:</div>
+                        <div className="text-text-secondary/90 italic text-sm">{refeicao.dica}</div>
                       </div>
                     )}
                   </>
                 ) : (
-                  <p className="text-base text-text-secondary text-center py-8">
-                    Nenhum item encontrado para esta refeição.
-                  </p>
+                  <p className="text-base text-text-secondary/90 text-center py-8">Nenhum item encontrado para esta refeição.</p>
                 )}
               </div>
             </div>

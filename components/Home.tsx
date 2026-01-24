@@ -290,22 +290,15 @@ export default function Home() {
       {/* Espaçamento para a barra de progresso quando estiver visível */}
       {gerandoCardapio && <div className="h-24" />}
       {/* Header */}
-      <div className="mb-8 lg:mb-12 max-w-full">
-        <h1 
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal mb-3 lg:mb-4"
-          style={{ 
-            color: '#FFFFFF',
-            fontFamily: 'var(--font-roketto)',
-            fontWeight: 400,
-            letterSpacing: '0.02em',
-            lineHeight: '1.2'
-          }}
-        >
-          Alimentação Sem Medo
-        </h1>
-        <p className="text-base sm:text-lg lg:text-xl text-text-secondary font-light">
-          Seu espaço seguro para comer sem medo
-        </p>
+      <div className="flex justify-start mb-8 lg:mb-12 max-w-full -ml-1">
+        <Image
+          src="/logo/logonovo.png"
+          alt="Alimentação Sem Medo - Seu espaço seguro para comer sem medo"
+          width={480}
+          height={180}
+          className="object-contain w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] h-auto"
+          priority
+        />
       </div>
 
       {/* Carrossel de semanas - estilo Netflix */}
@@ -317,9 +310,11 @@ export default function Home() {
           {cardapios.length > 0 && (
             <button
               onClick={() => setMostrarListaCompras(true)}
-              className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-neon-cyan to-neon-purple hover:from-neon-purple hover:to-neon-cyan text-white rounded-lg text-sm sm:text-base font-bold transition-all duration-300 flex items-center gap-2 touch-manipulation whitespace-nowrap"
+              className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold transition-all duration-300 flex items-center gap-2 touch-manipulation whitespace-nowrap hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
               style={{
-                boxShadow: '0 4px 16px rgba(0, 240, 255, 0.3)'
+                background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                color: '#E9EFEA',
+                boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
               }}
             >
               🛒 Gerar Lista de Compras
@@ -443,30 +438,40 @@ export default function Home() {
                   setCardapioVisualizar(cardapioSemana.id)
                 }
               }}
-              className={`flex-shrink-0 w-64 sm:w-72 lg:w-80 h-48 sm:h-52 lg:h-56 rounded-xl border cursor-pointer transition-all duration-300 touch-manipulation snap-center flex flex-col overflow-hidden ${
-                selectedWeek === week
-                  ? 'border-neon-purple/60 bg-gradient-to-br from-dark-card to-dark-tertiary shadow-neon-purple scale-105'
-                  : 'border-dark-border bg-dark-card hover:border-lilac/40 active:scale-102'
+              className={`flex-shrink-0 w-48 sm:w-56 lg:w-64 h-36 sm:h-44 lg:h-52 rounded-xl cursor-pointer transition-all duration-300 touch-manipulation snap-center flex flex-col overflow-hidden card-hover ${
+                selectedWeek === week ? 'scale-105' : ''
               }`}
               style={{
-                boxShadow: selectedWeek === week 
-                  ? '0 8px 32px rgba(199, 125, 255, 0.3), 0 0 0 1px rgba(199, 125, 255, 0.2)'
-                  : '0 4px 16px rgba(0, 0, 0, 0.3)'
+                background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                border: `1px solid ${selectedWeek === week ? 'rgba(110, 143, 61, 0.4)' : 'rgba(110, 143, 61, 0.25)'}`,
+                boxShadow: selectedWeek === week
+                  ? '0 0 0 1px rgba(110, 143, 61, 0.4), 0 0 25px rgba(110, 143, 61, 0.25), 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+                  : '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               }}
             >
-              <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-2 sm:pb-3 lg:pb-4" style={{ height: '40%', display: 'flex', alignItems: 'center' }}>
-                <h3 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">
+              <div className="flex-shrink-0 px-2 sm:px-3 lg:px-4 pt-2 sm:pt-3 lg:pt-4 pb-2 flex items-center" style={{ height: '12%', paddingBottom: '4px' }}>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-light text-text-primary tracking-tight" style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.05)' }}>
                   Semana {week}
                 </h3>
               </div>
-              <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: '60%' }}>
-                <Image
-                  src={`/imagens/${week}.png`}
-                  alt={`Semana ${week}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 288px, 320px"
-                />
+              <div className="relative w-full flex-shrink-0 rounded-b-xl overflow-hidden" style={{ height: '88%', marginTop: '-30px', padding: '4px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)' }}>
+                <div className="relative w-full h-full rounded-lg overflow-hidden">
+                  <Image
+                    src={`/imagens/${week}.png`}
+                    alt={`Semana ${week}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 256px, (max-width: 1024px) 288px, 320px"
+                    style={{ objectFit: 'cover', objectPosition: 'center' }}
+                  />
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%)',
+                      borderRadius: 'inherit'
+                    }}
+                  />
+                </div>
               </div>
             </div>
           ))}

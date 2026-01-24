@@ -206,19 +206,21 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
           setGerandoCardapio(false)
         }}
       />
-      <div className="relative w-full max-w-4xl bg-dark-secondary/98 backdrop-blur-sm border border-lilac/30 rounded-xl flex flex-col overflow-hidden animate-genio-appear"
+      <div
+        className="relative w-full max-w-4xl backdrop-blur-sm rounded-xl flex flex-col overflow-hidden animate-genio-appear"
         style={{
-          background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.98) 0%, rgba(14, 11, 20, 0.98) 100%)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(199, 125, 255, 0.2)',
+          background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+          border: '1px solid rgba(110, 143, 61, 0.25)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(110, 143, 61, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
           maxHeight: 'calc(100vh - 2rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0))',
           height: 'auto'
         }}
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 md:p-8 border-b border-dark-border flex-shrink-0">
+        <div className="p-4 sm:p-6 md:p-8 border-b flex-shrink-0" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h2 className="text-3xl font-bold text-text-primary mb-2 tracking-tight">
+              <h2 className="text-3xl font-bold text-text-primary mb-2 tracking-tight" style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.05)' }}>
                 Meu Cardápio Personalizado
               </h2>
               {cardapio?.semana && (
@@ -231,12 +233,12 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-text-secondary">Progresso do cardápio</span>
-                    <span className="text-sm font-bold text-neon-purple">{progressoRefeicoes}%</span>
+                    <span className="text-sm font-bold text-accent-primary">{progressoRefeicoes}%</span>
                   </div>
-                  <div className="w-full h-3 bg-dark-card rounded-full overflow-hidden border border-dark-border">
-                    <div 
-                      className="h-full bg-gradient-to-r from-neon-purple via-lilac to-neon-cyan transition-all duration-500 ease-out"
-                      style={{ width: `${progressoRefeicoes}%` }}
+                  <div className="w-full h-3 rounded-full overflow-hidden border" style={{ background: 'rgba(15, 46, 43, 0.6)', borderColor: 'rgba(110, 143, 61, 0.25)' }}>
+                    <div
+                      className="h-full transition-all duration-500 ease-out"
+                      style={{ width: `${progressoRefeicoes}%`, background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)' }}
                     />
                   </div>
                   <p className="text-xs text-text-muted mt-1">
@@ -247,9 +249,11 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
             </div>
             <button
               onClick={onClose}
-              className="w-11 h-11 rounded-full bg-dark-card hover:bg-dark-tertiary border border-dark-border text-text-secondary hover:text-neon-pink hover:border-neon-pink/50 transition-all duration-300 flex items-center justify-center"
+              className="w-11 h-11 rounded-full text-text-secondary hover:text-accent-primary transition-all duration-300 flex items-center justify-center"
               style={{
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                border: '1px solid rgba(110, 143, 61, 0.25)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               }}
             >
               ✕
@@ -265,41 +269,33 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
         >
           {carregando ? (
             <div className="text-center py-20">
-              <div className="text-xl text-neon-cyan mb-6 font-semibold">Carregando cardápio...</div>
+              <div className="text-xl text-accent-primary mb-6 font-semibold">Carregando cardápio...</div>
               <div className="flex justify-center gap-3">
-                <div className="w-4 h-4 bg-neon-purple rounded-full animate-bounce"
-                  style={{
-                    boxShadow: '0 0 12px rgba(199, 125, 255, 0.6)'
-                  }}
-                />
-                <div className="w-4 h-4 bg-neon-cyan rounded-full animate-bounce"
-                  style={{
-                    boxShadow: '0 0 12px rgba(0, 240, 255, 0.6)',
-                    animationDelay: '0.2s'
-                  }}
-                />
-                <div className="w-4 h-4 bg-neon-purple rounded-full animate-bounce"
-                  style={{
-                    boxShadow: '0 0 12px rgba(199, 125, 255, 0.6)',
-                    animationDelay: '0.4s'
-                  }}
-                />
+                <div className="w-4 h-4 bg-accent-primary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)' }} />
+                <div className="w-4 h-4 bg-accent-secondary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(79, 107, 88, 0.4)', animationDelay: '0.2s' }} />
+                <div className="w-4 h-4 bg-accent-primary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)', animationDelay: '0.4s' }} />
               </div>
             </div>
           ) : erro ? (
             <div className="text-center py-20">
-              <div className="p-6 bg-dark-card border border-neon-pink/40 rounded-xl inline-block"
+              <div
+                className="p-6 rounded-xl inline-block"
                 style={{
-                  boxShadow: '0 4px 16px rgba(255, 107, 157, 0.2)'
+                  background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                  border: '1px solid rgba(110, 143, 61, 0.4)',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
                 }}
               >
-                <p className="text-base text-neon-pink font-semibold">{erro}</p>
+                <p className="text-base text-accent-primary font-semibold">{erro}</p>
               </div>
             </div>
           ) : cardapio ? (
-            <div className="bg-dark-card border border-dark-border rounded-xl p-4 sm:p-6 md:p-8 lg:p-10"
+            <div
+              className="rounded-xl p-4 sm:p-6 md:p-8 lg:p-10"
               style={{
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+                background: 'linear-gradient(180deg, rgba(20, 58, 54, 0.5) 0%, rgba(15, 46, 43, 0.5) 100%)',
+                border: '1px solid rgba(110, 143, 61, 0.25)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               }}
             >
               {/* Renderizar usando estrutura de dados do plano */}
@@ -308,14 +304,14 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                   {cardapio.plano.dias.map((dia: any) => (
                     <div key={dia.dia} className="space-y-4">
                       {/* Título do dia */}
-                      <div className="text-2xl font-bold text-neon-cyan mb-4">
+                      <div className="text-2xl font-bold text-accent-primary mb-4">
                         {dia.nomeDia || `Dia ${dia.dia + 1}`}
                       </div>
                       
                       {/* Café da manhã */}
                       {dia.cafe_manha && dia.cafe_manha.length > 0 && (
                         <div className="space-y-2">
-                          <div className="text-neon-purple font-semibold text-xl mb-2">
+                          <div className="text-accent-primary font-semibold text-xl mb-2">
                             Café da manhã:
                           </div>
                           {dia.cafe_manha.map((item: any, itemIndex: number) => {
@@ -332,7 +328,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                                       setProgressoRefeicoes(novoProgresso)
                                     }
                                   }}
-                                  className="w-5 h-5 rounded border-2 border-lilac/40 bg-dark-card checked:bg-neon-purple checked:border-neon-purple focus:ring-2 focus:ring-neon-purple/50 cursor-pointer transition-all duration-200 flex-shrink-0"
+                                  className="w-5 h-5 rounded border-2 border-accent-secondary/40 bg-bg-secondary checked:bg-accent-primary checked:border-accent-primary focus:ring-2 focus:ring-accent-primary/50 cursor-pointer transition-all duration-200 flex-shrink-0"
                                 />
                                 <span className={`flex-1 ${concluida ? 'line-through text-text-muted opacity-60' : 'text-text-primary'}`}>
                                   - {item.nome} — {item.quantidade}
@@ -345,8 +341,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                             // Usar dica salva se disponível, senão gerar
                             const dica = dia.cafe_manha_dica || gerarDicaRefeicao(dia.cafe_manha, 'cafe_manha')
                             return dica ? (
-                              <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
-                                <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
+                              <div className="mt-3 ml-7 p-3 bg-bg-secondary/50 rounded-lg border border-accent-secondary/20">
+                                <div className="text-accent-primary font-semibold text-sm mb-1">💡 Dica de preparo:</div>
                                 <div className="text-text-secondary italic text-sm">{dica}</div>
                               </div>
                             ) : null
@@ -357,7 +353,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                       {/* Almoço */}
                       {dia.almoco && dia.almoco.length > 0 && (
                         <div className="space-y-2">
-                          <div className="text-neon-purple font-semibold text-xl mb-2">
+                          <div className="text-accent-primary font-semibold text-xl mb-2">
                             Almoço:
                           </div>
                           {dia.almoco.map((item: any, itemIndex: number) => {
@@ -374,7 +370,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                                       setProgressoRefeicoes(novoProgresso)
                                     }
                                   }}
-                                  className="w-5 h-5 rounded border-2 border-lilac/40 bg-dark-card checked:bg-neon-purple checked:border-neon-purple focus:ring-2 focus:ring-neon-purple/50 cursor-pointer transition-all duration-200 flex-shrink-0"
+                                  className="w-5 h-5 rounded border-2 border-accent-secondary/40 bg-bg-secondary checked:bg-accent-primary checked:border-accent-primary focus:ring-2 focus:ring-accent-primary/50 cursor-pointer transition-all duration-200 flex-shrink-0"
                                 />
                                 <span className={`flex-1 ${concluida ? 'line-through text-text-muted opacity-60' : 'text-text-primary'}`}>
                                   - {item.nome} — {item.quantidade}
@@ -387,8 +383,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                             // Usar dica salva se disponível, senão gerar
                             const dica = dia.almoco_dica || gerarDicaRefeicao(dia.almoco, 'almoco')
                             return dica ? (
-                              <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
-                                <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
+                              <div className="mt-3 ml-7 p-3 bg-bg-secondary/50 rounded-lg border border-accent-secondary/20">
+                                <div className="text-accent-primary font-semibold text-sm mb-1">💡 Dica de preparo:</div>
                                 <div className="text-text-secondary italic text-sm">{dica}</div>
                               </div>
                             ) : null
@@ -399,7 +395,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                       {/* Lanche da tarde */}
                       {dia.lanche_tarde && dia.lanche_tarde.length > 0 && (
                         <div className="space-y-2">
-                          <div className="text-neon-purple font-semibold text-xl mb-2">
+                          <div className="text-accent-primary font-semibold text-xl mb-2">
                             Lanche da tarde:
                           </div>
                           {dia.lanche_tarde.map((item: any, itemIndex: number) => {
@@ -416,7 +412,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                                       setProgressoRefeicoes(novoProgresso)
                                     }
                                   }}
-                                  className="w-5 h-5 rounded border-2 border-lilac/40 bg-dark-card checked:bg-neon-purple checked:border-neon-purple focus:ring-2 focus:ring-neon-purple/50 cursor-pointer transition-all duration-200 flex-shrink-0"
+                                  className="w-5 h-5 rounded border-2 border-accent-secondary/40 bg-bg-secondary checked:bg-accent-primary checked:border-accent-primary focus:ring-2 focus:ring-accent-primary/50 cursor-pointer transition-all duration-200 flex-shrink-0"
                                 />
                                 <span className={`flex-1 ${concluida ? 'line-through text-text-muted opacity-60' : 'text-text-primary'}`}>
                                   - {item.nome} — {item.quantidade}
@@ -429,8 +425,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                             // Usar dica salva se disponível, senão gerar
                             const dica = dia.lanche_tarde_dica || gerarDicaRefeicao(dia.lanche_tarde, 'lanche_tarde')
                             return dica ? (
-                              <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
-                                <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
+                              <div className="mt-3 ml-7 p-3 bg-bg-secondary/50 rounded-lg border border-accent-secondary/20">
+                                <div className="text-accent-primary font-semibold text-sm mb-1">💡 Dica de preparo:</div>
                                 <div className="text-text-secondary italic text-sm">{dica}</div>
                               </div>
                             ) : null
@@ -441,7 +437,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                       {/* Jantar */}
                       {dia.jantar && dia.jantar.length > 0 && (
                         <div className="space-y-2">
-                          <div className="text-neon-purple font-semibold text-xl mb-2">
+                          <div className="text-accent-primary font-semibold text-xl mb-2">
                             Jantar:
                           </div>
                           {dia.jantar.map((item: any, itemIndex: number) => {
@@ -458,7 +454,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                                       setProgressoRefeicoes(novoProgresso)
                                     }
                                   }}
-                                  className="w-5 h-5 rounded border-2 border-lilac/40 bg-dark-card checked:bg-neon-purple checked:border-neon-purple focus:ring-2 focus:ring-neon-purple/50 cursor-pointer transition-all duration-200 flex-shrink-0"
+                                  className="w-5 h-5 rounded border-2 border-accent-secondary/40 bg-bg-secondary checked:bg-accent-primary checked:border-accent-primary focus:ring-2 focus:ring-accent-primary/50 cursor-pointer transition-all duration-200 flex-shrink-0"
                                 />
                                 <span className={`flex-1 ${concluida ? 'line-through text-text-muted opacity-60' : 'text-text-primary'}`}>
                                   - {item.nome} — {item.quantidade}
@@ -471,8 +467,8 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                             // Usar dica salva se disponível, senão gerar
                             const dica = dia.jantar_dica || gerarDicaRefeicao(dia.jantar, 'jantar')
                             return dica ? (
-                              <div className="mt-3 ml-7 p-3 bg-dark-secondary/50 rounded-lg border border-neon-cyan/20">
-                                <div className="text-neon-cyan font-semibold text-sm mb-1">💡 Dica de preparo:</div>
+                              <div className="mt-3 ml-7 p-3 bg-bg-secondary/50 rounded-lg border border-accent-secondary/20">
+                                <div className="text-accent-primary font-semibold text-sm mb-1">💡 Dica de preparo:</div>
                                 <div className="text-text-secondary italic text-sm">{dica}</div>
                               </div>
                             ) : null
@@ -493,7 +489,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                   // Destacar "DIA X"
                   if (linha.trim().startsWith('DIA')) {
                     return (
-                      <div key={index} className="mt-8 mb-4 text-2xl font-bold text-neon-cyan">
+                      <div key={index} className="mt-8 mb-4 text-2xl font-bold text-accent-primary">
                         {linha}
                       </div>
                     )
@@ -501,7 +497,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                   // Destacar títulos de refeições
                   if (linha.includes('Café da manhã:') || linha.includes('Almoço:') || linha.includes('Lanche da tarde:') || linha.includes('Jantar:')) {
                     return (
-                      <div key={index} className="mt-6 mb-2 text-neon-purple font-semibold text-xl">
+                      <div key={index} className="mt-6 mb-2 text-accent-primary font-semibold text-xl">
                         {linha}
                       </div>
                     )
@@ -510,7 +506,7 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                   if (linha.includes('💡 Dica de preparo:')) {
                     return (
                       <div key={index} className="mt-4 mb-2">
-                        <span className="text-neon-cyan font-semibold">💡 Dica de preparo:</span>
+                        <span className="text-accent-primary font-semibold">💡 Dica de preparo:</span>
                       </div>
                     )
                   }
@@ -605,9 +601,9 @@ export default function VisualizarCardapio({ cardapioId, onClose }: VisualizarCa
                               setProgressoRefeicoes(novoProgresso)
                             }
                           }}
-                          className="w-5 h-5 rounded border-2 border-lilac/40 bg-dark-card checked:bg-neon-purple checked:border-neon-purple focus:ring-2 focus:ring-neon-purple/50 cursor-pointer transition-all duration-200 flex-shrink-0"
+                          className="w-5 h-5 rounded border-2 border-accent-secondary/40 bg-bg-secondary checked:bg-accent-primary checked:border-accent-primary focus:ring-2 focus:ring-accent-primary/50 cursor-pointer transition-all duration-200 flex-shrink-0"
                           style={{
-                            accentColor: '#C77DFF'
+                            accentColor: '#6E8F3D'
                           }}
                         />
                         <span className={`flex-1 ${concluida ? 'line-through text-text-muted opacity-60' : 'text-text-primary'}`}>

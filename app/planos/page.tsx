@@ -133,33 +133,36 @@ export default function PlanosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg relative overflow-hidden">
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        background: 'radial-gradient(circle at top center, rgba(110, 143, 61, 0.15), transparent 60%), linear-gradient(160deg, #0F2E2B 0%, #0C2623 40%, #081C1A 100%)'
+      }}
+    >
       <IntestineBackground />
       
       <div className="relative z-10 min-h-screen py-8 sm:py-12 lg:py-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-10 sm:mb-12 lg:mb-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold mb-4 sm:mb-6 tracking-tight text-text-primary">
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold mb-4 sm:mb-6 tracking-tight text-text-primary" style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.05)' }}>
               Escolha seu Plano
             </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl text-text-secondary font-light">
+            <p className="text-lg sm:text-xl lg:text-2xl text-text-secondary/90 font-light">
               Acesso completo à plataforma de alimentação sem medo
             </p>
           </div>
 
-          {/* Comparação de Planos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-12">
-            {/* PLANO 1 - Inteligente */}
-            <div className={`bg-dark-secondary border-2 rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-300 ${
-              planoAtual === 1 
-                ? 'border-lilac/60 shadow-neon-purple' 
-                : 'border-dark-border hover:border-lilac/40'
-            }`}
+            <div
+              className={`rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-300 card-hover ${
+                planoAtual === 1 ? 'scale-[1.02]' : ''
+              }`}
               style={{
-                boxShadow: planoAtual === 1 
-                  ? '0 8px 32px rgba(199, 125, 255, 0.3)' 
-                  : '0 4px 16px rgba(0, 0, 0, 0.3)'
+                background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                border: `1px solid ${planoAtual === 1 ? 'rgba(110, 143, 61, 0.4)' : 'rgba(110, 143, 61, 0.25)'}`,
+                boxShadow: planoAtual === 1
+                  ? '0 0 0 1px rgba(110, 143, 61, 0.4), 0 0 25px rgba(110, 143, 61, 0.25), 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+                  : '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               }}
             >
               <div className="mb-6 lg:mb-8">
@@ -167,37 +170,37 @@ export default function PlanosPage() {
                   Plano Inteligente
                 </h2>
                 <div className="flex items-baseline gap-2 mb-4 lg:mb-6">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-neon-cyan">R$ 67</span>
+                  <span className="text-4xl sm:text-5xl font-extrabold text-accent-primary">R$ 67</span>
                   <span className="text-lg sm:text-xl text-text-secondary">/mês</span>
                 </div>
                 {planoAtual === 1 && (
-                  <div className="inline-block px-4 py-2 bg-lilac/20 border border-lilac/40 rounded-lg mb-4">
-                    <span className="text-sm font-semibold text-lilac">Seu plano atual</span>
+                  <div className="inline-block px-4 py-2 bg-accent-primary/20 border border-accent-primary/40 rounded-lg mb-4">
+                    <span className="text-sm font-semibold text-accent-primary">Seu plano atual</span>
                   </div>
                 )}
               </div>
 
               <ul className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Geração automática de cardápios semanais personalizados
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Perfil evolutivo do paciente (histórico, preferências, restrições e progresso)
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Ajustes automáticos do cardápio conforme evolução
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-cyan">✓</span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
                   <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
                     Acesso total à plataforma
                   </span>
@@ -213,9 +216,11 @@ export default function PlanosPage() {
               {planoAtual === 1 ? (
                 <button
                   onClick={handleUpgrade}
-                  className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-neon-purple hover:shadow-large glow-purple touch-manipulation"
+                  className="w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
                   style={{
-                    boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
+                    background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                    color: '#E9EFEA',
+                    boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
                   }}
                 >
                   Fazer Upgrade para Plano Acompanhado
@@ -230,9 +235,12 @@ export default function PlanosPage() {
                       handleSelecionarPlano(1)
                     }
                   }}
-                  className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-dark-card border-2 border-lilac/40 hover:border-lilac/60 text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation"
+                  className="w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
                   style={{
-                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+                    background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                    color: '#E9EFEA',
+                    border: '1px solid rgba(110, 143, 61, 0.4)',
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
                   }}
                 >
                   Assinar Plano Inteligente
@@ -241,71 +249,61 @@ export default function PlanosPage() {
             </div>
 
             {/* PLANO 2 - Acompanhado (Premium) */}
-            <div className={`bg-gradient-to-br from-dark-secondary to-dark-tertiary border-2 rounded-2xl p-6 sm:p-8 lg:p-10 relative transition-all duration-300 lg:scale-105 ${
-              planoAtual === 2 
-                ? 'border-neon-pink/60 shadow-neon-pink' 
-                : 'border-neon-pink/40 hover:border-neon-pink/60'
-            }`}
+            <div
+              className={`rounded-2xl p-6 sm:p-8 lg:p-10 relative transition-all duration-300 card-hover lg:scale-[1.02] ${planoAtual === 2 ? 'scale-[1.02]' : ''}`}
               style={{
-                boxShadow: planoAtual === 2 
-                  ? '0 12px 48px rgba(255, 107, 157, 0.4)' 
-                  : '0 8px 32px rgba(255, 107, 157, 0.2)'
+                background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                border: `1px solid ${planoAtual === 2 ? 'rgba(110, 143, 61, 0.4)' : 'rgba(110, 143, 61, 0.25)'}`,
+                boxShadow: planoAtual === 2
+                  ? '0 0 0 1px rgba(110, 143, 61, 0.4), 0 0 25px rgba(110, 143, 61, 0.25), 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+                  : '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               }}
             >
-              {/* Badge Premium */}
               <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                <div className="px-4 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-neon-pink to-lilac rounded-full shadow-neon-pink glow-pink">
-                  <span className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
-                    ⭐ Premium
-                  </span>
+                <div
+                  className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full"
+                  style={{
+                    background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                    boxShadow: '0 4px 16px rgba(110, 143, 61, 0.4)'
+                  }}
+                >
+                  <span className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">⭐ Premium</span>
                 </div>
               </div>
 
               <div className="mb-6 lg:mb-8 mt-3 sm:mt-4">
-                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-3 tracking-tight">
-                  Plano Acompanhado
-                </h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-3 tracking-tight">Plano Acompanhado</h2>
                 <div className="flex items-baseline gap-2 mb-4 lg:mb-6">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-neon-pink">R$ 157</span>
-                  <span className="text-lg sm:text-xl text-text-secondary">/mês</span>
+                  <span className="text-4xl sm:text-5xl font-extrabold text-accent-primary">R$ 157</span>
+                  <span className="text-lg sm:text-xl text-text-secondary/90">/mês</span>
                 </div>
                 {planoAtual === 2 && (
-                  <div className="inline-block px-4 py-2 bg-neon-pink/20 border border-neon-pink/40 rounded-lg mb-4">
-                    <span className="text-sm font-semibold text-neon-pink">Seu plano atual</span>
+                  <div className="inline-block px-4 py-2 rounded-lg mb-4" style={{ background: 'rgba(110, 143, 61, 0.2)', border: '1px solid rgba(110, 143, 61, 0.4)' }}>
+                    <span className="text-sm font-semibold text-accent-primary">Seu plano atual</span>
                   </div>
                 )}
               </div>
 
               <ul className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
-                  <span className="text-base sm:text-lg text-text-primary leading-relaxed font-medium">
-                    <strong>Tudo do Plano Inteligente +</strong>
-                  </span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
+                  <span className="text-base sm:text-lg text-text-primary leading-relaxed font-medium"><strong>Tudo do Plano Inteligente +</strong></span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
-                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
-                    Acompanhamento direto com a nutricionista
-                  </span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary/90 leading-relaxed">Acompanhamento direto com a nutricionista</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
-                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
-                    Ajustes manuais no plano alimentar
-                  </span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary/90 leading-relaxed">Ajustes manuais no plano alimentar</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
-                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
-                    Atendimento via WhatsApp
-                  </span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary/90 leading-relaxed">Atendimento via WhatsApp</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-xl sm:text-2xl text-neon-pink">✓</span>
-                  <span className="text-base sm:text-lg text-text-secondary leading-relaxed">
-                    Área de acompanhamento e evolução individual
-                  </span>
+                  <span className="text-xl sm:text-2xl text-accent-primary">✓</span>
+                  <span className="text-base sm:text-lg text-text-secondary/90 leading-relaxed">Área de acompanhamento e evolução individual</span>
                 </li>
               </ul>
 
@@ -320,9 +318,11 @@ export default function PlanosPage() {
                   }
                 }}
                 disabled={planoAtual === 2}
-                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-neon-pink to-lilac hover:from-lilac hover:to-neon-pink text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-neon-pink hover:shadow-large glow-pink disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+                className="w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)] disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
-                  boxShadow: '0 6px 24px rgba(255, 107, 157, 0.4)'
+                  background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                  color: '#E9EFEA',
+                  boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
                 }}
               >
                 {planoAtual === 2 ? 'Plano Ativo' : 'Assinar Plano Acompanhado'}
@@ -330,13 +330,14 @@ export default function PlanosPage() {
             </div>
           </div>
 
-          {/* Botão Voltar */}
           <div className="text-center">
             <button
               onClick={() => router.push('/')}
-              className="px-6 sm:px-8 py-3 sm:py-4 bg-dark-card border border-dark-border rounded-lg text-sm sm:text-base font-semibold text-text-secondary hover:border-lilac/60 hover:text-lilac transition-all duration-300 touch-manipulation"
+              className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-semibold text-text-secondary/90 hover:text-accent-primary transition-all duration-300 touch-manipulation"
               style={{
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                border: '1px solid rgba(110, 143, 61, 0.25)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               }}
             >
               ← Voltar à Home

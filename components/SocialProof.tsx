@@ -27,23 +27,25 @@ export default function SocialProof() {
 
   return (
     <section className="mb-16 max-w-full">
-      <h2 className="text-3xl font-bold text-text-primary mb-10 tracking-tight">
+      <h2 className="text-3xl font-bold text-text-primary mb-10 tracking-tight" style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.05)' }}>
         Quem já voltou a comer sem medo
       </h2>
       <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide -mx-2 px-2">
         {testimonials.map((testimonial, index) => (
           <div
             key={index}
-            className="flex-shrink-0 w-96 h-auto rounded-xl bg-dark-card border border-dark-border p-8 card-hover transition-all duration-300"
+            className="flex-shrink-0 w-96 h-auto rounded-xl p-8 card-hover transition-all duration-300"
             style={{
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+              background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+              border: '1px solid rgba(110, 143, 61, 0.25)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
             }}
           >
             <div className="mb-6">
               <h3 className="text-xl font-bold text-text-primary mb-3 tracking-tight">
                 {testimonial.name}
               </h3>
-              <p className="text-base text-neon-cyan mb-4 font-semibold">
+              <p className="text-base text-accent-primary mb-4 font-semibold">
                 {testimonial.age} anos — {testimonial.condition}
               </p>
               <div className="flex gap-1">
@@ -52,7 +54,7 @@ export default function SocialProof() {
                 ))}
               </div>
             </div>
-            <p className="text-lg text-text-secondary leading-relaxed italic font-light">
+            <p className="text-lg text-text-secondary/90 leading-relaxed italic font-light">
               "{testimonial.text}"
             </p>
           </div>

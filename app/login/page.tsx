@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import IntestineBackground from '@/components/IntestineBackground'
 
 export default function LoginPage() {
@@ -73,34 +74,34 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg relative overflow-hidden flex items-center justify-center">
+    <div
+      className="min-h-screen relative overflow-hidden flex items-center justify-center"
+      style={{
+        background: 'radial-gradient(circle at top center, rgba(110, 143, 61, 0.15), transparent 60%), linear-gradient(160deg, #0F2E2B 0%, #0C2623 40%, #081C1A 100%)'
+      }}
+    >
       <IntestineBackground />
       
       <div className="relative z-10 w-full max-w-md px-4 sm:px-6">
         {/* Logo */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 
-            className="text-3xl sm:text-4xl lg:text-5xl font-normal mb-3 sm:mb-4"
-            style={{ 
-              color: '#FFFFFF',
-              fontFamily: 'var(--font-roketto)',
-              fontWeight: 400,
-              letterSpacing: '0.02em',
-              lineHeight: '1.2'
-            }}
-          >
-            Alimentação Sem Medo
-          </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-text-secondary">
-            Seu espaço seguro para comer sem medo
-          </p>
+        <div className="flex justify-start mb-8 sm:mb-12 -ml-1">
+          <Image
+            src="/logo/logonovo.png"
+            alt="Alimentação Sem Medo - Seu espaço seguro para comer sem medo"
+            width={400}
+            height={150}
+            className="object-contain w-full max-w-[400px] h-auto"
+            priority
+          />
         </div>
 
         {/* Formulário de Login */}
-        <div className="bg-dark-secondary/95 backdrop-blur-sm border border-dark-border rounded-xl p-6 sm:p-8 lg:p-12 shadow-2xl"
+        <div
+          className="backdrop-blur-sm rounded-xl p-6 sm:p-8 lg:p-12"
           style={{
-            background: 'linear-gradient(180deg, rgba(26, 21, 37, 0.95) 0%, rgba(14, 11, 20, 0.95) 100%)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
+            background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+            border: '1px solid rgba(110, 143, 61, 0.25)',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
           }}
         >
           <form onSubmit={handleLogin} className="space-y-6">
@@ -114,10 +115,10 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-5 py-4 bg-dark-card border border-dark-border rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+                className="w-full px-5 py-4 bg-bg-secondary/80 border border-accent-secondary/30 rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
                 placeholder="seu@email.com"
                 style={{
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.03)'
                 }}
               />
             </div>
@@ -132,26 +133,34 @@ export default function LoginPage() {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 required
-                className="w-full px-5 py-4 bg-dark-card border border-dark-border rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 transition-all duration-300"
+                className="w-full px-5 py-4 bg-bg-secondary/80 border border-accent-secondary/30 rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
                 placeholder="••••••••"
                 style={{
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.03)'
                 }}
               />
             </div>
 
             {erro && (
-              <div className="p-4 bg-dark-card border-2 border-neon-pink/30 rounded-xl">
-                <p className="text-base text-neon-pink font-medium">{erro}</p>
+              <div
+                className="p-4 rounded-xl border"
+                style={{
+                  background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                  borderColor: 'rgba(110, 143, 61, 0.4)'
+                }}
+              >
+                <p className="text-base text-accent-primary font-medium">{erro}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={carregando}
-              className="w-full py-4 px-6 bg-gradient-to-r from-neon-purple to-lilac hover:from-lilac hover:to-neon-purple text-white rounded-lg text-base sm:text-lg font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+              className="w-full py-4 px-6 rounded-lg text-base sm:text-lg font-bold transition-all duration-300 tracking-tight disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
               style={{
-                boxShadow: '0 4px 16px rgba(199, 125, 255, 0.3)'
+                background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                color: '#E9EFEA',
+                boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
               }}
             >
               {carregando ? 'Entrando...' : 'Entrar'}
@@ -161,7 +170,7 @@ export default function LoginPage() {
           <div className="mt-8 text-center">
             <button
               onClick={() => router.push('/criar-conta')}
-              className="text-base text-neon-cyan hover:text-lilac font-medium transition-colors"
+              className="text-base text-accent-primary hover:text-accent-primary/80 font-medium transition-colors"
             >
               Criar conta
             </button>

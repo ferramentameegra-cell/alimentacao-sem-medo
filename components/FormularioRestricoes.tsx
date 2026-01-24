@@ -106,19 +106,6 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
   
   const [alimentoNaoGosta, setAlimentoNaoGosta] = useState('')
   const [alimentoPreferido, setAlimentoPreferido] = useState('')
-  // Lista de condições gastrointestinais disponíveis
-  const condicoesGI = [
-    { key: 'azia_refluxo', label: 'Azia e Refluxo' },
-    { key: 'constipacao_intestinal', label: 'Constipação Intestinal' },
-    { key: 'diarreia', label: 'Diarréia' },
-    { key: 'dor_abdominal', label: 'Dor Abdominal' },
-    { key: 'sindrome_intestino_irritavel', label: 'Síndrome do Intestino Irritável' },
-    { key: 'diverticulos_intestinais', label: 'Divertículos Intestinais' },
-    { key: 'gases_abdome_distendido', label: 'Gases e Abdome Distendido' },
-    { key: 'retocolite_doenca_crohn', label: 'Retocolite ou Doença de Crohn' },
-    { key: 'disbiose', label: 'Disbiose' },
-    { key: 'ma_digestao', label: 'Má Digestão' },
-  ] as const
 
   // Carregar dados salvos do perfil
   useEffect(() => {
@@ -240,21 +227,6 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
     }))
   }
 
-  const toggleCondicaoGI = (condicaoKey: typeof condicoesGI[number]['key']) => {
-    setCondicoesSaude(prev => {
-      const problemasAtuais = prev.problemas_gastrointestinais || []
-      const jaExiste = problemasAtuais.includes(condicaoKey)
-      
-      return {
-        ...prev,
-        problemas_gastrointestinais: jaExiste
-          ? problemasAtuais.filter(c => c !== condicaoKey)
-          : [...problemasAtuais, condicaoKey],
-        nenhuma: false // Se selecionar alguma condição, desmarcar "nenhuma"
-      }
-    })
-  }
-
   const toggleRestricao = (key: keyof typeof restricoes) => {
     if (key === 'outras_restricoes') return
     setRestricoes(prev => ({
@@ -304,9 +276,9 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
             {Math.round((passoAtual / totalPassos) * 100)}%
           </span>
         </div>
-        <div className="w-full bg-dark-secondary rounded-full h-2 sm:h-3">
+        <div className="w-full bg-bg-secondary rounded-full h-2 sm:h-3">
           <div
-            className="bg-gradient-to-r from-neon-purple to-lilac h-full rounded-full transition-all duration-300"
+            className="bg-gradient-to-r from-accent-primary to-accent-primary/80 h-full rounded-full transition-all duration-300"
             style={{ width: `${(passoAtual / totalPassos) * 100}%` }}
           />
         </div>
@@ -314,7 +286,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
 
       {/* PASSO 1: Intolerâncias e Alergias */}
       {passoAtual === 1 && (
-        <div className="bg-dark-secondary rounded-xl p-6 sm:p-8 lg:p-12">
+        <div className="bg-bg-secondary rounded-xl p-6 sm:p-8 lg:p-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-2">
             Intolerâncias e Alergias
           </h2>
@@ -336,13 +308,13 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
             ].map(({ key, label }) => (
               <label
                 key={key}
-                className="flex items-center p-4 sm:p-5 bg-dark-card rounded-lg cursor-pointer hover:bg-dark-card/80 transition-colors touch-manipulation"
+                className="flex items-center p-4 sm:p-5 bg-bg-secondary rounded-lg cursor-pointer hover:bg-bg-secondary/80 transition-colors touch-manipulation"
               >
                 <input
                   type="checkbox"
                   checked={restricoes[key as keyof typeof restricoes] as boolean || false}
                   onChange={() => toggleRestricao(key as keyof typeof restricoes)}
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border rounded focus:ring-2 focus:ring-lilac/50"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-accent-primary bg-bg-secondary border-accent-secondary/30 rounded focus:ring-2 focus:ring-accent-primary/50"
                 />
                 <span className="ml-4 text-base sm:text-lg text-text-primary">{label}</span>
               </label>
@@ -356,7 +328,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                 value={restricoes.outras_restricoes || ''}
                 onChange={(e) => setRestricoes(prev => ({ ...prev, outras_restricoes: e.target.value }))}
                 placeholder="Descreva outras restrições alimentares que você possui..."
-                className="w-full px-4 sm:px-6 py-4 sm:py-5 bg-dark-card border border-dark-border rounded-lg text-base sm:text-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-lilac/60 focus:ring-2 focus:ring-lilac/20 resize-none"
+                className="w-full px-4 sm:px-6 py-4 sm:py-5 bg-bg-secondary border border-accent-secondary/30 rounded-lg text-base sm:text-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 resize-none"
                 rows={3}
               />
             </div>
@@ -366,7 +338,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
 
       {/* PASSO 2: Tipo de Alimentação */}
       {passoAtual === 2 && (
-        <div className="bg-dark-secondary rounded-xl p-6 sm:p-8 lg:p-12">
+        <div className="bg-bg-secondary rounded-xl p-6 sm:p-8 lg:p-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-2">
             Tipo de Alimentação
           </h2>
@@ -388,7 +360,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
             ].map(({ value, label }) => (
               <label
                 key={value}
-                className="flex items-center p-4 sm:p-5 bg-dark-card rounded-lg cursor-pointer hover:bg-dark-card/80 transition-colors touch-manipulation"
+                className="flex items-center p-4 sm:p-5 bg-bg-secondary rounded-lg cursor-pointer hover:bg-bg-secondary/80 transition-colors touch-manipulation"
               >
                 <input
                   type="radio"
@@ -396,7 +368,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                   value={value}
                   checked={tipoAlimentacao === value}
                   onChange={() => setTipoAlimentacao(value as RestricoesCompletas['tipo_alimentacao'])}
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border focus:ring-2 focus:ring-lilac/50"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-accent-primary bg-bg-secondary border-accent-secondary/30 focus:ring-2 focus:ring-accent-primary/50"
                 />
                 <span className="ml-4 text-base sm:text-lg text-text-primary">{label}</span>
               </label>
@@ -407,7 +379,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
 
       {/* PASSO 3: Condições de Saúde */}
       {passoAtual === 3 && (
-        <div className="bg-dark-secondary rounded-xl p-6 sm:p-8 lg:p-12">
+        <div className="bg-bg-secondary rounded-xl p-6 sm:p-8 lg:p-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-2">
             Condições de Saúde
           </h2>
@@ -416,23 +388,23 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
           </p>
 
           <div className="space-y-4 sm:space-y-5">
-            <label className="flex items-center p-4 sm:p-5 bg-dark-card rounded-lg cursor-pointer hover:bg-dark-card/80 transition-colors touch-manipulation">
+            <label className="flex items-center p-4 sm:p-5 bg-bg-secondary rounded-lg cursor-pointer hover:bg-bg-secondary/80 transition-colors touch-manipulation">
               <input
                 type="checkbox"
                 checked={condicoesSaude.nenhuma || false}
                 onChange={() => toggleCondicaoSaude('nenhuma')}
-                className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border rounded focus:ring-2 focus:ring-lilac/50"
+                className="w-5 h-5 sm:w-6 sm:h-6 text-accent-primary bg-bg-secondary border-accent-secondary/30 rounded focus:ring-2 focus:ring-accent-primary/50"
               />
               <span className="ml-4 text-base sm:text-lg text-text-primary">Nenhuma condição de saúde</span>
             </label>
 
-            <div className="p-4 sm:p-5 bg-dark-card rounded-lg">
+            <div className="p-4 sm:p-5 bg-bg-secondary rounded-lg">
               <label className="flex items-center mb-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={condicoesSaude.diabetes === 'tipo1' || condicoesSaude.diabetes === 'tipo2'}
                   onChange={() => toggleCondicaoSaude('diabetes')}
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border rounded focus:ring-2 focus:ring-lilac/50"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-accent-primary bg-bg-secondary border-accent-secondary/30 rounded focus:ring-2 focus:ring-accent-primary/50"
                 />
                 <span className="ml-4 text-base sm:text-lg text-text-primary">Diabetes</span>
               </label>
@@ -444,7 +416,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                       name="diabetes_tipo"
                       checked={condicoesSaude.diabetes === 'tipo1'}
                       onChange={() => setCondicoesSaude(prev => ({ ...prev, diabetes: 'tipo1' }))}
-                      className="w-4 h-4 text-neon-purple"
+                      className="w-4 h-4 text-accent-primary"
                     />
                     <span className="ml-2 text-sm sm:text-base text-text-secondary">Tipo 1</span>
                   </label>
@@ -454,7 +426,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                       name="diabetes_tipo"
                       checked={condicoesSaude.diabetes === 'tipo2'}
                       onChange={() => setCondicoesSaude(prev => ({ ...prev, diabetes: 'tipo2' }))}
-                      className="w-4 h-4 text-neon-purple"
+                      className="w-4 h-4 text-accent-primary"
                     />
                     <span className="ml-2 text-sm sm:text-base text-text-secondary">Tipo 2</span>
                   </label>
@@ -472,52 +444,25 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
             ].map(({ key, label }) => (
               <label
                 key={key}
-                className="flex items-center p-4 sm:p-5 bg-dark-card rounded-lg cursor-pointer hover:bg-dark-card/80 transition-colors touch-manipulation"
+                className="flex items-center p-4 sm:p-5 bg-bg-secondary rounded-lg cursor-pointer hover:bg-bg-secondary/80 transition-colors touch-manipulation"
               >
                 <input
                   type="checkbox"
                   checked={condicoesSaude[key as keyof typeof condicoesSaude] as boolean || false}
                   onChange={() => toggleCondicaoSaude(key as keyof typeof condicoesSaude)}
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border rounded focus:ring-2 focus:ring-lilac/50"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-accent-primary bg-bg-secondary border-accent-secondary/30 rounded focus:ring-2 focus:ring-accent-primary/50"
                 />
                 <span className="ml-4 text-base sm:text-lg text-text-primary">{label}</span>
               </label>
             ))}
 
-            <div className="mt-6">
-              <label className="block text-base sm:text-lg font-semibold text-text-primary mb-4">
-                Problemas gastrointestinais
-              </label>
-              <p className="text-sm sm:text-base text-text-secondary mb-4">
-                Selecione todas as condições que se aplicam a você. Você pode selecionar múltiplas opções.
-              </p>
-              <div className="space-y-3 sm:space-y-4">
-                {condicoesGI.map(({ key, label }) => {
-                  const estaSelecionada = condicoesSaude.problemas_gastrointestinais?.includes(key) || false
-                  return (
-                    <label
-                      key={key}
-                      className="flex items-center p-4 sm:p-5 bg-dark-card rounded-lg cursor-pointer hover:bg-dark-card/80 transition-colors touch-manipulation"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={estaSelecionada}
-                        onChange={() => toggleCondicaoGI(key)}
-                        className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border rounded focus:ring-2 focus:ring-lilac/50"
-                      />
-                      <span className="ml-4 text-base sm:text-lg text-text-primary">{label}</span>
-                    </label>
-                  )
-                })}
-              </div>
-            </div>
           </div>
         </div>
       )}
 
       {/* PASSO 4: Preferências */}
       {passoAtual === 4 && (
-        <div className="bg-dark-secondary rounded-xl p-6 sm:p-8 lg:p-12">
+        <div className="bg-bg-secondary rounded-xl p-6 sm:p-8 lg:p-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-2">
             Preferências e Aversões
           </h2>
@@ -542,7 +487,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                 <button
                   type="button"
                   onClick={adicionarAlimentoNaoGosta}
-                  className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac text-white rounded-lg font-semibold hover:from-lilac hover:to-neon-purple transition-all touch-manipulation"
+                  className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-accent-primary to-accent-primary/80 text-white rounded-lg font-semibold hover:from-accent-primary/90 hover:to-accent-primary transition-all touch-manipulation"
                 >
                   Adicionar
                 </button>
@@ -557,7 +502,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                     <button
                       type="button"
                       onClick={() => removerAlimentoNaoGosta(index)}
-                      className="ml-2 text-neon-pink hover:text-neon-pink/80"
+                      className="ml-2 text-accent-primary hover:text-accent-primary/80"
                     >
                       ×
                     </button>
@@ -582,7 +527,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                 <button
                   type="button"
                   onClick={adicionarAlimentoPreferido}
-                  className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-neon-purple to-lilac text-white rounded-lg font-semibold hover:from-lilac hover:to-neon-purple transition-all touch-manipulation"
+                  className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-accent-primary to-accent-primary/80 text-white rounded-lg font-semibold hover:from-accent-primary/90 hover:to-accent-primary transition-all touch-manipulation"
                 >
                   Adicionar
                 </button>
@@ -597,7 +542,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                     <button
                       type="button"
                       onClick={() => removerAlimentoPreferido(index)}
-                      className="ml-2 text-neon-pink hover:text-neon-pink/80"
+                      className="ml-2 text-accent-primary hover:text-accent-primary/80"
                     >
                       ×
                     </button>
@@ -622,7 +567,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                       value={num}
                       checked={preferencias.frequencia_refeicoes === num}
                       onChange={() => setPreferencias(prev => ({ ...prev, frequencia_refeicoes: num as 3 | 4 | 5 | 6 }))}
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border focus:ring-2 focus:ring-lilac/50"
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-accent-primary bg-bg-secondary border-accent-secondary/30 focus:ring-2 focus:ring-accent-primary/50"
                     />
                     <span className="ml-2 text-base sm:text-lg text-text-primary">{num} refeições</span>
                   </label>
@@ -642,7 +587,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                 ].map(({ value, label }) => (
                   <label
                     key={value}
-                    className="flex items-center p-4 sm:p-5 bg-dark-card rounded-lg cursor-pointer hover:bg-dark-card/80 transition-colors touch-manipulation"
+                    className="flex items-center p-4 sm:p-5 bg-bg-secondary rounded-lg cursor-pointer hover:bg-bg-secondary/80 transition-colors touch-manipulation"
                   >
                     <input
                       type="radio"
@@ -650,7 +595,7 @@ export default function FormularioRestricoes({ onCompleto, dadosIniciais }: Form
                       value={value}
                       checked={preferencias.preferencia_preparo === value}
                       onChange={() => setPreferencias(prev => ({ ...prev, preferencia_preparo: value as 'rapido' | 'elaborado' | 'indiferente' }))}
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-neon-purple bg-dark-secondary border-dark-border focus:ring-2 focus:ring-lilac/50"
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-accent-primary bg-bg-secondary border-accent-secondary/30 focus:ring-2 focus:ring-accent-primary/50"
                     />
                     <span className="ml-4 text-base sm:text-lg text-text-primary">{label}</span>
                   </label>

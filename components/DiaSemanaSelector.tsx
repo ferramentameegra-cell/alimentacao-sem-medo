@@ -31,24 +31,20 @@ export default function DiaSemanaSelector({ selectedDay, onSelectDay }: DiaSeman
           <button
             key={dia.numero}
             onClick={() => onSelectDay(dia.numero)}
-            className={`flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 rounded-xl border transition-all duration-300 touch-manipulation snap-center min-w-[100px] sm:min-w-[120px] ${
-              isSelected
-                ? 'border-neon-purple/60 bg-gradient-to-br from-dark-card to-dark-tertiary shadow-neon-purple scale-105'
-                : 'border-dark-border bg-dark-card active:border-lilac/40 active:scale-102'
-            } ${isToday && !isSelected ? 'border-neon-cyan/40' : ''}`}
+            className={`flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 rounded-xl border transition-all duration-300 touch-manipulation snap-center min-w-[100px] sm:min-w-[120px] card-hover ${isSelected ? 'scale-105' : ''}`}
             style={{
-              boxShadow: isSelected 
-                ? '0 8px 32px rgba(199, 125, 255, 0.3), 0 0 0 1px rgba(199, 125, 255, 0.2)'
-                : isToday
-                ? '0 4px 16px rgba(0, 240, 255, 0.2)'
-                : '0 4px 16px rgba(0, 0, 0, 0.3)'
+              background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+              border: `1px solid ${isSelected ? 'rgba(110, 143, 61, 0.4)' : 'rgba(110, 143, 61, 0.25)'}`,
+              boxShadow: isSelected
+                ? '0 0 0 1px rgba(110, 143, 61, 0.4), 0 0 25px rgba(110, 143, 61, 0.25), 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+                : '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
             }}
           >
             <div className="text-center">
-              <div className={`text-xs sm:text-sm font-semibold mb-1 ${isToday ? 'text-neon-cyan' : 'text-text-secondary'}`}>
+              <div className={`text-xs sm:text-sm font-semibold mb-1 ${isToday ? 'text-accent-primary' : 'text-text-secondary/90'}`}>
                 {isToday ? 'Hoje' : dia.abreviacao}
               </div>
-              <div className={`text-base sm:text-lg font-bold ${isSelected ? 'text-neon-purple' : 'text-text-primary'}`}>
+              <div className={`text-base sm:text-lg font-bold ${isSelected ? 'text-accent-primary' : 'text-text-primary'}`} style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.05)' }}>
                 {dia.nome}
               </div>
             </div>
