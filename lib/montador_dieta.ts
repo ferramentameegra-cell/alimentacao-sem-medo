@@ -25,6 +25,9 @@ export interface DadosUsuario {
   }
   condicao_digestiva: 'azia' | 'refluxo' | 'ambos'
   objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso' | 'equilibrar_microbiota' | 'melhorar_funcionamento'
+
+  /** Condição digestiva em texto livre, quando não está nas opções pré-definidas */
+  condicao_digestiva_custom?: string
   
   // Restrições alimentares (intolerâncias e alergias)
   restricoes?: {
