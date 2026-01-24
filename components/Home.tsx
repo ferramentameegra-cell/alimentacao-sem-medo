@@ -443,7 +443,7 @@ export default function Home() {
                   setCardapioVisualizar(cardapioSemana.id)
                 }
               }}
-              className={`flex-shrink-0 w-64 sm:w-72 lg:w-80 h-48 sm:h-52 lg:h-56 rounded-xl border p-4 sm:p-6 lg:p-8 cursor-pointer transition-all duration-300 touch-manipulation snap-center ${
+              className={`flex-shrink-0 w-64 sm:w-72 lg:w-80 h-48 sm:h-52 lg:h-56 rounded-xl border cursor-pointer transition-all duration-300 touch-manipulation snap-center flex flex-col overflow-hidden ${
                 selectedWeek === week
                   ? 'border-neon-purple/60 bg-gradient-to-br from-dark-card to-dark-tertiary shadow-neon-purple scale-105'
                   : 'border-dark-border bg-dark-card hover:border-lilac/40 active:scale-102'
@@ -454,10 +454,12 @@ export default function Home() {
                   : '0 4px 16px rgba(0, 0, 0, 0.3)'
               }}
             >
-              <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-2 lg:mb-3 tracking-tight">
-                Semana {week}
-              </h3>
-              <div className="relative w-full h-32 sm:h-36 lg:h-40 rounded-lg overflow-hidden">
+              <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-2 sm:pb-3 lg:pb-4" style={{ height: '40%', display: 'flex', alignItems: 'center' }}>
+                <h3 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">
+                  Semana {week}
+                </h3>
+              </div>
+              <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: '60%' }}>
                 <Image
                   src={`/imagens/${week}.png`}
                   alt={`Semana ${week}`}
