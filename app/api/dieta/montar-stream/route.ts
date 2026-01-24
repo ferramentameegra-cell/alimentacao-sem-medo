@@ -88,15 +88,17 @@ export async function POST(request: NextRequest) {
           return
         }
 
+        const custom = (dadosUsuario.condicao_digestiva_custom ?? '').trim()
         const temCondicao = !!dadosUsuario.condicao_digestiva ||
           (Array.isArray(dadosUsuario.condicoes_saude?.problemas_gastrointestinais) &&
-            dadosUsuario.condicoes_saude.problemas_gastrointestinais.length > 0)
+            dadosUsuario.condicoes_saude.problemas_gastrointestinais.length > 0) ||
+          custom.length > 0
         if (!temCondicao) {
-          sendProgress(0, 'Erro: Selecione pelo menos uma condição digestiva')
+          sendProgress(0, 'Erro: Selecione pelo menos uma condição digestiva ou descreva sua condição')
           controller.close()
           return
         }
-        if (!dadosUsuario.condicao_digestiva && dadosUsuario.condicoes_saude?.problemas_gastrointestinais?.length) {
+        if (!dadosUsuario.condicao_digestiva && (dadosUsuario.condicoes_saude?.problemas_gastrointestinais?.length || custom.length)) {
           dadosUsuario.condicao_digestiva = 'azia'
         }
 

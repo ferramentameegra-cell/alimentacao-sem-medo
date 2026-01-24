@@ -142,6 +142,8 @@ interface DadosFormulario {
   sexo: 'M' | 'F' | null
   rotina: 'sedentaria' | 'levemente_ativa' | 'moderadamente_ativa' | 'ativa' | null
   problemas_gastrointestinais: ProblemaGI[]
+  nenhuma_das_opcoes_acima: boolean
+  condicao_digestiva_custom: string
   objetivo: 'conforto' | 'manutencao' | 'leve_perda_peso' | 'equilibrar_microbiota' | 'melhorar_funcionamento' | null
   dias_cardapio: 1 | 7 | null
 }
@@ -156,6 +158,8 @@ export default function MontarCardapio() {
     sexo: null,
     rotina: null,
     problemas_gastrointestinais: [],
+    nenhuma_das_opcoes_acima: false,
+    condicao_digestiva_custom: '',
     objetivo: null,
     dias_cardapio: null,
   })
@@ -207,7 +211,7 @@ export default function MontarCardapio() {
           console.error('Erro ao verificar sessão:', error)
         }
 
-        // Se tem plano e dados pendentes, gerar automaticamente
+        // Se tem plano e dados pendentes, gerar automaticamente (sem voltar ao questionário)
         if (temPlano) {
           const dadosAPI = JSON.parse(dadosPendentes)
           const gi = Array.isArray(dadosAPI.problemas_gastrointestinais)
@@ -222,15 +226,17 @@ export default function MontarCardapio() {
             sexo: dadosAPI.sexo,
             rotina: dadosAPI.rotina,
             problemas_gastrointestinais: gi,
+            nenhuma_das_opcoes_acima: !!dadosAPI.nenhuma_das_opcoes_acima,
+            condicao_digestiva_custom: dadosAPI.condicao_digestiva_custom ?? '',
             objetivo: dadosAPI.objetivo,
             dias_cardapio: dadosAPI.dias_cardapio,
           })
 
-          // Ir direto para a geração
-          setPassoAtual(totalPassos + 1) // Passo após o último (geração)
+          setPassoAtual(totalPassos + 1)
           setVerificandoDadosPendentes(false)
-          
-          // Disparar geração automaticamente
+          setCarregando(true)
+          setTemPlano(true)
+
           await gerarCardapioComDados(dadosAPI, sessionId)
         } else {
           const dadosAPI = JSON.parse(dadosPendentes)
@@ -244,6 +250,8 @@ export default function MontarCardapio() {
             sexo: dadosAPI.sexo,
             rotina: dadosAPI.rotina,
             problemas_gastrointestinais: gi,
+            nenhuma_das_opcoes_acima: !!dadosAPI.nenhuma_das_opcoes_acima,
+            condicao_digestiva_custom: dadosAPI.condicao_digestiva_custom ?? '',
             objetivo: dadosAPI.objetivo,
             dias_cardapio: dadosAPI.dias_cardapio,
           })
@@ -267,6 +275,43 @@ export default function MontarCardapio() {
     }
   }
 
+  // Se já logado: selecionar plano e ir para /montar-cardapio (gera automático). Senão: criar-conta.
+  const handleAssinarPlano = async (plano: 1 | 2) => {
+    const sessionId = localStorage.getItem('sessionId')
+    const userEmail = localStorage.getItem('userEmail')
+
+    if (!sessionId) {
+      router.push(`/criar-conta?plano=${plano}`)
+      return
+    }
+
+    try {
+      const sessionRes = await fetch('/api/auth/session', {
+        headers: { 'X-Session-Id': sessionId, 'X-User-Email': userEmail || '' },
+      })
+      if (!sessionRes.ok) {
+        router.push(`/criar-conta?plano=${plano}`)
+        return
+      }
+
+      const selRes = await fetch('/api/planos/selecionar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Id': sessionId },
+        body: JSON.stringify({ plano }),
+      })
+      if (!selRes.ok) {
+        alert('Erro ao selecionar plano. Tente novamente.')
+        return
+      }
+
+      // Dados pendentes já estão no localStorage; /montar-cardapio vai gerar automaticamente
+      router.push('/montar-cardapio')
+    } catch (e) {
+      console.error('Erro ao assinar plano:', e)
+      alert('Erro ao assinar plano. Tente novamente.')
+    }
+  }
+
   const passoAnterior = () => {
     if (passoAtual > 1) {
       setPassoAtual(passoAtual - 1)
@@ -287,6 +332,7 @@ export default function MontarCardapio() {
       const gi = Array.isArray(dadosAPI.problemas_gastrointestinais)
         ? dadosAPI.problemas_gastrointestinais
         : dadosAPI.condicao_digestiva ? ['azia_refluxo'] : []
+      const custom = (dadosAPI.condicao_digestiva_custom ?? '').trim()
       const dadosFormatados = {
         idade: dadosAPI.idade,
         peso: dadosAPI.peso,
@@ -304,6 +350,7 @@ export default function MontarCardapio() {
         condicao_digestiva: gi.length ? 'azia' : (dadosAPI.condicao_digestiva || 'azia'),
         objetivo: dadosAPI.objetivo,
         condicoes_saude: { problemas_gastrointestinais: gi },
+        ...(custom && { condicao_digestiva_custom: custom }),
       }
 
       // Verificar e reautenticar se necessário
@@ -456,8 +503,10 @@ export default function MontarCardapio() {
       setErro('Por favor, preencha todos os campos antes de gerar o cardápio.')
       return
     }
-    if (!dados.problemas_gastrointestinais?.length) {
-      setErro('Selecione pelo menos uma condição digestiva.')
+    const temGi = (dados.problemas_gastrointestinais?.length ?? 0) > 0
+    const temCustom = (dados.condicao_digestiva_custom?.trim() ?? '').length > 0
+    if (!temGi && !temCustom) {
+      setErro('Selecione pelo menos uma condição digestiva ou descreva sua condição no campo abaixo.')
       return
     }
 
@@ -528,6 +577,8 @@ export default function MontarCardapio() {
         sexo: dados.sexo,
         rotina: dados.rotina,
         problemas_gastrointestinais: dados.problemas_gastrointestinais,
+        nenhuma_das_opcoes_acima: dados.nenhuma_das_opcoes_acima,
+        condicao_digestiva_custom: dados.condicao_digestiva_custom,
         objetivo: dados.objetivo,
         dias_cardapio: dados.dias_cardapio,
       }))
@@ -566,6 +617,9 @@ export default function MontarCardapio() {
           ...(restricoes?.condicoes_saude || {}),
           problemas_gastrointestinais: dados.problemas_gastrointestinais,
         },
+        ...(dados.condicao_digestiva_custom?.trim() && {
+          condicao_digestiva_custom: dados.condicao_digestiva_custom.trim(),
+        }),
         ...(restricoes && {
           restricoes: restricoes.restricoes,
           tipo_alimentacao: restricoes.tipo_alimentacao,
@@ -991,7 +1045,11 @@ export default function MontarCardapio() {
                       const next = selecionada
                         ? atuais.filter((k) => k !== opcao.key)
                         : [...atuais, opcao.key]
-                      setDados({ ...dados, problemas_gastrointestinais: next })
+                      setDados({
+                        ...dados,
+                        problemas_gastrointestinais: next,
+                        nenhuma_das_opcoes_acima: false,
+                      })
                     }}
                     className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation flex items-center gap-3 ${
                       selecionada
@@ -1017,6 +1075,54 @@ export default function MontarCardapio() {
                   </button>
                 )
               })}
+              <button
+                type="button"
+                onClick={() => {
+                  const nenhuma = !dados.nenhuma_das_opcoes_acima
+                  setDados({
+                    ...dados,
+                    nenhuma_das_opcoes_acima: nenhuma,
+                    problemas_gastrointestinais: nenhuma ? [] : (dados.problemas_gastrointestinais ?? []),
+                  })
+                }}
+                className={`w-full p-4 sm:p-5 rounded-xl border transition-all duration-300 text-left touch-manipulation flex items-center gap-3 ${
+                  dados.nenhuma_das_opcoes_acima
+                    ? 'border-accent-primary/60 bg-bg-secondary'
+                    : 'border-accent-secondary/30 bg-bg-secondary hover:border-accent-primary/40'
+                }`}
+                style={dados.nenhuma_das_opcoes_acima ? {
+                  boxShadow: '0 4px 20px rgba(110, 143, 61, 0.3)'
+                } : {
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                <span
+                  className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center text-sm ${
+                    dados.nenhuma_das_opcoes_acima
+                      ? 'bg-accent-primary border-accent-primary text-white'
+                      : 'border-accent-secondary/50'
+                  }`}
+                >
+                  {dados.nenhuma_das_opcoes_acima ? '✓' : ''}
+                </span>
+                <span className="text-base sm:text-lg lg:text-xl font-medium text-text-primary">
+                  Nenhuma das opções acima
+                </span>
+              </button>
+            </div>
+            <div className="pt-4 mt-6 border-t border-accent-secondary/20">
+              <label htmlFor="condicao-custom" className="block text-base sm:text-lg font-medium text-text-primary mb-3">
+                Ou descreva sua condição (se não estiver nas opções acima)
+              </label>
+              <input
+                id="condicao-custom"
+                type="text"
+                value={dados.condicao_digestiva_custom}
+                onChange={(e) => setDados({ ...dados, condicao_digestiva_custom: e.target.value })}
+                placeholder="Ex.: intolerância à lactose, alergia ao glúten..."
+                className="w-full px-4 py-3 sm:px-5 sm:py-4 bg-bg-secondary border border-accent-secondary/30 rounded-xl text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all"
+                style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)' }}
+              />
             </div>
           </div>
         )
@@ -1119,7 +1225,11 @@ export default function MontarCardapio() {
       case 3: return dados.altura !== null && dados.altura! > 0
       case 4: return dados.sexo !== null
       case 5: return dados.rotina !== null
-      case 6: return (dados.problemas_gastrointestinais?.length ?? 0) > 0
+      case 6:
+        return (
+          (dados.problemas_gastrointestinais?.length ?? 0) > 0 ||
+          (dados.condicao_digestiva_custom?.trim() ?? '').length > 0
+        )
       case 7: return dados.objetivo !== null
       case 8: return dados.dias_cardapio !== null
       default: return false
@@ -1145,30 +1255,32 @@ export default function MontarCardapio() {
       
       {/* Espaçamento para a barra de progresso quando estiver visível */}
       {carregando && <div className="h-24" />}
-      {/* Header */}
-      <div className="mb-8 lg:mb-12 text-center">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 lg:mb-6 tracking-tight">
-          Montar meu Cardápio
-        </h1>
-        <div className="flex items-center justify-center gap-2 sm:gap-3 mt-6 lg:mt-8 mb-4 lg:mb-5">
-          {Array.from({ length: totalPassos }).map((_, i) => (
-            <div
-              key={i}
-              className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
-                i + 1 <= passoAtual
-                  ? 'bg-accent-primary w-8 sm:w-12'
-                  : 'bg-accent-secondary/30 w-2 sm:w-2.5'
-              }`}
-              style={i + 1 <= passoAtual ? {
-                boxShadow: '0 0 12px rgba(199, 125, 255, 0.5)'
-              } : {}}
-            />
-          ))}
+      {/* Header - ocultar durante auto-geração (após escolher plano estando logado) */}
+      {!(carregando && passoAtual > totalPassos) && (
+        <div className="mb-8 lg:mb-12 text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 lg:mb-6 tracking-tight">
+            Montar meu Cardápio
+          </h1>
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mt-6 lg:mt-8 mb-4 lg:mb-5">
+            {Array.from({ length: totalPassos }).map((_, i) => (
+              <div
+                key={i}
+                className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
+                  i + 1 <= passoAtual
+                    ? 'bg-accent-primary w-8 sm:w-12'
+                    : 'bg-accent-secondary/30 w-2 sm:w-2.5'
+                }`}
+                style={i + 1 <= passoAtual ? {
+                  boxShadow: '0 0 12px rgba(199, 125, 255, 0.5)'
+                } : {}}
+              />
+            ))}
+          </div>
+          <p className="text-base sm:text-lg text-text-secondary font-light">
+            Passo {passoAtual} de {totalPassos}
+          </p>
         </div>
-        <p className="text-base sm:text-lg text-text-secondary font-light">
-          Passo {passoAtual} de {totalPassos}
-        </p>
-      </div>
+      )}
 
       {/* Mensagem de erro - apenas para erros que não sejam de sessão */}
       {erro && !erro.includes('Sessão') && !erro.includes('sessão') && (
@@ -1264,9 +1376,7 @@ export default function MontarCardapio() {
               </ul>
 
               <button
-                onClick={() => {
-                  router.push('/criar-conta?plano=1')
-                }}
+                onClick={() => handleAssinarPlano(1)}
                 className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-bg-secondary border-2 border-accent-primary/40 hover:border-accent-primary/60 text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation"
               >
                 Assinar Plano Inteligente
@@ -1331,9 +1441,7 @@ export default function MontarCardapio() {
               </ul>
 
               <button
-                onClick={() => {
-                  router.push('/criar-conta?plano=2')
-                }}
+                onClick={() => handleAssinarPlano(2)}
                 className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl touch-manipulation"
                 style={{
                   boxShadow: '0 6px 24px rgba(255, 107, 157, 0.4)'
@@ -1423,7 +1531,7 @@ export default function MontarCardapio() {
             />
           </div>
         </div>
-      ) : !mostrarPlanos && !mostrarFormularioRestricoes && (
+      ) : !mostrarPlanos && !mostrarFormularioRestricoes && !(carregando && passoAtual > totalPassos) && (
         <>
           {/* Pergunta */}
           <div className="bg-bg-secondary border border-accent-secondary/30 rounded-xl p-6 sm:p-8 lg:p-12 mb-6 lg:mb-10 transition-all duration-300"
