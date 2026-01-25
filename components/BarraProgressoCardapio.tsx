@@ -3,17 +3,19 @@
 import { useEffect, useState } from 'react'
 
 interface BarraProgressoCardapioProps {
-  progresso: number // 0-100
+  progresso: number
   etapa: string
   mostrar: boolean
   onCompleto?: () => void
+  resumoEvolucao?: string | null
 }
 
 export default function BarraProgressoCardapio({ 
   progresso, 
   etapa, 
   mostrar,
-  onCompleto 
+  onCompleto,
+  resumoEvolucao,
 }: BarraProgressoCardapioProps) {
   const [mostrarConfetes, setMostrarConfetes] = useState(false)
   const [cardapioPronto, setCardapioPronto] = useState(false)
@@ -85,7 +87,6 @@ export default function BarraProgressoCardapio({
                 </span>
               </div>
               
-              {/* Barra de progresso */}
               <div className="w-full h-2.5 bg-bg-secondary rounded-full overflow-hidden border border-accent-secondary/30">
                 <div 
                   className="h-full bg-gradient-to-r from-accent-primary to-accent-primary/80 transition-all duration-500 ease-out relative overflow-hidden"
@@ -97,6 +98,11 @@ export default function BarraProgressoCardapio({
                   )}
                 </div>
               </div>
+              {cardapioPronto && resumoEvolucao && (
+                <p className="mt-3 text-sm text-text-secondary/90 leading-relaxed">
+                  {resumoEvolucao}
+                </p>
+              )}
             </div>
           </div>
         </div>

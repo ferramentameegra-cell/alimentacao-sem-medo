@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import GenioLampada from './GenioLampada'
 import MetaAgua from './MetaAgua'
+import BarraEvolucao from './BarraEvolucao'
 import { DadosUsuarioAgua } from '@/lib/calculadora_agua'
 
 export default function Sidebar() {
@@ -417,6 +418,11 @@ export default function Sidebar() {
             <p className="text-xs lg:text-sm text-text-secondary/90 font-light">Ver todos os meses</p>
           </div>
         </div>
+      </div>
+
+      {/* Barra de Evolução do Usuário - sempre visível */}
+      <div className="mb-6 lg:mb-8">
+        <BarraEvolucao />
       </div>
 
       {/* Tempo de constância */}

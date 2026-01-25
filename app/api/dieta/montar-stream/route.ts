@@ -71,17 +71,15 @@ export async function POST(request: NextRequest) {
         sendProgress(10, 'Analisando suas necessidades nutricionais...')
         await new Promise(resolve => setTimeout(resolve, 500)) // 0.5 segundos
 
-        // Ler dados do body
-        let dadosUsuario: DadosUsuario = await request.json()
-        
-        // Carregar restrições do perfil se disponíveis (já vêm no body se foram preenchidas)
-        // Se não vieram no body, tentar carregar do perfil salvo
+        const body = await request.json() as Record<string, unknown>
+        const contextoEvolucao = body.contexto_evolucao as { acao?: 'atualizar' | 'evoluir'; fase?: string; percentual?: number } | undefined
+        const { contexto_evolucao: _ctx, ...rest } = body
+        let dadosUsuario = rest as unknown as DadosUsuario
+
         if (!dadosUsuario.restricoes && conta) {
           // Em produção, carregar do banco de dados
-          // Por enquanto, as restrições já devem vir no body do request
         }
 
-        // Validar dados
         if (!dadosUsuario.peso || !dadosUsuario.altura || !dadosUsuario.idade) {
           sendProgress(0, 'Erro: Dados incompletos')
           controller.close()
@@ -164,11 +162,19 @@ export async function POST(request: NextRequest) {
         sendProgress(98, 'Finalizando detalhes do seu cardápio...')
         await new Promise(resolve => setTimeout(resolve, 200)) // 0.2 segundos
 
+        let resumoEvolucao: string | undefined
+        if (contextoEvolucao?.acao) {
+          resumoEvolucao = contextoEvolucao.acao === 'atualizar'
+            ? 'Ajustamos seu cardápio reduzindo alimentos fermentativos e priorizando refeições mais leves.'
+            : 'Evoluímos seu cardápio para o próximo nível, com maior variedade e progressão adequada.'
+        }
+
         sendProgress(100, 'Cardápio pronto!', {
           cardapioId: cardapioSalvo.id,
           plano,
           planoFormatado,
           dadosUsuario,
+          ...(resumoEvolucao && { resumoEvolucao }),
         })
 
         // Aguardar um pouco antes de fechar para mostrar mensagem de sucesso

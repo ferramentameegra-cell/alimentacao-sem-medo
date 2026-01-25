@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import BarraProgressoCardapio from './BarraProgressoCardapio'
 import FormularioRestricoes, { RestricoesCompletas } from './FormularioRestricoes'
+import { obterContextoEvolucaoParaAPI, marcarCardapioAtualizado } from '@/lib/evolucao_usuario'
 
 // Componente de Login inline
 function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
@@ -150,6 +151,7 @@ interface DadosFormulario {
 
 export default function MontarCardapio() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [passoAtual, setPassoAtual] = useState(1)
   const [dados, setDados] = useState<DadosFormulario>({
     idade: null,
@@ -174,21 +176,79 @@ export default function MontarCardapio() {
   const [temPlano, setTemPlano] = useState(false)
   const [restricoes, setRestricoes] = useState<RestricoesCompletas | null>(null)
   const [mostrarFormularioRestricoes, setMostrarFormularioRestricoes] = useState(false)
+  const [resumoEvolucao, setResumoEvolucao] = useState<string | null>(null)
 
   const totalPassos = 8
 
-  // Verificar se há dados pendentes e gerar automaticamente se tiver plano
+  // Verificar evolucao (?evolucao=atualizar|evoluir) ou dados pendentes + plano
   useEffect(() => {
     const verificarEDispararGeracao = async () => {
+      const evolucao = searchParams.get('evolucao')
+      const sessionId = localStorage.getItem('sessionId')
+      const userEmail = localStorage.getItem('userEmail')
+
+      const verificarSessaoPlano = async (): Promise<boolean> => {
+        if (!sessionId && !userEmail) return false
+        try {
+          const res = await fetch('/api/auth/session', {
+            headers: { 'X-Session-Id': sessionId || '', 'X-User-Email': userEmail || '' },
+          })
+          if (!res.ok) return false
+          const data = await res.json()
+          return !!(data.conta && data.conta.plano)
+        } catch {
+          return false
+        }
+      }
+
       try {
+        if (evolucao === 'atualizar' || evolucao === 'evoluir') {
+          const temPlano = await verificarSessaoPlano()
+          if (!temPlano || !sessionId) {
+            setVerificandoDadosPendentes(false)
+            return
+          }
+          const listRes = await fetch('/api/cardapios', {
+            headers: { 'X-Session-Id': sessionId, 'X-User-Email': userEmail || '' },
+          })
+          if (!listRes.ok) {
+            setVerificandoDadosPendentes(false)
+            return
+          }
+          const { cardapios } = await listRes.json()
+          if (!cardapios?.length) {
+            setVerificandoDadosPendentes(false)
+            return
+          }
+          const ultimo = cardapios.sort((a: any, b: any) =>
+            new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
+          )[0]
+          const cardRes = await fetch(`/api/cardapios/${ultimo.id}`, {
+            headers: { 'X-Session-Id': sessionId, 'X-User-Email': userEmail || '' },
+          })
+          if (!cardRes.ok) {
+            setVerificandoDadosPendentes(false)
+            return
+          }
+          const { cardapio } = await cardRes.json()
+          const du = cardapio?.dadosUsuario
+          if (!du?.idade || !du?.peso || !du?.altura) {
+            setVerificandoDadosPendentes(false)
+            return
+          }
+          setPassoAtual(totalPassos + 1)
+          setVerificandoDadosPendentes(false)
+          setCarregando(true)
+          setTemPlano(true)
+          await gerarCardapioComDados(du, sessionId, { evolucao: true })
+          return
+        }
+
         const dadosPendentes = localStorage.getItem('dadosCardapioPendente')
         if (!dadosPendentes) {
           setVerificandoDadosPendentes(false)
           return
         }
-
-        // Verificar se tem plano
-        const sessionId = localStorage.getItem('sessionId')
         if (!sessionId) {
           setVerificandoDadosPendentes(false)
           return
@@ -202,7 +262,6 @@ export default function MontarCardapio() {
               'X-User-Email': localStorage.getItem('userEmail') || '',
             },
           })
-          
           if (sessionResponse.ok) {
             const sessionData = await sessionResponse.json()
             temPlano = sessionData.conta && sessionData.conta.plano
@@ -211,14 +270,11 @@ export default function MontarCardapio() {
           console.error('Erro ao verificar sessão:', error)
         }
 
-        // Se tem plano e dados pendentes, gerar automaticamente (sem voltar ao questionário)
         if (temPlano) {
           const dadosAPI = JSON.parse(dadosPendentes)
           const gi = Array.isArray(dadosAPI.problemas_gastrointestinais)
             ? dadosAPI.problemas_gastrointestinais
-            : dadosAPI.condicao_digestiva
-              ? ['azia_refluxo' as const]
-              : []
+            : dadosAPI.condicao_digestiva ? ['azia_refluxo' as const] : []
           setDados({
             idade: dadosAPI.idade,
             peso: dadosAPI.peso,
@@ -231,12 +287,10 @@ export default function MontarCardapio() {
             objetivo: dadosAPI.objetivo,
             dias_cardapio: dadosAPI.dias_cardapio,
           })
-
           setPassoAtual(totalPassos + 1)
           setVerificandoDadosPendentes(false)
           setCarregando(true)
           setTemPlano(true)
-
           await gerarCardapioComDados(dadosAPI, sessionId)
         } else {
           const dadosAPI = JSON.parse(dadosPendentes)
@@ -264,7 +318,7 @@ export default function MontarCardapio() {
     }
 
     verificarEDispararGeracao()
-  }, [])
+  }, [searchParams])
 
   const proximoPasso = () => {
     if (passoAtual < totalPassos) {
@@ -318,22 +372,27 @@ export default function MontarCardapio() {
     }
   }
 
-  // Função para gerar cardápio com dados específicos (usada quando volta de /planos)
-  const gerarCardapioComDados = async (dadosAPI: any, sessionId: string) => {
+  // Função para gerar cardápio com dados específicos (usada quando volta de /planos ou evolução)
+  const gerarCardapioComDados = async (
+    dadosAPI: any,
+    sessionId: string,
+    opts?: { evolucao?: boolean }
+  ) => {
     setErro('')
     setCarregando(true)
     setProgresso(0)
     setEtapaAtual('Analisando suas necessidades...')
 
     try {
-      // Limpar dados pendentes
-      localStorage.removeItem('dadosCardapioPendente')
+      if (!opts?.evolucao) {
+        localStorage.removeItem('dadosCardapioPendente')
+      }
 
       const gi = Array.isArray(dadosAPI.problemas_gastrointestinais)
         ? dadosAPI.problemas_gastrointestinais
-        : dadosAPI.condicao_digestiva ? ['azia_refluxo'] : []
+        : dadosAPI.condicoes_saude?.problemas_gastrointestinais ?? (dadosAPI.condicao_digestiva ? ['azia_refluxo'] : [])
       const custom = (dadosAPI.condicao_digestiva_custom ?? '').trim()
-      const dadosFormatados = {
+      const dadosFormatados: Record<string, unknown> = {
         idade: dadosAPI.idade,
         peso: dadosAPI.peso,
         altura: dadosAPI.altura,
@@ -351,6 +410,12 @@ export default function MontarCardapio() {
         objetivo: dadosAPI.objetivo,
         condicoes_saude: { problemas_gastrointestinais: gi },
         ...(custom && { condicao_digestiva_custom: custom }),
+      }
+      if (opts?.evolucao) {
+        const ctx = obterContextoEvolucaoParaAPI()
+        if (ctx) {
+          dadosFormatados.contexto_evolucao = ctx
+        }
       }
 
       // Verificar e reautenticar se necessário
@@ -389,7 +454,6 @@ export default function MontarCardapio() {
         }
       }
 
-      // Chamar API com streaming
       const response = await fetch('/api/dieta/montar-stream', {
         method: 'POST',
         headers: { 
@@ -445,6 +509,7 @@ export default function MontarCardapio() {
               
               if (data.dados && data.dados.cardapioId) {
                 cardapioGerado = data.dados
+                if (data.dados.resumoEvolucao) setResumoEvolucao(data.dados.resumoEvolucao)
               }
             } catch (e) {
               console.error('Erro ao processar dados do stream:', e)
@@ -456,11 +521,10 @@ export default function MontarCardapio() {
       if (cardapioGerado) {
         setProgresso(100)
         setCardapioPronto(true)
+        if (opts?.evolucao) marcarCardapioAtualizado()
         
-        // Verificar se tem plano
         const sessionId = localStorage.getItem('sessionId')
         let temPlanoVerificado = false
-        
         if (sessionId) {
           try {
             const sessionResponse = await fetch('/api/auth/session', {
@@ -474,15 +538,12 @@ export default function MontarCardapio() {
             console.error('Erro ao verificar sessão:', error)
           }
         }
-        
-        // Se não tem plano, mostrar mensagem de parabéns e planos
         if (!temPlanoVerificado) {
           setEtapaAtual('Parabéns, seu cardápio personalizado foi criado!')
           setCarregando(false)
           setMostrarPlanos(true)
         } else {
           setEtapaAtual('Cardápio pronto!')
-          // Redirecionar será feito pelo BarraProgressoCardapio
         }
       } else {
         throw new Error('Cardápio não foi gerado corretamente')
@@ -818,9 +879,9 @@ export default function MontarCardapio() {
                 console.log('✅ Novo sessionId recebido:', data.dados.newSessionId)
               }
 
-              // Se cardápio foi gerado, salvar dados
               if (data.dados && data.dados.cardapioId) {
                 cardapioGerado = data.dados
+                if (data.dados.resumoEvolucao) setResumoEvolucao(data.dados.resumoEvolucao)
               }
             } catch (e) {
               console.error('Erro ao processar dados do stream:', e)
@@ -829,7 +890,6 @@ export default function MontarCardapio() {
         }
       }
 
-      // Se chegou aqui, cardápio foi gerado com sucesso
       if (cardapioGerado) {
         console.log('Cardápio gerado com sucesso:', cardapioGerado)
         setProgresso(100)
@@ -1244,8 +1304,8 @@ export default function MontarCardapio() {
           progresso={progresso}
           etapa={etapaAtual}
           mostrar={carregando}
+          resumoEvolucao={resumoEvolucao}
           onCompleto={() => {
-            // Quando cardápio estiver pronto e tem plano, redirecionar para home
             if (temPlano) {
               router.push('/')
             }
