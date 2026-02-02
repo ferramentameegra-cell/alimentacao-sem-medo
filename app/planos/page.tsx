@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import IntestineBackground from '@/components/IntestineBackground'
+import { STRIPE_PLANO_INTELIGENTE, STRIPE_PLANO_ACOMPANHADO } from '@/lib/stripe'
 
 export default function PlanosPage() {
   const router = useRouter()
@@ -214,9 +215,9 @@ export default function PlanosPage() {
               </ul>
 
               {planoAtual === 1 ? (
-                <button
-                  onClick={handleUpgrade}
-                  className="w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
+                <a
+                  href={STRIPE_PLANO_ACOMPANHADO}
+                  className="block w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px text-center"
                   style={{
                     background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
                     color: '#E9EFEA',
@@ -224,18 +225,11 @@ export default function PlanosPage() {
                   }}
                 >
                   Fazer Upgrade para Plano Acompanhado
-                </button>
+                </a>
               ) : (
-                <button
-                  onClick={() => {
-                    const sessionId = localStorage.getItem('sessionId')
-                    if (!sessionId) {
-                      router.push('/criar-conta?plano=1')
-                    } else {
-                      handleSelecionarPlano(1)
-                    }
-                  }}
-                  className="w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
+                <a
+                  href={STRIPE_PLANO_INTELIGENTE}
+                  className="block w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px text-center"
                   style={{
                     background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
                     color: '#E9EFEA',
@@ -244,7 +238,7 @@ export default function PlanosPage() {
                   }}
                 >
                   Assinar Plano Inteligente
-                </button>
+                </a>
               )}
             </div>
 
@@ -307,26 +301,30 @@ export default function PlanosPage() {
                 </li>
               </ul>
 
-              <button
-                onClick={() => {
-                  if (planoAtual === 2) return
-                  const sessionId = localStorage.getItem('sessionId')
-                  if (!sessionId) {
-                    router.push('/criar-conta?plano=2')
-                  } else {
-                    handleSelecionarPlano(2)
-                  }
-                }}
-                disabled={planoAtual === 2}
-                className="w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)] disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
-                  color: '#E9EFEA',
-                  boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
-                }}
-              >
-                {planoAtual === 2 ? 'Plano Ativo' : 'Assinar Plano Acompanhado'}
-              </button>
+              {planoAtual === 2 ? (
+                <div
+                  className="w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold text-center opacity-50 cursor-not-allowed"
+                  style={{
+                    background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                    color: '#E9EFEA',
+                    boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
+                  }}
+                >
+                  Plano Ativo
+                </div>
+              ) : (
+                <a
+                  href={STRIPE_PLANO_ACOMPANHADO}
+                  className="block w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px text-center"
+                  style={{
+                    background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                    color: '#E9EFEA',
+                    boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
+                  }}
+                >
+                  Assinar Plano Acompanhado
+                </a>
+              )}
             </div>
           </div>
 

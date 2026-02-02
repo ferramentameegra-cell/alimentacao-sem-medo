@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import BarraProgressoCardapio from './BarraProgressoCardapio'
 import FormularioRestricoes, { RestricoesCompletas } from './FormularioRestricoes'
 import { obterContextoEvolucaoParaAPI, marcarCardapioAtualizado } from '@/lib/evolucao_usuario'
+import { STRIPE_PLANO_INTELIGENTE, STRIPE_PLANO_ACOMPANHADO } from '@/lib/stripe'
 
 // Componente de Login inline
 function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
@@ -1435,12 +1436,12 @@ export default function MontarCardapio() {
                 </li>
               </ul>
 
-              <button
-                onClick={() => handleAssinarPlano(1)}
-                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-bg-secondary border-2 border-accent-primary/40 hover:border-accent-primary/60 text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation"
+              <a
+                href={STRIPE_PLANO_INTELIGENTE}
+                className="block w-full py-4 sm:py-5 px-4 sm:px-6 bg-bg-secondary border-2 border-accent-primary/40 hover:border-accent-primary/60 text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 touch-manipulation text-center"
               >
                 Assinar Plano Inteligente
-              </button>
+              </a>
             </div>
 
             {/* PLANO 2 - Acompanhado (Premium) */}
@@ -1500,15 +1501,15 @@ export default function MontarCardapio() {
                 </li>
               </ul>
 
-              <button
-                onClick={() => handleAssinarPlano(2)}
-                className="w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl touch-manipulation"
+              <a
+                href={STRIPE_PLANO_ACOMPANHADO}
+                className="block w-full py-4 sm:py-5 px-4 sm:px-6 bg-gradient-to-r from-accent-primary to-accent-primary/80 hover:from-accent-primary/90 hover:to-accent-primary text-white rounded-xl text-lg sm:text-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl touch-manipulation text-center"
                 style={{
                   boxShadow: '0 6px 24px rgba(255, 107, 157, 0.4)'
                 }}
               >
                 Assinar Plano Acompanhado
-              </button>
+              </a>
             </div>
           </div>
 
