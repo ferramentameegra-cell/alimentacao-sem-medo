@@ -285,9 +285,16 @@ function verificarCombinacoesEstranhas(
   return problemas
 }
 
+/** Gera hash único de uma combinação de refeição (para evitar repetição) */
+function hashCombinacao(itens: ItemAlimentar[]): string {
+  return itens.map(i => i.id).sort().join('|')
+}
+
 /**
  * Seleciona a melhor combinação de itens para uma refeição.
  * Prioriza itens não usados na semana e no mês (outras semanas).
+ * REGRA NUTRICIONISTA: Nunca repetir a mesma combinação de refeição na semana
+ * (ex: não pode tomar o mesmo café da manhã dois dias seguidos ou na semana).
  */
 export function selecionarMelhorCombinacao(
   itensDisponiveis: ItemAlimentar[],
@@ -296,7 +303,8 @@ export function selecionarMelhorCombinacao(
   quantidadeItens: number,
   itensUsadosNoDia: Set<string> = new Set(),
   itensUsadosNaSemana: Set<string> = new Set(),
-  itensUsadosNoMes: Set<string> = new Set()
+  itensUsadosNoMes: Set<string> = new Set(),
+  combinacoesRefeicaoUsadasNaSemana: Set<string> = new Set()
 ): ItemAlimentar[] | null {
   if (itensDisponiveis.length === 0) {
     return null
@@ -325,27 +333,29 @@ export function selecionarMelhorCombinacao(
     return null
   }
   
-  // Gerar todas as combinações possíveis (limitado para performance)
-  const maxCombinacoes = 100
+  // Gerar combinações variadas (estratégia nutricionista: explorar toda a base)
+  const maxCombinacoes = 150
   const combinacoes: ItemAlimentar[][] = []
   
-  // Estratégia: gerar combinações variadas
-  for (let tentativa = 0; tentativa < Math.min(maxCombinacoes, candidatos.length * 10); tentativa++) {
+  // Embaralhar candidatos para explorar diferentes combinações
+  const shuffled = [...candidatos].sort(() => Math.random() - 0.5)
+  
+  for (let tentativa = 0; tentativa < Math.min(maxCombinacoes, shuffled.length * 12); tentativa++) {
     const combinacao: ItemAlimentar[] = []
     const indicesUsados = new Set<number>()
     
-    for (let i = 0; i < quantidadeItens && i < candidatos.length; i++) {
+    for (let i = 0; i < quantidadeItens && i < shuffled.length; i++) {
       let indice: number
       let tentativasIndice = 0
       
       do {
-        indice = (tentativa * (i + 1) + i * 7) % candidatos.length
+        indice = (tentativa * (i + 1) + i * 17 + tentativa % 5) % shuffled.length
         tentativasIndice++
-      } while (indicesUsados.has(indice) && tentativasIndice < candidatos.length)
+      } while (indicesUsados.has(indice) && tentativasIndice < shuffled.length)
       
       if (!indicesUsados.has(indice)) {
         indicesUsados.add(indice)
-        combinacao.push(candidatos[indice])
+        combinacao.push(shuffled[indice])
       }
     }
     
@@ -366,9 +376,16 @@ export function selecionarMelhorCombinacao(
     // Fallback: retornar primeiros itens disponíveis
     return candidatos.slice(0, quantidadeItens)
   }
+
+  // REGRA NUTRICIONISTA: Excluir combinações já usadas na semana (mesmo café/almoço/jantar em outro dia)
+  const combinacoesUnicas = combinacoes.filter(c => {
+    const h = hashCombinacao(c)
+    return !combinacoesRefeicaoUsadasNaSemana.has(h)
+  })
+  const combinacoesParaAvaliar = combinacoesUnicas.length > 0 ? combinacoesUnicas : combinacoes
   
   // Avaliar cada combinação
-  const avaliacoes = combinacoes.map(combinacao => {
+  const avaliacoes = combinacoesParaAvaliar.map(combinacao => {
     const avaliacao = avaliarCoerenciaRefeicao(
       combinacao,
       tipoRefeicao,

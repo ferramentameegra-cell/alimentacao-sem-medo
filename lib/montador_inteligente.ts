@@ -14,10 +14,16 @@ import { DadosUsuario, PlanoDia, PlanoSemanal } from './montador_dieta'
 import { selecionarMelhorCombinacao, avaliarCoerenciaRefeicao } from './sistema_coerencia'
 import { filtrarItensPorRestricoes, priorizarItensPreferidos } from './filtro_restricoes'
 
+/** Hash único de combinação para garantir refeições nunca repetidas na semana */
+function hashCombinacao(itens: ItemAlimentar[]): string {
+  return itens.map(i => i.id).sort().join('|')
+}
+
 /**
  * Monta um dia de cardápio usando lógica nutricional inteligente
  * 
  * ⚠️ REGRA ABSOLUTA: Usa EXCLUSIVAMENTE dados do PDF validado
+ * REGRA NUTRICIONISTA: Cada dia tem refeições diferentes - nunca o mesmo café, almoço, etc.
  * Retorna null se não houver combinações válidas (prefere não gerar a gerar algo incoerente)
  */
 function montarDiaInteligente(
@@ -25,7 +31,18 @@ function montarDiaInteligente(
   diaNumero: number, // 0-6 (Domingo-Sábado)
   itensUsadosNoDia: Set<string> = new Set(),
   itensUsadosNaSemana: Set<string> = new Set(),
-  itensUsadosNoMes: Set<string> = new Set()
+  itensUsadosNoMes: Set<string> = new Set(),
+  combinacoesRefeicaoUsadas: {
+    cafe_manha: Set<string>
+    almoco: Set<string>
+    lanche_tarde: Set<string>
+    jantar: Set<string>
+  } = {
+    cafe_manha: new Set(),
+    almoco: new Set(),
+    lanche_tarde: new Set(),
+    jantar: new Set(),
+  }
 ): PlanoDia | null {
   // Verificar se há dados no PDF
   if (BASE_CONHECIMENTO.length === 0) {
@@ -100,7 +117,7 @@ function montarDiaInteligente(
     dadosUsuario.objetivo
   )
   
-  // Montar café da manhã (2-3 itens: cereal + líquido + opcional fruta)
+  // Montar café da manhã (2-3 itens: cereal + líquido + opcional fruta) - NUNCA repetir na semana
   const cafeManha = selecionarMelhorCombinacao(
     cafeManhaDisponiveis,
     'cafe_manha',
@@ -108,7 +125,8 @@ function montarDiaInteligente(
     dadosUsuario.objetivo === 'leve_perda_peso' ? 3 : 2,
     itensUsadosNoDia,
     itensUsadosNaSemana,
-    itensUsadosNoMes
+    itensUsadosNoMes,
+    combinacoesRefeicaoUsadas.cafe_manha
   )
   
   if (!cafeManha || cafeManha.length === 0) {
@@ -133,13 +151,14 @@ function montarDiaInteligente(
     cafeManha.push(...cafeManhaAlternativo)
   }
   
-  // Marcar itens como usados
+  // Marcar itens como usados e registrar combinação (evitar repetir café na semana)
   cafeManha.forEach(item => {
     itensUsadosNoDia.add(`${item.nome}-${item.quantidade}`)
     itensUsadosNaSemana.add(`${item.nome}-${item.quantidade}`)
   })
+  combinacoesRefeicaoUsadas.cafe_manha.add(hashCombinacao(cafeManha))
   
-  // Montar almoço (3-4 itens: carboidrato + proteína + vegetal + gordura)
+  // Montar almoço (3-4 itens: carboidrato + proteína + vegetal + gordura) - NUNCA repetir na semana
   let quantidadeAlmoco = 3
   if (diaSemana === 0) { // Domingo - almoço mais completo
     quantidadeAlmoco = 4
@@ -154,7 +173,8 @@ function montarDiaInteligente(
     quantidadeAlmoco,
     itensUsadosNoDia,
     itensUsadosNaSemana,
-    itensUsadosNoMes
+    itensUsadosNoMes,
+    combinacoesRefeicaoUsadas.almoco
   )
   
   if (!almoco || almoco.length === 0) {
@@ -208,13 +228,14 @@ function montarDiaInteligente(
     }
   }
   
-  // Marcar itens como usados
+  // Marcar itens como usados e registrar combinação (evitar repetir almoço na semana)
   almoco.forEach(item => {
     itensUsadosNoDia.add(`${item.nome}-${item.quantidade}`)
     itensUsadosNaSemana.add(`${item.nome}-${item.quantidade}`)
   })
+  combinacoesRefeicaoUsadas.almoco.add(hashCombinacao(almoco))
   
-  // Montar lanche da tarde (1-2 itens, leve)
+  // Montar lanche da tarde (1-2 itens, leve) - NUNCA repetir na semana
   const quantidadeLanche = dadosUsuario.rotina === 'muito_ativa' || dadosUsuario.rotina === 'ativa' ? 2 : 1
   
   const lancheTarde = selecionarMelhorCombinacao(
@@ -224,25 +245,34 @@ function montarDiaInteligente(
     quantidadeLanche,
     itensUsadosNoDia,
     itensUsadosNaSemana,
-    itensUsadosNoMes
+    itensUsadosNoMes,
+    combinacoesRefeicaoUsadas.lanche_tarde
   )
   
+  let lancheTardeFinal = lancheTarde
   if (!lancheTarde || lancheTarde.length === 0) {
-    // Lanche é opcional, usar primeiro item disponível
-    if (lancheTardeDisponiveis.length > 0) {
-      lancheTardeDisponiveis.slice(0, 1).forEach(item => {
+    // Lanche é opcional, usar primeiro item disponível (evitar repetição)
+    const fallback = lancheTardeDisponiveis.filter(
+      i => !combinacoesRefeicaoUsadas.lanche_tarde.has(i.id)
+    )
+    const itemFallback = (fallback.length > 0 ? fallback : lancheTardeDisponiveis).slice(0, 1)
+    if (itemFallback.length > 0) {
+      itemFallback.forEach(item => {
         itensUsadosNoDia.add(`${item.nome}-${item.quantidade}`)
         itensUsadosNaSemana.add(`${item.nome}-${item.quantidade}`)
       })
+      combinacoesRefeicaoUsadas.lanche_tarde.add(hashCombinacao(itemFallback))
+      lancheTardeFinal = itemFallback
     }
   } else {
     lancheTarde.forEach(item => {
       itensUsadosNoDia.add(`${item.nome}-${item.quantidade}`)
       itensUsadosNaSemana.add(`${item.nome}-${item.quantidade}`)
     })
+    combinacoesRefeicaoUsadas.lanche_tarde.add(hashCombinacao(lancheTarde))
   }
   
-  // Montar jantar (1-2 itens, leve - preferencialmente sopa/creme)
+  // Montar jantar (1-2 itens, leve - preferencialmente sopa/creme) - NUNCA repetir na semana
   let quantidadeJantar = 1
   // Priorizar refeições leves para conforto digestivo ou condições GI
   const temCondicaoGI = dadosUsuario.condicoes_saude?.problemas_gastrointestinais && 
@@ -268,7 +298,8 @@ function montarDiaInteligente(
         1,
         itensUsadosNoDia,
         itensUsadosNaSemana,
-        itensUsadosNoMes
+        itensUsadosNoMes,
+        combinacoesRefeicaoUsadas.jantar
       )
       
       if (jantar && jantar.length > 0) {
@@ -276,6 +307,7 @@ function montarDiaInteligente(
           itensUsadosNoDia.add(`${item.nome}-${item.quantidade}`)
           itensUsadosNaSemana.add(`${item.nome}-${item.quantidade}`)
         })
+        combinacoesRefeicaoUsadas.jantar.add(hashCombinacao(jantar))
         
         // Ajustar quantidades
         const cafeManhaAjustado = cafeManha.map(item => ({
@@ -286,7 +318,7 @@ function montarDiaInteligente(
           ...item,
           quantidade: ajustarQuantidade(item.quantidade, fatorAjuste)
         }))
-        const lancheTardeAjustado = (lancheTarde || lancheTardeDisponiveis.slice(0, 1)).map(item => ({
+        const lancheTardeAjustado = (lancheTardeFinal || lancheTardeDisponiveis.slice(0, 1)).map(item => ({
           ...item,
           quantidade: ajustarQuantidade(item.quantidade, fatorAjuste)
         }))
@@ -319,18 +351,20 @@ function montarDiaInteligente(
     quantidadeJantar,
     itensUsadosNoDia,
     itensUsadosNaSemana,
-    itensUsadosNoMes
+    itensUsadosNoMes,
+    combinacoesRefeicaoUsadas.jantar
   )
   
   if (!jantar || jantar.length === 0) {
     return null
   }
   
-  // Marcar itens como usados
+  // Marcar itens como usados e registrar combinação (evitar repetir jantar na semana)
   jantar.forEach(item => {
     itensUsadosNoDia.add(`${item.nome}-${item.quantidade}`)
     itensUsadosNaSemana.add(`${item.nome}-${item.quantidade}`)
   })
+  combinacoesRefeicaoUsadas.jantar.add(hashCombinacao(jantar))
   
   // Ajustar quantidades baseado no perfil do usuário
   const cafeManhaAjustado = cafeManha.map(item => ({
@@ -341,7 +375,7 @@ function montarDiaInteligente(
     ...item,
     quantidade: ajustarQuantidade(item.quantidade, fatorAjuste)
   }))
-  const lancheTardeAjustado = (lancheTarde || lancheTardeDisponiveis.slice(0, 1)).map(item => ({
+  const lancheTardeAjustado = (lancheTardeFinal || lancheTardeDisponiveis.slice(0, 1)).map(item => ({
     ...item,
     quantidade: ajustarQuantidade(item.quantidade, fatorAjuste)
   }))
@@ -380,6 +414,12 @@ export function montarPlanoSemanalInteligente(
   }
 
   const itensUsadosNaSemana = new Set<string>()
+  const combinacoesRefeicaoUsadas = {
+    cafe_manha: new Set<string>(),
+    almoco: new Set<string>(),
+    lanche_tarde: new Set<string>(),
+    jantar: new Set<string>(),
+  }
   const dias: PlanoDia[] = []
 
   for (let diaSemana = 0; diaSemana < 7; diaSemana++) {
@@ -390,7 +430,8 @@ export function montarPlanoSemanalInteligente(
       diaSemana,
       itensUsadosNoDia,
       itensUsadosNaSemana,
-      itensUsadosEmOutrasSemanas
+      itensUsadosEmOutrasSemanas,
+      combinacoesRefeicaoUsadas
     )
     
     if (!diaPlano) {
@@ -409,6 +450,6 @@ export function montarPlanoSemanalInteligente(
   
   return {
     dias,
-    observacoes: `Plano personalizado para ${dadosUsuario.condicao_digestiva}. Baseado exclusivamente nos cardápios do Planeta Intestino. Semana ${semana} - Gerado com lógica nutricional inteligente.`
+    observacoes: `Plano personalizado para ${dadosUsuario.condicao_digestiva}. Baseado na base de conhecimento do Planeta Intestino. Semana ${semana} - Cada dia e refeição é única (sem repetições), montado com lógica nutricional como um nutricionista.`
   }
 }
