@@ -1,18 +1,37 @@
 /**
  * GERADOR DE DICAS DE PREPARO
- * 
- * Gera dicas práticas e simples para preparo dos pratos,
- * mantendo fidelidade total ao PDF e foco em conforto digestivo.
+ *
+ * Gera dicas práticas para preparo dos pratos.
+ * Regra: NÃO gerar dicas para alimentos que não precisam de preparo (ex: frutas in natura).
  */
 
 import { ItemAlimentar } from './base_conhecimento'
 
+/** Alimentos que não precisam de preparo - não exibir dica */
+const ALIMENTOS_SEM_PREPARO = [
+  'banana', 'maçã', 'maça', 'mamão', 'mamao', 'pera', 'melão', 'melao', 'uva', 'laranja',
+  'abacaxi', 'manga', 'morango', 'melancia', 'kiwi', 'goiaba', 'caju', 'mexerica', 'tangerina',
+  'ameixa', 'pêssego', 'pesego', 'cereja', 'framboesa', 'amora', 'blueberry', 'abacate',
+  'figo', 'caqui', 'damasco', 'carambola', 'maracujá', 'maracuja', 'limão', 'limao',
+]
+
+function ehAlimentoSemPreparo(nome: string): boolean {
+  const n = nome.toLowerCase()
+  return ALIMENTOS_SEM_PREPARO.some(palavra => n.includes(palavra))
+}
+
 /**
- * Gera dica de preparo para um item específico
+ * Gera dica de preparo para um item específico.
+ * Retorna string vazia para frutas e alimentos que não precisam de preparo.
  */
 export function gerarDicaPreparo(item: ItemAlimentar, tipoRefeicao: string): string {
   const nomeLower = item.nome.toLowerCase()
-  
+
+  // Não gerar dica para frutas e alimentos que não precisam de preparo
+  if (ehAlimentoSemPreparo(item.nome)) {
+    return ''
+  }
+
   // DICAS PARA CAFÉ DA MANHÃ
   if (tipoRefeicao === 'cafe_manha') {
     if (nomeLower.includes('aveia')) {
@@ -23,9 +42,6 @@ export function gerarDicaPreparo(item: ItemAlimentar, tipoRefeicao: string): str
     }
     if (nomeLower.includes('leite') || nomeLower.includes('iogurte')) {
       return 'Consuma em temperatura ambiente ou levemente morno. Evite muito gelado para melhor digestão.'
-    }
-    if (nomeLower.includes('banana') || nomeLower.includes('mamão') || nomeLower.includes('maçã') || nomeLower.includes('pera')) {
-      return 'Prefira frutas maduras e em temperatura ambiente. Corte em pedaços pequenos para facilitar a digestão.'
     }
     if (nomeLower.includes('manteiga')) {
       return 'Use apenas a quantidade indicada. Evite aquecer demais para não alterar as propriedades.'
@@ -65,9 +81,6 @@ export function gerarDicaPreparo(item: ItemAlimentar, tipoRefeicao: string): str
   
   // DICAS PARA LANCHE DA TARDE
   if (tipoRefeicao === 'lanche_tarde') {
-    if (nomeLower.includes('fruta')) {
-      return 'Prefira frutas maduras e em temperatura ambiente. Corte em pedaços para facilitar a digestão.'
-    }
     if (nomeLower.includes('iogurte')) {
       return 'Consuma em temperatura ambiente. Evite muito gelado.'
     }
@@ -100,31 +113,22 @@ export function gerarDicaPreparo(item: ItemAlimentar, tipoRefeicao: string): str
 }
 
 /**
- * Gera dica de preparo para uma refeição completa
- * Agrupa dicas dos itens principais da refeição
+ * Gera dica de preparo para uma refeição completa.
+ * Só retorna dica se houver itens que precisam de preparo.
+ * Frutas e alimentos prontos não geram dica.
  */
 export function gerarDicaRefeicao(itens: ItemAlimentar[], tipoRefeicao: string): string {
   if (itens.length === 0) {
     return ''
   }
-  
-  // Para refeições com múltiplos itens, focar nos itens principais
-  const itensPrincipais = itens.slice(0, Math.min(2, itens.length))
-  
-  // Se há apenas um item, usar dica específica
-  if (itensPrincipais.length === 1) {
-    return gerarDicaPreparo(itensPrincipais[0], tipoRefeicao)
+
+  const itensPrincipais = itens.slice(0, Math.min(3, itens.length))
+  const dicas = itensPrincipais
+    .map(item => gerarDicaPreparo(item, tipoRefeicao))
+    .filter(d => d.length > 0)
+
+  if (dicas.length === 0) {
+    return ''
   }
-  
-  // Para múltiplos itens, gerar dica combinada
-  const dicas = itensPrincipais.map(item => gerarDicaPreparo(item, tipoRefeicao))
-  
-  // Se todas as dicas são iguais, retornar uma única
-  if (dicas.every(d => d === dicas[0])) {
-    return dicas[0]
-  }
-  
-  // Se há dicas diferentes, combinar de forma prática
-  // Priorizar dica do item principal (primeiro)
   return dicas[0]
 }
