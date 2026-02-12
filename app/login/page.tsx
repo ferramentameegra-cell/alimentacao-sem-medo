@@ -136,7 +136,7 @@ function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-5 py-4 bg-bg-secondary/80 border border-accent-secondary/30 rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
+                className="w-full px-5 py-4 bg-bg-secondary/80 border border-accent-secondary/30 rounded-lg text-base text-black placeholder:text-gray-500 focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
                 placeholder="seu@email.com"
                 style={{
                   boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.03)'
@@ -154,7 +154,7 @@ function LoginForm() {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 required
-                className="w-full px-5 py-4 bg-bg-secondary/80 border border-accent-secondary/30 rounded-lg text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
+                className="w-full px-5 py-4 bg-bg-secondary/80 border border-accent-secondary/30 rounded-lg text-base text-black placeholder:text-gray-500 focus:outline-none focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 transition-all duration-300"
                 placeholder="••••••••"
                 style={{
                   boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.03)'
