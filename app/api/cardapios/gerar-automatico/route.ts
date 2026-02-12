@@ -82,33 +82,17 @@ export async function POST(request: NextRequest) {
         sendProgress(30, 'Buscando seus dados personalizados...')
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        // Buscar dados do usuário do último cardápio gerado ou usar padrões
-        let dadosUsuario: DadosUsuario = {
-          peso: 70,
-          altura: 165,
-          idade: 50,
-          sexo: 'F',
-          rotina: 'sedentaria',
-          horarios: {
-            cafe_manha: '07:00',
-            almoco: '12:30',
-            lanche_tarde: '16:00',
-            jantar: '19:00',
-          },
-          condicao_digestiva: 'azia',
-          objetivo: 'conforto',
+        // SÓ gerar cardápio se o usuário JÁ criou pelo menos um via "Montar meu cardápio" (com dados reais)
+        const cardapioComDadosReais = conta.cardapios?.find(
+          (c: any) => c.dadosUsuario && !c.dadosUsuario.geradoAutomatico
+        )
+        if (!cardapioComDadosReais?.dadosUsuario) {
+          sendProgress(0, 'Erro: Crie seu primeiro cardápio em "Montar meu cardápio" com suas informações (peso, altura, condição digestiva, etc.) antes de gerar novos.')
+          controller.close()
+          return
         }
 
-        // Tentar buscar dados do último cardápio personalizado
-        if (conta.cardapios && conta.cardapios.length > 0) {
-          const ultimoCardapio = conta.cardapios
-            .filter((c: any) => c.dadosUsuario && !c.dadosUsuario.geradoAutomatico)
-            .sort((a: any, b: any) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime())[0]
-          
-          if (ultimoCardapio && ultimoCardapio.dadosUsuario) {
-            dadosUsuario = ultimoCardapio.dadosUsuario as DadosUsuario
-          }
-        }
+        const dadosUsuario = cardapioComDadosReais.dadosUsuario as DadosUsuario
 
         sendProgress(40, 'Montando cardápio da semana...')
         await new Promise(resolve => setTimeout(resolve, 700))

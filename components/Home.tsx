@@ -127,112 +127,7 @@ export default function Home() {
           console.error('Erro ao buscar cardápios:', response.status)
         }
 
-        // Verificar se precisa gerar cardápio automático para hoje
-        const hoje = new Date()
-        const dataBrasilia = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
-        const semanaAtual = Math.ceil(dataBrasilia.getDate() / 7)
-        const mesAtual = dataBrasilia.getMonth() + 1
-        const anoAtual = dataBrasilia.getFullYear()
-
-        // Verificar se já existe cardápio para a semana atual
-        const cardapioSemanaAtual = cardapiosExistentes.find(
-          (c: CardapioSalvo) => c.semana === semanaAtual && c.mes === mesAtual && c.ano === anoAtual
-        )
-
-        // Gerar cardápios para todas as semanas do mês se não existirem
-        for (let semana = 1; semana <= 4; semana++) {
-          const cardapioSemana = cardapiosExistentes.find(
-            (c: CardapioSalvo) => c.semana === semana && c.mes === mesAtual && c.ano === anoAtual
-          )
-
-          if (!cardapioSemana) {
-            // Gerar cardápio automático para esta semana com streaming
-            try {
-              setGerandoCardapio(true)
-              setProgressoGeracao(0)
-              setEtapaGeracao('Iniciando geração...')
-              
-              const gerarResponse = await fetch('/api/cardapios/gerar-automatico', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-Session-Id': sessionId,
-                  'X-User-Email': localStorage.getItem('userEmail') || '',
-                },
-                body: JSON.stringify({ semana }),
-              })
-
-              if (!gerarResponse.ok) {
-                throw new Error('Erro ao iniciar geração')
-              }
-
-              // Ler stream de progresso
-              const reader = gerarResponse.body?.getReader()
-              const decoder = new TextDecoder()
-
-              if (!reader) {
-                throw new Error('Não foi possível ler o stream')
-              }
-
-              let buffer = ''
-              let cardapioGerado = null
-
-              while (true) {
-                const { done, value } = await reader.read()
-                if (done) break
-
-                buffer += decoder.decode(value, { stream: true })
-                const lines = buffer.split('\n')
-                buffer = lines.pop() || ''
-
-                for (const line of lines) {
-                  if (line.startsWith('data: ')) {
-                    try {
-                      const data = JSON.parse(line.slice(6))
-                      
-                      if (data.progresso !== undefined) {
-                        setProgressoGeracao(data.progresso)
-                      }
-                      if (data.etapa) {
-                        setEtapaGeracao(data.etapa)
-                      }
-
-                      if (data.etapa && data.etapa.startsWith('Erro:')) {
-                        throw new Error(data.etapa)
-                      }
-
-                      if (data.dados && data.dados.cardapio) {
-                        cardapioGerado = data.dados.cardapio
-                      }
-                    } catch (e) {
-                      console.error('Erro ao processar stream:', e)
-                    }
-                  }
-                }
-              }
-
-              if (cardapioGerado) {
-                cardapiosExistentes.push({
-                  id: cardapioGerado.id,
-                  planoFormatado: cardapioGerado.planoFormatado,
-                  plano: cardapioGerado.plano,
-                  semana: cardapioGerado.semana,
-                  mes: cardapioGerado.mes,
-                  ano: cardapioGerado.ano,
-                  criadoEm: cardapioGerado.criadoEm,
-                })
-                console.log(`Cardápio automático gerado para semana ${semana}:`, cardapioGerado.id)
-              }
-            } catch (error) {
-              console.error(`Erro ao gerar cardápio automático para semana ${semana}:`, error)
-            } finally {
-              setGerandoCardapio(false)
-              setProgressoGeracao(0)
-              setEtapaGeracao('')
-            }
-          }
-        }
-
+        // NUNCA gerar cardápios automaticamente - só quando usuário clicar em "Montar meu cardápio" com suas informações
         setCardapios(cardapiosExistentes)
         
         // Encontrar cardápio da semana selecionada ou mais recente
@@ -366,6 +261,25 @@ export default function Home() {
 
       {/* Carrossel de semanas - estilo Netflix */}
       <section className="mb-10 lg:mb-16 max-w-full">
+        {cardapios.length === 0 && (
+          <div className="mb-8 p-6 sm:p-8 rounded-xl text-center" style={{
+            background: 'linear-gradient(180deg, rgba(20, 58, 54, 0.8) 0%, rgba(15, 46, 43, 0.8) 100%)',
+            border: '1px solid rgba(110, 143, 61, 0.3)'
+          }}>
+            <p className="text-lg text-text-primary mb-4">Você ainda não tem cardápios. Informe seus dados e clique em &quot;Montar meu cardápio&quot; para criar seu plano personalizado.</p>
+            <button
+              onClick={() => router.push('/montar-cardapio')}
+              className="px-6 py-3 rounded-lg text-base font-bold transition-all hover:-translate-y-px"
+              style={{
+                background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
+                color: '#E9EFEA',
+                boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
+              }}
+            >
+              Montar meu cardápio
+            </button>
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 lg:mb-8 gap-4">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary tracking-tight">
             {(() => {
@@ -398,8 +312,14 @@ export default function Home() {
                   (c: CardapioSalvo) => c.semana === week
                 )
                 
-                // Se não existe, gerar cardápio para esta semana com streaming
+                // Se não existe cardápio para esta semana
                 if (!cardapioSemana) {
+                  // Se usuário nunca criou cardápio (Montar meu cardápio), redirecionar para lá - precisa das informações primeiro
+                  if (cardapios.length === 0) {
+                    router.push('/montar-cardapio')
+                    return
+                  }
+                  // Já tem cardápios com dados reais, pode gerar para esta semana
                   try {
                     const sessionId = localStorage.getItem('sessionId')
                     const userEmail = localStorage.getItem('userEmail')
