@@ -194,20 +194,22 @@ export function getCardapioPorId(cardapioId: string): CardapioSalvo | undefined 
   return undefined
 }
 
-// Inicializar conta de administrador
+// Inicializar contas de administrador
 function inicializarAdmin() {
-  const adminEmail = 'josyasborba@hotmail.com'
-  const adminSenha = '12345678'
-  
-  const contaExistente = getContaPorEmail(adminEmail)
-  if (!contaExistente) {
-    const admin = criarConta(adminEmail, adminSenha, 2) // Plano 2 - Acompanhado (máximo)
-    console.log('✅ Conta de administrador criada:', adminEmail, 'Plano:', admin.plano)
-  } else {
-    // Garantir que sempre tem plano 2 e senha correta
-    contaExistente.plano = 2
-    contaExistente.senha = btoa(adminSenha)
-    console.log('✅ Conta de administrador verificada:', adminEmail, 'Plano:', contaExistente.plano)
+  const admins = [
+    { email: 'josyasborba@hotmail.com', senha: '12345678' },
+    { email: 'dr.lemoss@gmail.com', senha: 'drlemoss' },
+  ]
+  for (const { email, senha } of admins) {
+    const contaExistente = getContaPorEmail(email)
+    if (!contaExistente) {
+      const admin = criarConta(email, senha, 2) // Plano 2 - Acompanhado (máximo)
+      console.log('✅ Conta de administrador criada:', admin.email, 'Plano:', admin.plano)
+    } else {
+      contaExistente.plano = 2
+      contaExistente.senha = btoa(senha)
+      console.log('✅ Conta de administrador verificada:', contaExistente.email, 'Plano:', contaExistente.plano)
+    }
   }
 }
 
