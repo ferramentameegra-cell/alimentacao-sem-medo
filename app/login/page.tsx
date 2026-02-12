@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import IntestineBackground from '@/components/IntestineBackground'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const planoParam = searchParams.get('plano')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
@@ -50,7 +52,26 @@ export default function LoginPage() {
           })
           
           if (verificacao.ok) {
-            // Sessão confirmada, redirecionar
+            // Se veio de seleção de plano, selecionar o plano e redirecionar
+            if (planoParam && (planoParam === '1' || planoParam === '2')) {
+              try {
+                const planoRes = await fetch('/api/planos/selecionar', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Session-Id': sessionSalva,
+                    'X-User-Email': emailSalvo,
+                  },
+                  body: JSON.stringify({ plano: parseInt(planoParam) }),
+                })
+                if (planoRes.ok) {
+                  window.location.href = '/montar-cardapio'
+                  return
+                }
+              } catch {
+                // Se falhar, ir para home
+              }
+            }
             window.location.href = '/'
           } else {
             // Se verificação falhou, tentar novamente
@@ -168,15 +189,41 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-8 text-center">
+            <p className="text-sm text-text-secondary/80 mb-2">Ainda não tem conta?</p>
             <button
-              onClick={() => router.push('/criar-conta')}
+              onClick={() => router.push(planoParam ? `/criar-conta?plano=${planoParam}` : '/criar-conta')}
               className="text-base text-accent-primary hover:text-accent-primary/80 font-medium transition-colors"
             >
-              Criar conta
+              Criar login
             </button>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div
+        className="min-h-screen relative overflow-hidden flex items-center justify-center"
+        style={{
+          background: 'radial-gradient(circle at top center, rgba(110, 143, 61, 0.15), transparent 60%), linear-gradient(160deg, #0F2E2B 0%, #0C2623 40%, #081C1A 100%)'
+        }}
+      >
+        <IntestineBackground />
+        <div className="relative z-10 text-center">
+          <div className="text-xl text-accent-primary mb-4 font-semibold">Carregando...</div>
+          <div className="flex justify-center gap-3">
+            <div className="w-3 h-3 bg-accent-primary rounded-full animate-bounce" style={{ boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)' }} />
+            <div className="w-3 h-3 bg-accent-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s', boxShadow: '0 0 12px rgba(79, 107, 88, 0.4)' }} />
+            <div className="w-3 h-3 bg-accent-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s', boxShadow: '0 0 12px rgba(110, 143, 61, 0.4)' }} />
+          </div>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

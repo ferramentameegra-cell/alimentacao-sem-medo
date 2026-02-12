@@ -467,7 +467,7 @@ export default function Sidebar() {
           </button>
         ) : (
           <button
-            onClick={() => { router.push('/criar-conta'); setSidebarAberta(false) }}
+            onClick={() => { router.push('/login'); setSidebarAberta(false) }}
             className="w-full p-3 lg:p-4 rounded-lg text-sm lg:text-base font-bold transition-all duration-300 touch-manipulation hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
             style={{
               background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
@@ -475,7 +475,7 @@ export default function Sidebar() {
               boxShadow: '0 4px 16px rgba(110, 143, 61, 0.3)'
             }}
           >
-            Criar Conta / Entrar
+            Entrar
           </button>
         )}
       </div>

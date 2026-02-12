@@ -105,7 +105,7 @@ function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
           onClick={() => router.push('/criar-conta')}
           className="text-base text-accent-primary hover:text-accent-primary/80 font-medium transition-colors"
         >
-          Não tem conta? Criar conta
+          Ainda não tem conta? Criar login
         </button>
       </div>
     </form>

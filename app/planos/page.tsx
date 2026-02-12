@@ -80,9 +80,9 @@ export default function PlanosPage() {
     try {
       const sessionId = localStorage.getItem('sessionId')
       
-      // Se não tem sessão, redirecionar para criar conta
+      // Se não tem sessão, redirecionar para login
       if (!sessionId) {
-        router.push(`/criar-conta?plano=${plano}`)
+        router.push(`/login?plano=${plano}`)
         return
       }
 
@@ -94,8 +94,8 @@ export default function PlanosPage() {
       })
 
       if (!sessionResponse.ok) {
-        // Sessão inválida, redirecionar para criar conta
-        router.push(`/criar-conta?plano=${plano}`)
+        // Sessão inválida, redirecionar para login
+        router.push(`/login?plano=${plano}`)
         return
       }
 
