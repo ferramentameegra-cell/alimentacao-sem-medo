@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { montarPlanoSemanal, formatarPlano, DadosUsuario } from '@/lib/montador_dieta'
+import { montarPlanoMensal, formatarPlano, extrairItensUsadosDoPlano, DadosUsuario } from '@/lib/montador_dieta'
 import { getSessao, salvarCardapio, reautenticarPorEmail } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
@@ -121,45 +121,55 @@ export async function POST(request: NextRequest) {
         sendProgress(75, 'Personalizando quantidades baseadas no seu perfil...')
         await new Promise(resolve => setTimeout(resolve, 400)) // 0.4 segundos
         
-        // Calcular semana, mês e ano atual
         const agora = new Date()
         const dataBrasilia = new Date(agora.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
         const mesAtual = dataBrasilia.getMonth() + 1
         const anoAtual = dataBrasilia.getFullYear()
-        
-        // Calcular semana do mês (1-4)
-        const primeiroDiaMes = new Date(anoAtual, mesAtual - 1, 1)
-        const diasDesdeInicioMes = Math.floor((dataBrasilia.getTime() - primeiroDiaMes.getTime()) / (1000 * 60 * 60 * 24))
-        const semanaAtual = Math.floor(diasDesdeInicioMes / 7) + 1
-        const semana = Math.min(semanaAtual, 4) // Máximo 4 semanas
 
-        // Montar plano semanal (processamento real) com rastreamento de variações
-        const plano = montarPlanoSemanal(dadosUsuario, semana, mesAtual, anoAtual)
+        // Coletar itens usados em meses anteriores (evita repetição no próximo mês)
+        const itensUsadosEmMesesAnteriores = new Set<string>()
+        const cardapiosAnteriores = (conta.cardapios || []).filter(
+          (c: { mes?: number; ano?: number; plano?: { dias?: any[] } }) =>
+            c.plano?.dias &&
+            (c.ano! < anoAtual || (c.ano === anoAtual && (c.mes ?? 0) < mesAtual))
+        )
+        for (const c of cardapiosAnteriores) {
+          extrairItensUsadosDoPlano(c.plano).forEach((k) =>
+            itensUsadosEmMesesAnteriores.add(k)
+          )
+        }
 
-        sendProgress(85, 'Formatando cardápio completo...')
-        await new Promise(resolve => setTimeout(resolve, 300)) // 0.3 segundos
-
-        // Formatar para exibição
-        const planoFormatado = formatarPlano(plano)
-
-        sendProgress(95, 'Salvando seu cardápio personalizado...')
-        await new Promise(resolve => setTimeout(resolve, 300)) // 0.3 segundos
-
-        // Determinar número de dias
-        const dias = plano.dias.length
-
-        // Salvar cardápio na conta
-        const cardapioSalvo = salvarCardapio(conta.id, {
+        // Montar plano MENSAL: 4 semanas distintas, sem repetição entre semanas nem entre meses
+        const planos = montarPlanoMensal(
           dadosUsuario,
-          plano,
-          planoFormatado,
-          dias,
-          semana,
-          mes: mesAtual,
-          ano: anoAtual,
-        })
+          mesAtual,
+          anoAtual,
+          itensUsadosEmMesesAnteriores
+        )
+        const cardapiosSalvos: { id: string; semana: number }[] = []
 
-        sendProgress(98, 'Finalizando detalhes do seu cardápio...')
+        for (let s = 0; s < planos.length; s++) {
+          const semana = s + 1
+          sendProgress(76 + Math.floor((s / 4) * 20), `Montando semana ${semana} de 4...`)
+          await new Promise(resolve => setTimeout(resolve, 100))
+
+          const plano = planos[s]
+          const planoFormatado = formatarPlano(plano)
+          const dias = plano.dias.length
+
+          const cardapioSalvo = salvarCardapio(conta.id, {
+            dadosUsuario,
+            plano,
+            planoFormatado,
+            dias,
+            semana,
+            mes: mesAtual,
+            ano: anoAtual,
+          })
+          cardapiosSalvos.push({ id: cardapioSalvo.id, semana })
+        }
+
+        sendProgress(98, 'Finalizando detalhes dos cardápios...')
         await new Promise(resolve => setTimeout(resolve, 200)) // 0.2 segundos
 
         let resumoEvolucao: string | undefined
@@ -169,10 +179,12 @@ export async function POST(request: NextRequest) {
             : 'Evoluímos seu cardápio para o próximo nível, com maior variedade e progressão adequada.'
         }
 
-        sendProgress(100, 'Cardápio pronto!', {
-          cardapioId: cardapioSalvo.id,
-          plano,
-          planoFormatado,
+        // Retorna o primeiro cardápio (semana 1) para compatibilidade; a Home carrega todos via /api/cardapios
+        sendProgress(100, '4 cardápios prontos!', {
+          cardapioId: cardapiosSalvos[0]?.id,
+          cardapiosIds: cardapiosSalvos.map(c => c.id),
+          plano: planos[0],
+          planoFormatado: formatarPlano(planos[0]),
           dadosUsuario,
           ...(resumoEvolucao && { resumoEvolucao }),
         })

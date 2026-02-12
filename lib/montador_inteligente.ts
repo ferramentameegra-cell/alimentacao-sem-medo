@@ -24,7 +24,8 @@ function montarDiaInteligente(
   dadosUsuario: DadosUsuario,
   diaNumero: number, // 0-6 (Domingo-Sábado)
   itensUsadosNoDia: Set<string> = new Set(),
-  itensUsadosNaSemana: Set<string> = new Set()
+  itensUsadosNaSemana: Set<string> = new Set(),
+  itensUsadosNoMes: Set<string> = new Set()
 ): PlanoDia | null {
   // Verificar se há dados no PDF
   if (BASE_CONHECIMENTO.length === 0) {
@@ -106,7 +107,8 @@ function montarDiaInteligente(
     dadosUsuario,
     dadosUsuario.objetivo === 'leve_perda_peso' ? 3 : 2,
     itensUsadosNoDia,
-    itensUsadosNaSemana
+    itensUsadosNaSemana,
+    itensUsadosNoMes
   )
   
   if (!cafeManha || cafeManha.length === 0) {
@@ -151,7 +153,8 @@ function montarDiaInteligente(
     dadosUsuario,
     quantidadeAlmoco,
     itensUsadosNoDia,
-    itensUsadosNaSemana
+    itensUsadosNaSemana,
+    itensUsadosNoMes
   )
   
   if (!almoco || almoco.length === 0) {
@@ -220,7 +223,8 @@ function montarDiaInteligente(
     dadosUsuario,
     quantidadeLanche,
     itensUsadosNoDia,
-    itensUsadosNaSemana
+    itensUsadosNaSemana,
+    itensUsadosNoMes
   )
   
   if (!lancheTarde || lancheTarde.length === 0) {
@@ -263,7 +267,8 @@ function montarDiaInteligente(
         dadosUsuario,
         1,
         itensUsadosNoDia,
-        itensUsadosNaSemana
+        itensUsadosNaSemana,
+        itensUsadosNoMes
       )
       
       if (jantar && jantar.length > 0) {
@@ -313,7 +318,8 @@ function montarDiaInteligente(
     dadosUsuario,
     quantidadeJantar,
     itensUsadosNoDia,
-    itensUsadosNaSemana
+    itensUsadosNaSemana,
+    itensUsadosNoMes
   )
   
   if (!jantar || jantar.length === 0) {
@@ -359,31 +365,32 @@ function montarDiaInteligente(
 }
 
 /**
- * Monta um plano semanal usando lógica nutricional inteligente
+ * Monta um plano semanal usando lógica nutricional inteligente.
+ * @param itensUsadosEmOutrasSemanas Itens já usados em semanas anteriores do mês (evita repetição)
  */
 export function montarPlanoSemanalInteligente(
   dadosUsuario: DadosUsuario,
   semana: number = 1,
   mes?: number,
-  ano?: number
+  ano?: number,
+  itensUsadosEmOutrasSemanas: Set<string> = new Set()
 ): PlanoSemanal | null {
-  // Verificar se há dados no PDF
   if (BASE_CONHECIMENTO.length === 0) {
     return null
   }
-  
+
   const itensUsadosNaSemana = new Set<string>()
   const dias: PlanoDia[] = []
-  
-  // Gerar cada dia da semana (0 = Domingo, 1 = Segunda, ..., 6 = Sábado)
+
   for (let diaSemana = 0; diaSemana < 7; diaSemana++) {
     const itensUsadosNoDia = new Set<string>()
-    
+
     const diaPlano = montarDiaInteligente(
       dadosUsuario,
       diaSemana,
       itensUsadosNoDia,
-      itensUsadosNaSemana
+      itensUsadosNaSemana,
+      itensUsadosEmOutrasSemanas
     )
     
     if (!diaPlano) {

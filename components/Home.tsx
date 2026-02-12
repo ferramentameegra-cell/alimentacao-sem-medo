@@ -25,6 +25,16 @@ interface CardapioSalvo {
 export default function Home() {
   const router = useRouter()
   const [selectedWeek, setSelectedWeek] = useState(1)
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const hoje = new Date()
+    const dataBrasilia = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+    return dataBrasilia.getMonth() + 1
+  })
+  const [selectedYear, setSelectedYear] = useState(() => {
+    const hoje = new Date()
+    const dataBrasilia = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+    return dataBrasilia.getFullYear()
+  })
   const [selectedDay, setSelectedDay] = useState(() => {
     // Inicializar com o dia atual em Brasília
     const hoje = new Date()
@@ -257,11 +267,16 @@ export default function Home() {
     }
   }, [selectedWeek])
 
-  // Atualizar cardápio quando semana mudar
+  // Cardápios filtrados pelo mês/ano selecionado
+  const cardapiosFiltrados = cardapios.filter(
+    (c) => c.mes === selectedMonth && c.ano === selectedYear
+  )
+
+  // Atualizar cardápio quando semana ou mês mudar
   useEffect(() => {
-    const cardapioSemana = cardapios.find(c => c.semana === selectedWeek)
-    setCardapioAtual(cardapioSemana || cardapios[0] || null)
-  }, [selectedWeek, cardapios])
+    const cardapioSemana = cardapiosFiltrados.find((c) => c.semana === selectedWeek)
+    setCardapioAtual(cardapioSemana || cardapiosFiltrados[0] || null)
+  }, [selectedWeek, selectedMonth, selectedYear, cardapiosFiltrados])
 
   return (
     <div className="min-h-screen px-3 sm:px-4 md:px-6 lg:px-12 py-4 sm:py-6 md:py-8 lg:py-14 max-w-full overflow-x-hidden w-full relative"
@@ -301,13 +316,64 @@ export default function Home() {
         />
       </div>
 
+      {/* Seletor de meses */}
+      <section className="mb-6 lg:mb-8 max-w-full">
+        <h2 className="text-lg sm:text-xl font-semibold text-text-primary mb-4 tracking-tight">
+          Escolha o mês
+        </h2>
+        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-2 px-2">
+          {(() => {
+            const hoje = new Date()
+            const dataBr = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+            const mesAtual = dataBr.getMonth() + 1
+            const anoAtual = dataBr.getFullYear()
+            const meses: { mes: number; ano: number }[] = []
+            for (let i = 0; i < 12; i++) {
+              const d = new Date(anoAtual, mesAtual - 1 - i, 1)
+              meses.push({ mes: d.getMonth() + 1, ano: d.getFullYear() })
+            }
+            const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+            return meses.map(({ mes, ano }) => {
+              const ativo = mes === selectedMonth && ano === selectedYear
+              const temCardapio = cardapios.some((c) => c.mes === mes && c.ano === ano)
+              return (
+                <button
+                  key={`${ano}-${mes}`}
+                  onClick={() => {
+                    setSelectedMonth(mes)
+                    setSelectedYear(ano)
+                    setSelectedWeek(1)
+                  }}
+                  className={`flex-shrink-0 px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-semibold transition-all duration-300 ${
+                    ativo ? 'text-bg-primary' : 'text-text-primary'
+                  }`}
+                  style={{
+                    background: ativo
+                      ? 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)'
+                      : 'rgba(20, 58, 54, 0.6)',
+                    border: `1px solid ${ativo ? 'rgba(110, 143, 61, 0.5)' : 'rgba(110, 143, 61, 0.25)'}`,
+                    boxShadow: ativo ? '0 4px 16px rgba(110, 143, 61, 0.3)' : '0 2px 8px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  {nomesMeses[mes - 1]} {ano}
+                  {temCardapio && <span className="ml-1 opacity-80">✓</span>}
+                </button>
+              )
+            })
+          })()}
+        </div>
+      </section>
+
       {/* Carrossel de semanas - estilo Netflix */}
       <section className="mb-10 lg:mb-16 max-w-full">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 lg:mb-8 gap-4">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary tracking-tight">
-            Seu cardápio deste mês
+            {(() => {
+              const nomes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+              return `Seu cardápio - ${nomes[selectedMonth - 1]} ${selectedYear}`
+            })()}
           </h2>
-          {cardapios.length > 0 && (
+          {cardapiosFiltrados.length > 0 && (
             <button
               onClick={() => setMostrarListaCompras(true)}
               className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold transition-all duration-300 flex items-center gap-2 touch-manipulation whitespace-nowrap hover:-translate-y-px hover:shadow-[0_8px_25px_rgba(110,143,61,0.4)]"
@@ -328,14 +394,8 @@ export default function Home() {
               onClick={async () => {
                 setSelectedWeek(week)
                 
-                // Verificar se existe cardápio para esta semana
-                const hoje = new Date()
-                const dataBrasilia = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
-                const mesAtual = dataBrasilia.getMonth() + 1
-                const anoAtual = dataBrasilia.getFullYear()
-                
-                let cardapioSemana = cardapios.find(
-                  (c: CardapioSalvo) => c.semana === week && c.mes === mesAtual && c.ano === anoAtual
+                let cardapioSemana = cardapiosFiltrados.find(
+                  (c: CardapioSalvo) => c.semana === week
                 )
                 
                 // Se não existe, gerar cardápio para esta semana com streaming
@@ -356,7 +416,7 @@ export default function Home() {
                           'X-Session-Id': sessionId || '',
                           'X-User-Email': userEmail || '',
                         },
-                        body: JSON.stringify({ semana: week }),
+                        body: JSON.stringify({ semana: week, mes: selectedMonth, ano: selectedYear }),
                       })
 
                       if (!gerarResponse.ok) {
@@ -734,7 +794,9 @@ export default function Home() {
       {/* Modal de lista de compras */}
       {mostrarListaCompras && (
         <ListaCompras
-          cardapios={cardapios}
+          cardapios={cardapiosFiltrados}
+          mes={selectedMonth}
+          ano={selectedYear}
           onClose={() => setMostrarListaCompras(false)}
         />
       )}

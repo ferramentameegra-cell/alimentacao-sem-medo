@@ -20,10 +20,12 @@ interface CardapioSalvo {
 
 interface ListaComprasProps {
   cardapios: CardapioSalvo[]
+  mes?: number
+  ano?: number
   onClose: () => void
 }
 
-export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) {
+export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, onClose }: ListaComprasProps) {
   const [selectedView, setSelectedView] = useState<number | 'mes'>(1)
   const [listasPorSemana, setListasPorSemana] = useState<Map<number, ItemListaCompras[]>>(new Map())
   const [listaMes, setListaMes] = useState<ItemListaCompras[]>([])
@@ -53,11 +55,11 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
 
     const hoje = new Date()
     const dataBr = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
-    const mesAtual = dataBr.getMonth() + 1
-    const anoAtual = dataBr.getFullYear()
+    const mes = mesProp ?? dataBr.getMonth() + 1
+    const ano = anoProp ?? dataBr.getFullYear()
 
     const doMes = cardapios.filter(
-      (c) => c.id && c.semana != null && c.mes === mesAtual && c.ano === anoAtual
+      (c) => c.id && c.semana != null && c.mes === mes && c.ano === ano
     )
 
     if (doMes.length === 0) {
@@ -136,7 +138,7 @@ export default function ListaCompras({ cardapios, onClose }: ListaComprasProps) 
     setProgresso(100)
     setEtapa('Pronto!')
     setCarregando(false)
-  }, [cardapios])
+  }, [cardapios, mesProp, anoProp])
 
   useEffect(() => {
     carregarListas()

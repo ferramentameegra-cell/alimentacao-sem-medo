@@ -438,23 +438,68 @@ export function montarDia(
   return plano
 }
 
+/** Extrai chaves de itens usados de um plano para evitar repetição entre semanas/meses */
+export function extrairItensUsadosDoPlano(plano: PlanoSemanal): Set<string> {
+  const usados = new Set<string>()
+  for (const dia of plano.dias) {
+    for (const ref of ['cafe_manha', 'almoco', 'lanche_tarde', 'jantar'] as const) {
+      const itens = dia[ref] || []
+      for (const item of itens) {
+        usados.add(`${item.nome}-${item.quantidade}`)
+      }
+    }
+  }
+  return usados
+}
+
+/**
+ * Monta plano mensal com 4 semanas distintas (sem repetição entre semanas nem entre meses).
+ * Usa toda a base de conhecimento para máxima variedade.
+ * @param itensUsadosEmMesesAnteriores Itens usados em cardápios de meses anteriores (evita repetição)
+ */
+export function montarPlanoMensal(
+  dadosUsuario: DadosUsuario,
+  mes?: number,
+  ano?: number,
+  itensUsadosEmMesesAnteriores: Set<string> = new Set()
+): PlanoSemanal[] {
+  const planos: PlanoSemanal[] = []
+  const itensUsadosEmSemanasAnteriores = new Set<string>(itensUsadosEmMesesAnteriores)
+
+  for (let semana = 1; semana <= 4; semana++) {
+    const plano = montarPlanoSemanal(
+      dadosUsuario,
+      semana,
+      mes,
+      ano,
+      itensUsadosEmSemanasAnteriores
+    )
+    planos.push(plano)
+    const usados = extrairItensUsadosDoPlano(plano)
+    usados.forEach(k => itensUsadosEmSemanasAnteriores.add(k))
+  }
+  return planos
+}
+
 /**
  * Monta um plano alimentar semanal (7 dias)
- * @param dadosUsuario Dados do usuário
- * @param semana Número da semana (1-4) para garantir variações diferentes
- * @param mes Mês atual para rastreamento
- * @param ano Ano atual para rastreamento
+ * @param itensUsadosEmOutrasSemanas Itens já usados em semanas anteriores (evita repetição)
  */
 export function montarPlanoSemanal(
   dadosUsuario: DadosUsuario,
   semana: number = 1,
   mes?: number,
-  ano?: number
+  ano?: number,
+  itensUsadosEmOutrasSemanas: Set<string> = new Set()
 ): PlanoSemanal {
-  // PRIORIDADE 1: Tentar usar sistema inteligente (lógica nutricional)
-  // Este sistema atua como nutricionista experiente, garantindo coerência nutricional
   try {
-    const planoInteligente = montarPlanoSemanalInteligente(dadosUsuario, semana, mes, ano)
+    const planoInteligente = montarPlanoSemanalInteligente(
+      dadosUsuario,
+      semana,
+      mes,
+      ano,
+      itensUsadosEmOutrasSemanas
+    )
     if (planoInteligente) {
       return planoInteligente
     }

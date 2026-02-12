@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { getSessao, salvarCardapio, reautenticarPorEmail } from '@/lib/auth'
-import { montarPlanoSemanal, formatarPlano, DadosUsuario } from '@/lib/montador_dieta'
+import { montarPlanoSemanal, formatarPlano, extrairItensUsadosDoPlano, DadosUsuario } from '@/lib/montador_dieta'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -64,16 +64,17 @@ export async function POST(request: NextRequest) {
         sendProgress(10, 'Preparando seu cardápio automático...')
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        // Obter dados da requisição (semana opcional)
+        // Obter dados da requisição (semana, mês e ano opcionais)
         const body = await request.json().catch(() => ({}))
         const semanaSolicitada = body.semana
+        const mesSolicitado = body.mes
+        const anoSolicitado = body.ano
 
-        // Calcular semana e mês atual
         const agora = new Date()
         const dataBrasilia = new Date(agora.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
-        const semana = semanaSolicitada || Math.ceil(dataBrasilia.getDate() / 7)
-        const mes = dataBrasilia.getMonth() + 1
-        const ano = dataBrasilia.getFullYear()
+        const semana = semanaSolicitada ?? Math.ceil(dataBrasilia.getDate() / 7)
+        const mes = mesSolicitado ?? dataBrasilia.getMonth() + 1
+        const ano = anoSolicitado ?? dataBrasilia.getFullYear()
 
         sendProgress(20, 'Consultando base de conhecimento...')
         await new Promise(resolve => setTimeout(resolve, 600))
@@ -118,15 +119,28 @@ export async function POST(request: NextRequest) {
         sendProgress(60, 'Personalizando para sua condição...')
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        // Obter condição digestiva para rastreamento
-        const condicaoDigestiva = dadosUsuario.condicao_digestiva === 'ambos' 
-          ? 'azia_refluxo' 
-          : dadosUsuario.condicao_digestiva === 'azia'
-          ? 'azia_refluxo'
-          : 'azia_refluxo'
+        // Coletar itens usados em meses/semanas anteriores (evita repetição)
+        const itensUsadosEmOutrasSemanas = new Set<string>()
+        const cardapiosAnteriores = (conta.cardapios || []).filter(
+          (c: { mes?: number; ano?: number; semana?: number; plano?: { dias?: any[] } }) =>
+            c.plano?.dias &&
+            (c.ano! < ano || (c.ano === ano && c.mes! < mes) ||
+              (c.ano === ano && c.mes === mes && (c.semana ?? 0) < semana))
+        )
+        for (const c of cardapiosAnteriores) {
+          extrairItensUsadosDoPlano(c.plano).forEach((k) =>
+            itensUsadosEmOutrasSemanas.add(k)
+          )
+        }
 
-        // Montar plano semanal completo (7 dias) com variações e rastreamento
-        const plano = montarPlanoSemanal(dadosUsuario, semana, mes, ano)
+        // Montar plano semanal com variações e sem repetição
+        const plano = montarPlanoSemanal(
+          dadosUsuario,
+          semana,
+          mes,
+          ano,
+          itensUsadosEmOutrasSemanas
+        )
         
         sendProgress(70, 'Formatando cardápio...')
         await new Promise(resolve => setTimeout(resolve, 400))

@@ -286,7 +286,8 @@ function verificarCombinacoesEstranhas(
 }
 
 /**
- * Seleciona a melhor combinação de itens para uma refeição
+ * Seleciona a melhor combinação de itens para uma refeição.
+ * Prioriza itens não usados na semana e no mês (outras semanas).
  */
 export function selecionarMelhorCombinacao(
   itensDisponiveis: ItemAlimentar[],
@@ -294,17 +295,26 @@ export function selecionarMelhorCombinacao(
   dadosUsuario: DadosUsuario,
   quantidadeItens: number,
   itensUsadosNoDia: Set<string> = new Set(),
-  itensUsadosNaSemana: Set<string> = new Set()
+  itensUsadosNaSemana: Set<string> = new Set(),
+  itensUsadosNoMes: Set<string> = new Set()
 ): ItemAlimentar[] | null {
   if (itensDisponiveis.length === 0) {
     return null
   }
-  
-  // Filtrar itens não usados
-  let candidatos = itensDisponiveis.filter(item => 
+
+  // Filtrar itens não usados no dia
+  let candidatos = itensDisponiveis.filter(item =>
     !itensUsadosNoDia.has(`${item.nome}-${item.quantidade}`)
   )
-  
+
+  // Preferir itens não usados em outras semanas (evitar repetir cardápios entre semanas)
+  const candidatosNovosNoMes = candidatos.filter(item =>
+    !itensUsadosNoMes.has(`${item.nome}-${item.quantidade}`)
+  )
+  if (candidatosNovosNoMes.length >= quantidadeItens) {
+    candidatos = candidatosNovosNoMes
+  }
+
   // Se não há candidatos novos, usar todos disponíveis
   if (candidatos.length === 0) {
     candidatos = itensDisponiveis
@@ -366,12 +376,12 @@ export function selecionarMelhorCombinacao(
       itensUsadosNoDia
     )
     
-    // Bonus por itens não usados na semana
+    // Bonus por itens não usados na semana e no mês (variação entre semanas)
     let bonusVariacao = 0
     combinacao.forEach(item => {
-      if (!itensUsadosNaSemana.has(`${item.nome}-${item.quantidade}`)) {
-        bonusVariacao += 5
-      }
+      const chave = `${item.nome}-${item.quantidade}`
+      if (!itensUsadosNaSemana.has(chave)) bonusVariacao += 5
+      if (!itensUsadosNoMes.has(chave)) bonusVariacao += 15 // Forte preferência por itens não usados em outras semanas
     })
     
     return {
