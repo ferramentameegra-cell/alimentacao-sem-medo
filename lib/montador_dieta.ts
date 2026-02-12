@@ -6,7 +6,7 @@
  */
 
 import { ItemAlimentar, buscarItens, BASE_CONHECIMENTO } from './base_conhecimento'
-import { calcularFatorAjuste, ajustarQuantidade } from './dados_pdf_validado'
+import { calcularFatorAjuste, ajustarQuantidade } from './ajuste_quantidades'
 import { gerarDicaRefeicao } from './gerador_dicas_preparo'
 import { gerarDiaSemRepeticoes } from './rastreador_variacoes'
 import { montarPlanoSemanalInteligente } from './montador_inteligente'

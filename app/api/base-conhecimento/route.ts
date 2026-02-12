@@ -17,7 +17,7 @@ export async function GET() {
       return NextResponse.json({
         itens: [],
         total_itens: 0,
-        mensagem: 'Base de conhecimento ainda não processada. Execute: python3 scripts/processar_base_conhecimento.py'
+        mensagem: 'Base de conhecimento ainda não processada. Execute: python3 scripts/extrair_docx_base_conhecimento.py'
       })
     }
   } catch (error: any) {

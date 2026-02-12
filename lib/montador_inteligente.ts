@@ -8,7 +8,7 @@
  */
 
 import { ItemAlimentar, buscarItens, BASE_CONHECIMENTO } from './base_conhecimento'
-import { calcularFatorAjuste, ajustarQuantidade } from './dados_pdf_validado'
+import { calcularFatorAjuste, ajustarQuantidade } from './ajuste_quantidades'
 import { gerarDicaRefeicao } from './gerador_dicas_preparo'
 import { DadosUsuario, PlanoDia, PlanoSemanal } from './montador_dieta'
 import { selecionarMelhorCombinacao, avaliarCoerenciaRefeicao } from './sistema_coerencia'
@@ -45,16 +45,20 @@ function montarDiaInteligente(
     // Se tem condições GI específicas, usar a primeira como referência
     const primeiraCondicao = dadosUsuario.condicoes_saude.problemas_gastrointestinais[0]
     
-    // Mapear condições GI para condição digestiva do PDF
-    if (primeiraCondicao === 'azia_refluxo') {
-      condicao = 'azia_refluxo'
-    } else if (primeiraCondicao === 'constipacao_intestinal') {
-      condicao = 'intestino_preso'
-    } else if (primeiraCondicao === 'sindrome_intestino_irritavel') {
-      condicao = 'sii'
-    } else {
-      condicao = 'azia_refluxo' // padrão para outras condições
+    // Mapear condições GI para condição da base (.docx)
+    const mapa: Record<string, string> = {
+      azia_refluxo: 'azia_refluxo',
+      constipacao_intestinal: 'intestino_preso',
+      diarreia: 'diarreia',
+      dor_abdominal: 'ma_digestao',
+      sindrome_intestino_irritavel: 'sindrome_intestino_irritavel',
+      diverticulos_intestinais: 'diverticulos_intestinais',
+      gases_abdome_distendido: 'gases_abdome_distendido',
+      retocolite_doenca_crohn: 'colite',
+      disbiose: 'disbiose',
+      ma_digestao: 'ma_digestao',
     }
+    condicao = mapa[primeiraCondicao] ?? 'azia_refluxo'
   }
   
   // Nomes dos dias da semana

@@ -1,11 +1,11 @@
 /**
  * GERADOR AUTOMÁTICO DE CARDÁPIOS
- * 
- * Gera cardápios automaticamente baseados no PDF validado
+ *
+ * Gera cardápios automaticamente baseados na base de conhecimento (.docx)
  * e no calendário mundial (fuso horário de Brasília)
  */
 
-import { ITENS_PDF_VALIDADO } from './dados_pdf_validado'
+import { BASE_CONHECIMENTO } from './base_conhecimento'
 
 interface ItemAlimentar {
   id: string
@@ -57,11 +57,11 @@ export function gerarCardapioAutomatico(diaSemana?: number): {
   const dia = diaSemana !== undefined ? diaSemana : getDiaSemanaBrasilia()
   const nomeDia = getNomeDiaSemana(dia)
 
-  // Filtrar itens por tipo de refeição
-  const cafeManha = ITENS_PDF_VALIDADO.filter(item => item.tipo === 'cafe_manha')
-  const almoco = ITENS_PDF_VALIDADO.filter(item => item.tipo === 'almoco')
-  const lancheTarde = ITENS_PDF_VALIDADO.filter(item => item.tipo === 'lanche_tarde')
-  const jantar = ITENS_PDF_VALIDADO.filter(item => item.tipo === 'jantar')
+  // Filtrar itens por tipo de refeição (base .docx)
+  const cafeManha = BASE_CONHECIMENTO.filter(item => item.tipo === 'cafe_manha')
+  const almoco = BASE_CONHECIMENTO.filter(item => item.tipo === 'almoco')
+  const lancheTarde = BASE_CONHECIMENTO.filter(item => item.tipo === 'lanche_tarde')
+  const jantar = BASE_CONHECIMENTO.filter(item => item.tipo === 'jantar')
 
   // Selecionar itens de forma variada baseado no dia da semana
   // Usar o dia da semana como seed para garantir variedade

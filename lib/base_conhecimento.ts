@@ -1,25 +1,25 @@
 /**
  * BASE DE CONHECIMENTO - Cardápios do Planeta Intestino
- * 
- * Esta é a ÚNICA FONTE DE VERDADE para todos os alimentos, pratos e quantidades.
- * 
- * ⚠️ REGRA ABSOLUTA:
- * - NÃO alterar alimentos
- * - NÃO alterar pesos/medidas
- * - NÃO criar substituições
- * - NÃO criar novas receitas
- * 
- * Esta base será populada a partir do PDF validado.
+ *
+ * FONTE ÚNICA: Arquivos .docx em data/pdfs/
+ * ⚠️ NUNCA usar cardapios-planeta-intestino.pdf (excluído permanentemente)
+ *
+ * Execute: python3 scripts/extrair_docx_base_conhecimento.py
+ * para regenerar data/base_conhecimento.json
  */
+
+import { readFileSync, existsSync } from 'fs'
+import { join } from 'path'
 
 export interface ItemAlimentar {
   id: string
-  nome: string // Nome EXATO do PDF
-  quantidade: string // Medida EXATA do PDF (ex: "200g", "1 xícara", "2 colheres")
+  nome: string
+  quantidade: string
   tipo: 'cafe_manha' | 'almoco' | 'lanche_tarde' | 'jantar'
-  condicao_digestiva: 'azia_refluxo' | 'intestino_preso' | 'sii' | 'geral'
+  condicao_digestiva: string
   pagina_origem?: number
   observacoes?: string
+  fonte?: string
 }
 
 export interface PratoCompleto {
@@ -30,36 +30,37 @@ export interface PratoCompleto {
   condicao_digestiva: string[]
 }
 
-// Base de conhecimento (será populada do PDF validado)
-export const BASE_CONHECIMENTO: ItemAlimentar[] = []
+// Carregar base do JSON (gerado dos .docx)
+function carregarBaseDoJson(): ItemAlimentar[] {
+  if (typeof process === 'undefined' || !process.versions?.node) {
+    return []
+  }
+  try {
+    const filePath = join(process.cwd(), 'data', 'base_conhecimento.json')
+    if (existsSync(filePath)) {
+      const content = readFileSync(filePath, 'utf-8')
+      const data = JSON.parse(content)
+      return Array.isArray(data.itens) ? data.itens : []
+    }
+  } catch (_) {
+    // Fallback: base vazia
+  }
+  return []
+}
 
-// Importar dados validados do PDF
-import { ITENS_PDF_VALIDADO } from './dados_pdf_validado'
-
-// Popular base de conhecimento com dados validados
-BASE_CONHECIMENTO.push(...ITENS_PDF_VALIDADO)
-
-// Pratos completos (será populada do PDF validado)
+export const BASE_CONHECIMENTO: ItemAlimentar[] = carregarBaseDoJson()
 export const PRATOS_COMPLETOS: PratoCompleto[] = []
 
 /**
- * Carrega a base de conhecimento do arquivo de extração validado
- */
-export function carregarBaseConhecimento(dadosExtraidos: any): void {
-  // Esta função será implementada para processar os dados do PDF
-  // e popular BASE_CONHECIMENTO e PRATOS_COMPLETOS
-  // TODO: Implementar parser dos dados extraídos
-}
-
-/**
  * Busca itens alimentares por tipo de refeição e condição digestiva
+ * Considera itens da condição específica ou 'geral'
  */
 export function buscarItens(
   tipoRefeicao: ItemAlimentar['tipo'],
   condicaoDigestiva: string
 ): ItemAlimentar[] {
   return BASE_CONHECIMENTO.filter(
-    item => 
+    item =>
       item.tipo === tipoRefeicao &&
       (item.condicao_digestiva === condicaoDigestiva || item.condicao_digestiva === 'geral')
   )
@@ -69,7 +70,5 @@ export function buscarItens(
  * Valida se um item existe na base de conhecimento
  */
 export function validarItem(nome: string, quantidade: string): boolean {
-  return BASE_CONHECIMENTO.some(
-    item => item.nome === nome && item.quantidade === quantidade
-  )
+  return BASE_CONHECIMENTO.some(item => item.nome === nome && item.quantidade === quantidade)
 }

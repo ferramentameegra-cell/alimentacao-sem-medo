@@ -9,8 +9,7 @@
  * Usa todas as variações possíveis antes de repetir
  */
 
-import { ITENS_PDF_VALIDADO } from './dados_pdf_validado'
-import { buscarItens } from './base_conhecimento'
+import { BASE_CONHECIMENTO, buscarItens } from './base_conhecimento'
 
 interface ItemAlimentar {
   id: string
@@ -227,11 +226,8 @@ export function gerarTodasCombinacoesPossiveis(
   quantidadeItens: number = 1,
   condicaoDigestiva: string = 'azia_refluxo'
 ): Array<Array<{ nome: string; quantidade: string }>> {
-  // Buscar itens do PDF validado
-  const itens = ITENS_PDF_VALIDADO.filter(item => 
-    item.tipo === tipo && 
-    (item.condicao_digestiva === condicaoDigestiva || item.condicao_digestiva === 'azia_refluxo')
-  )
+  // Buscar itens da base (.docx)
+  const itens = buscarItens(tipo, condicaoDigestiva)
   
   if (itens.length === 0) return []
   
@@ -446,9 +442,11 @@ export function gerarSemanaSemRepeticoes(
         ...diaGerado
       })
     } else {
-      // Fallback: usar itens do PDF diretamente se não conseguir gerar sem repetição
-      const itens = ITENS_PDF_VALIDADO.filter(item => 
-        item.condicao_digestiva === condicaoDigestiva || item.condicao_digestiva === 'azia_refluxo'
+      // Fallback: usar itens da base (.docx) diretamente se não conseguir gerar sem repetição
+      const itens = BASE_CONHECIMENTO.filter(item =>
+        item.condicao_digestiva === condicaoDigestiva ||
+        item.condicao_digestiva === 'geral' ||
+        item.condicao_digestiva === 'azia_refluxo'
       )
       
       const cafe_manha = itens.filter(i => i.tipo === 'cafe_manha').slice(0, 2).map(i => ({

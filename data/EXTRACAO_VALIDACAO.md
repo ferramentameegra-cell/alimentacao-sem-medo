@@ -1,61 +1,43 @@
-# 📋 EXTRAÇÃO COMPLETA DO PDF - VALIDAÇÃO OBRIGATÓRIA
+# 📋 BASE DE CONHECIMENTO - Fontes .docx
 
-**ARQUIVO ORIGEM:** `/data/pdfs/cardapios-planeta-intestino.pdf`
+**FONTE ÚNICA:** Arquivos .docx em `/data/pdfs/`
 
-**DATA DA EXTRAÇÃO:** $(date)
-
-**STATUS:** ⚠️ **AGUARDANDO VALIDAÇÃO**
+⚠️ **NUNCA usar** `cardapios-planeta-intestino.pdf` — excluído permanentemente.
 
 ---
 
-## 📊 RESUMO DA EXTRAÇÃO
+## 📁 Arquivos de origem (.docx)
 
-- **Total de páginas:** 191 páginas
-- **Método:** OCR (Tesseract) com idioma português
-- **Resolução:** 300 DPI
-- **Status:** Extração completa realizada
+- Azia e Refluxo.docx
+- Bloqueio Defecatório.docx
+- Colite.docx
+- Dieta Anti-inflamatória.docx
+- Disbiose.docx
+- Diverticulite.docx
+- Divertículos_.docx
+- Gases.docx
+- INTESTINO PRESO.docx
+- Intolerancia à Lactose.docx
+- Má Digestão.docx
+- Prevenção a diarreia.docx
+- sem gluten e lactose.docx
+- Sem Gluten.docx
+- SII.docx
+- zJantar casual_romantico.docx
 
 ---
 
-## ⚠️ REGRA CRÍTICA
+## 🔄 Regenerar a base
 
-**ESTE DOCUMENTO DEVE SER VALIDADO ANTES DE QUALQUER USO DOS DADOS.**
-
-Após revisar a extração completa, você DEVE confirmar explicitamente:
-
+```bash
+python3 scripts/extrair_docx_base_conhecimento.py
 ```
-EXTRAÇÃO VALIDADA
-```
 
-**É PROIBIDO usar os dados antes dessa confirmação.**
+O script gera `data/base_conhecimento.json`, usado pelo sistema de montagem de cardápios.
 
 ---
 
-## 📁 ARQUIVOS GERADOS
+## 📊 Estrutura gerada
 
-1. **`data/extracao_ocr_completa.json`** - Dados brutos extraídos via OCR
-2. **`data/extracao_completa.json`** - Tentativa inicial (sem OCR)
-3. **`data/extracao_bruta.json`** - Primeira tentativa
-
----
-
-## 🔍 PRÓXIMOS PASSOS
-
-1. **Revisar** o arquivo `data/extracao_ocr_completa.json`
-2. **Validar** que todo o conteúdo foi extraído corretamente
-3. **Confirmar** com: "EXTRAÇÃO VALIDADA"
-4. **Aguardar** estruturação final dos dados
-
----
-
-## 📝 NOTAS IMPORTANTES
-
-- O PDF é baseado em imagens (scanned)
-- OCR foi aplicado em todas as páginas
-- Qualidade do OCR depende da qualidade das imagens originais
-- Alguns caracteres podem ter sido interpretados incorretamente
-- Revisão manual é recomendada para garantir precisão
-
----
-
-**AGUARDANDO VALIDAÇÃO DO USUÁRIO**
+- `data/base_conhecimento.json` — itens alimentares por condição digestiva
+- Campos: nome, quantidade, tipo (cafe_manha, almoco, lanche_tarde, jantar), condicao_digestiva, fonte

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Script para processar os dados extraídos do PDF e criar a base de conhecimento.
-Este script estrutura os dados para uso no sistema de montagem de dietas.
+DEPRECADO: Fonte mudou de PDF para arquivos .docx.
+Use: python3 scripts/extrair_docx_base_conhecimento.py
+
+Script legado - processava extracao_ocr_completa.json (do PDF excluído).
 """
 
 import json
@@ -154,4 +156,6 @@ def main():
 
 if __name__ == '__main__':
     import sys
-    main()
+    import subprocess
+    print("⚠️  Script deprecado. Redirecionando para extrair_docx_base_conhecimento.py...")
+    sys.exit(subprocess.call([sys.executable, str(Path(__file__).parent / 'extrair_docx_base_conhecimento.py')]))
