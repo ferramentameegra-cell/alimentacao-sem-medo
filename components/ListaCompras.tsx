@@ -180,11 +180,11 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0,0,0,0.05)',
         }}
       >
-        {/* Header estilo iFood - fundo branco, título limpo */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+        {/* Header - título e subtítulo bem visíveis */}
+        <div className="flex items-center justify-between p-5 pb-3 border-b border-gray-100">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Lista de Compras</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm font-medium text-gray-700 mt-1.5">
               Total em gramas e kg • Somado da semana
             </p>
           </div>
@@ -196,8 +196,8 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 p-3 border-b border-gray-100 overflow-x-auto bg-gray-50/50">
+        {/* Tabs - Semanas - separado do header */}
+        <div className="flex gap-1 p-3 pt-2 border-b border-gray-100 overflow-x-auto bg-white">
           {[1, 2, 3, 4].map((w) => {
             const tem = listasPorSemana.has(w)
             const sel = selectedView === w
@@ -295,10 +295,13 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
         </div>
 
         {!carregando && temConteudo && (
-          <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+          <div
+            className="p-4 pt-3 border-t border-gray-100 bg-gray-50/50"
+            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))' }}
+          >
             <button
               onClick={copiar}
-              className="w-full py-3.5 px-6 rounded-2xl font-bold text-white transition-all hover:opacity-95 active:scale-[0.98]"
+              className="w-full py-3.5 px-6 rounded-2xl font-bold text-white text-base transition-all hover:opacity-95 active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
                 boxShadow: '0 4px 14px rgba(110, 143, 61, 0.35)',
