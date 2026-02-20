@@ -70,7 +70,7 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
     }
 
     setProgresso(20)
-    setEtapa('Extraindo ingredientes...')
+    setEtapa('Somando quantidades...')
 
     const listas = new Map<number, ItemListaCompras[]>()
     const total = doMes.length
@@ -127,8 +127,8 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
       }
     }
 
-    setProgresso(85)
-    setEtapa('Somando quantidades do mês...')
+    setProgresso(90)
+    setEtapa('Consolidando totais...')
 
     const todas = Array.from(listas.values())
     const consolidada = todas.length > 0 ? combinarListasCompras(todas) : []
@@ -161,11 +161,11 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
   const semanas = Array.from(listasPorSemana.keys()).sort((a, b) => a - b)
   const listaAtual: ItemListaCompras[] =
     selectedView === 'mes' ? listaMes : listasPorSemana.get(selectedView) || []
-  const temConteudo = listaAtual.length > 0 || (selectedView === 'mes' && listaMes.length > 0)
+  const temConteudo = listaAtual.length > 0
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-3 sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4"
       style={{
         paddingTop: 'max(1rem, env(safe-area-inset-top))',
         paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
@@ -174,31 +174,30 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
       }}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden rounded-2xl bg-bg-secondary border border-accent-primary/30"
+        className="relative w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-3xl"
         style={{
-          background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
-          border: '1px solid rgba(110,143,61,0.3)',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+          background: '#ffffff',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0,0,0,0.05)',
         }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-accent-secondary/30">
+        {/* Header estilo iFood - fundo branco, título limpo */}
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <div>
-            <h2 className="text-2xl font-bold text-text-primary">🛒 Lista de Compras</h2>
-            <p className="text-sm text-text-secondary">
-              Peso total somado por ingrediente • Semana ou mês completo
+            <h2 className="text-xl font-bold text-gray-900">Lista de Compras</h2>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Total em gramas e kg • Somado da semana
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full border border-accent-secondary/30 text-text-secondary hover:text-accent-primary hover:border-accent-primary/50 flex items-center justify-center"
+            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors"
           >
             ✕
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 p-4 border-b border-accent-secondary/30 overflow-x-auto">
+        <div className="flex gap-1 p-3 border-b border-gray-100 overflow-x-auto bg-gray-50/50">
           {[1, 2, 3, 4].map((w) => {
             const tem = listasPorSemana.has(w)
             const sel = selectedView === w
@@ -207,128 +206,102 @@ export default function ListaCompras({ cardapios, mes: mesProp, ano: anoProp, on
                 key={w}
                 onClick={() => setSelectedView(w)}
                 disabled={!tem}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+                className={`px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
                   sel
-                    ? 'bg-accent-primary/20 border-accent-primary/60 text-accent-primary'
+                    ? 'bg-[#6E8F3D] text-white shadow-sm'
                     : tem
-                    ? 'border-accent-secondary/30 text-text-primary hover:border-accent-primary/50'
-                    : 'border-accent-secondary/20 text-text-muted cursor-not-allowed'
+                    ? 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`}
               >
                 Semana {w}
-                {tem && (
-                  <span className="ml-1.5 text-xs opacity-80">
-                    {listasPorSemana.get(w)?.length}
-                  </span>
-                )}
               </button>
             )
           })}
           <button
             onClick={() => setSelectedView('mes')}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
               selectedView === 'mes'
-                ? 'bg-accent-secondary/30 border-accent-primary/60 text-accent-primary'
-                : 'border-accent-secondary/30 text-text-primary hover:border-accent-primary/50'
+                ? 'bg-[#6E8F3D] text-white shadow-sm'
+                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
             }`}
           >
-            📅 Mês Completo
-            {listaMes.length > 0 && (
-              <span className="ml-1.5 text-xs opacity-80">{listaMes.length}</span>
-            )}
+            Mês
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-5">
+        {/* Lista - estilo iFood: cards brancos, bordas suaves */}
+        <div className="flex-1 overflow-y-auto p-4">
           {carregando && (
-            <div className="text-center py-16">
-              <div className="mb-4 max-w-xs mx-auto">
-                <div className="flex justify-between text-sm text-text-secondary mb-2">
-                  <span>{etapa}</span>
-                  <span>{progresso}%</span>
-                </div>
-                <div className="h-2 bg-bg-secondary rounded-full overflow-hidden border border-accent-secondary/30">
-                  <div
-                    className="h-full bg-gradient-to-r from-accent-primary to-accent-primary/80 transition-all duration-500"
-                    style={{ width: `${progresso}%` }}
-                  />
-                </div>
+            <div className="py-12 text-center">
+              <div className="inline-block w-10 h-10 border-2 border-[#6E8F3D] border-t-transparent rounded-full animate-spin mb-4" />
+              <p className="text-gray-600 font-medium">{etapa}</p>
+              <p className="text-sm text-gray-400 mt-1">{progresso}%</p>
+              <div className="mt-3 max-w-xs mx-auto h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#6E8F3D] transition-all duration-500"
+                  style={{ width: `${progresso}%` }}
+                />
               </div>
-              <p className="text-text-secondary">Calculando totais por peso...</p>
             </div>
           )}
 
           {!carregando && erro && (
-            <div className="text-center py-16">
-              <p className="text-accent-primary font-medium">{erro}</p>
+            <div className="py-12 text-center">
+              <p className="text-red-600 font-medium">{erro}</p>
             </div>
           )}
 
           {!carregando && !erro && !temConteudo && (
-            <div className="text-center py-16">
-              <p className="text-text-secondary mb-2">Nenhum cardápio deste mês encontrado.</p>
-              <p className="text-sm text-text-muted">
-                Gere cardápios para ver a lista de compras com pesos somados.
+            <div className="py-12 text-center">
+              <p className="text-gray-600">Nenhum cardápio deste mês.</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Monte seu cardápio para ver a lista com totais em g/kg.
               </p>
             </div>
           )}
 
           {!carregando && !erro && temConteudo && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-text-primary">
-                  {selectedView === 'mes'
-                    ? '📅 Lista Consolidada do Mês'
-                    : `📋 Semana ${selectedView}`}
-                </h3>
-                <span className="text-sm text-text-secondary">
-                  {listaAtual.length} itens • pesos somados
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {listaAtual.map((item, i) => (
-                  <div
-                    key={`${item.nome}-${i}`}
-                    className="flex items-center justify-between p-4 rounded-xl bg-bg-secondary/50 border border-accent-secondary/30 hover:border-accent-primary/40"
-                    style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.2)' }}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span
-                        className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-accent-primary"
-                        style={{
-                          background: 'rgba(110,143,61,0.2)',
-                          border: '1px solid rgba(110,143,61,0.4)',
-                        }}
-                      >
-                        {i + 1}
-                      </span>
-                      <div>
-                        <p className="font-semibold text-text-primary truncate">{item.nome}</p>
-                        <p className="text-xs text-text-secondary">
-                          {item.ocorrencias} {item.ocorrencias === 1 ? 'vez' : 'vezes'} no período
-                        </p>
-                      </div>
+            <div className="space-y-2">
+              {listaAtual.map((item, i) => (
+                <div
+                  key={`${item.nome}-${i}`}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-white border border-gray-100 hover:border-[#6E8F3D]/30 transition-colors"
+                  style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <span
+                      className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold bg-[#6E8F3D]/10 text-[#6E8F3D]"
+                    >
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 truncate">{item.nome}</p>
+                      <p className="text-xs text-gray-500">
+                        {item.ocorrencias} {item.ocorrencias === 1 ? 'vez' : 'vezes'} no cardápio
+                      </p>
                     </div>
-                    <p className="flex-shrink-0 ml-4 font-bold text-accent-primary text-lg">
+                  </div>
+                  <div className="flex-shrink-0 ml-3 text-right">
+                    <p className="font-bold text-gray-900 text-lg">
                       {item.quantidadeTotal}
                     </p>
+                    <p className="text-xs text-gray-500">total</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
         {!carregando && temConteudo && (
-          <div className="p-5 border-t border-accent-secondary/30">
+          <div className="p-4 border-t border-gray-100 bg-gray-50/50">
             <button
               onClick={copiar}
-              className="w-full py-3 px-6 rounded-xl font-bold text-text-primary transition-all"
+              className="w-full py-3.5 px-6 rounded-2xl font-bold text-white transition-all hover:opacity-95 active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(135deg, #6E8F3D 0%, #7FA94A 100%)',
-                boxShadow: '0 4px 16px rgba(110,143,61,0.3)',
+                boxShadow: '0 4px 14px rgba(110, 143, 61, 0.35)',
               }}
             >
               📋 Copiar lista

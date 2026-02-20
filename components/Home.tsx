@@ -261,7 +261,7 @@ export default function Home() {
 
       {/* Carrossel de semanas - estilo Netflix */}
       <section className="mb-10 lg:mb-16 max-w-full">
-        {cardapios.length === 0 && (
+        {!carregando && cardapios.length === 0 && (
           <div className="mb-8 p-6 sm:p-8 rounded-xl text-center" style={{
             background: 'linear-gradient(180deg, rgba(20, 58, 54, 0.8) 0%, rgba(15, 46, 43, 0.8) 100%)',
             border: '1px solid rgba(110, 143, 61, 0.3)'
