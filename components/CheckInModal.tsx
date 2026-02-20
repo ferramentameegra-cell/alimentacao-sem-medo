@@ -147,7 +147,7 @@ export default function CheckInModal({
           <div className="flex flex-col gap-3">
             {decisao.tipo === 'sugerir_atualizar' && (
               <>
-                {btn(handleAtualizar, 'Atualizar cardápio agora', true)}
+                {btn(handleAtualizar, 'Adaptar meu cardápio', true)}
                 {btn(handleManter, 'Manter como está')}
               </>
             )}
@@ -159,7 +159,7 @@ export default function CheckInModal({
             )}
             {(decisao.tipo === 'sugerir_ajustar_ok') && (
               <>
-                {btn(handleAtualizar, 'Ajustar cardápio', true)}
+                {btn(handleAtualizar, 'Adaptar meu cardápio', true)}
                 {btn(handleManter, 'Manter como está')}
               </>
             )}

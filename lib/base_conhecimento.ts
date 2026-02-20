@@ -67,6 +67,33 @@ export function buscarItens(
 }
 
 /**
+ * Busca itens por tipo de refeição considerando MÚLTIPLAS condições.
+ * Retorna itens que correspondem a QUALQUER das condições ou 'geral'.
+ * Usado quando o usuário tem várias restrições (ex: intolerância à lactose + azia).
+ */
+export function buscarItensMultiplasCondicoes(
+  tipoRefeicao: ItemAlimentar['tipo'],
+  condicoes: string[]
+): ItemAlimentar[] {
+  if (condicoes.length === 0) {
+    return buscarItens(tipoRefeicao, 'geral')
+  }
+  const setCond = new Set([...condicoes, 'geral'])
+  const itens = BASE_CONHECIMENTO.filter(
+    item =>
+      item.tipo === tipoRefeicao &&
+      setCond.has(item.condicao_digestiva)
+  )
+  // Remover duplicatas por id
+  const visto = new Set<string>()
+  return itens.filter(i => {
+    if (visto.has(i.id)) return false
+    visto.add(i.id)
+    return true
+  })
+}
+
+/**
  * Valida se um item existe na base de conhecimento
  */
 export function validarItem(nome: string, quantidade: string): boolean {

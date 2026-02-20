@@ -7,7 +7,7 @@
  * ⚠️ REGRA ABSOLUTA: Usa EXCLUSIVAMENTE dados do PDF validado
  */
 
-import { ItemAlimentar, buscarItens, BASE_CONHECIMENTO } from './base_conhecimento'
+import { ItemAlimentar, buscarItens, buscarItensMultiplasCondicoes, BASE_CONHECIMENTO } from './base_conhecimento'
 import { calcularFatorAjuste, ajustarQuantidade } from './ajuste_quantidades'
 import { gerarDicaRefeicao } from './gerador_dicas_preparo'
 import { DadosUsuario, PlanoDia, PlanoSemanal } from './montador_dieta'
@@ -49,45 +49,67 @@ function montarDiaInteligente(
     return null
   }
   
-  // Determinar condição digestiva baseada em condicao_digestiva ou problemas_gastrointestinais
-  let condicao = 'azia_refluxo' // padrão
+  // Determinar condições da base considerando TODAS as respostas do usuário:
+  // restrições (intolerâncias/alergias), problemas GI, tipo de alimentação
+  const condicoes: string[] = []
   
-  if (dadosUsuario.condicao_digestiva) {
-    condicao = dadosUsuario.condicao_digestiva === 'ambos' 
-      ? 'azia_refluxo' 
-      : dadosUsuario.condicao_digestiva === 'azia'
-      ? 'azia_refluxo'
-      : 'azia_refluxo'
-  } else if (dadosUsuario.condicoes_saude?.problemas_gastrointestinais && 
-             dadosUsuario.condicoes_saude.problemas_gastrointestinais.length > 0) {
-    // Se tem condições GI específicas, usar a primeira como referência
-    const primeiraCondicao = dadosUsuario.condicoes_saude.problemas_gastrointestinais[0]
-    
-    // Mapear condições GI para condição da base (.docx)
-    const mapa: Record<string, string> = {
-      azia_refluxo: 'azia_refluxo',
-      constipacao_intestinal: 'intestino_preso',
-      diarreia: 'diarreia',
-      dor_abdominal: 'ma_digestao',
-      sindrome_intestino_irritavel: 'sindrome_intestino_irritavel',
-      diverticulos_intestinais: 'diverticulos_intestinais',
-      gases_abdome_distendido: 'gases_abdome_distendido',
-      retocolite_doenca_crohn: 'colite',
-      disbiose: 'disbiose',
-      ma_digestao: 'ma_digestao',
+  // 1. RESTRIÇÕES têm prioridade - base tem cardápios específicos (ex: intolerancia_lactose)
+  if (dadosUsuario.restricoes) {
+    if (dadosUsuario.restricoes.intolerancia_lactose && dadosUsuario.restricoes.intolerancia_gluten) {
+      condicoes.push('sem_gluten_lactose') // cardápio combinado se existir
     }
-    condicao = mapa[primeiraCondicao] ?? 'azia_refluxo'
+    if (dadosUsuario.restricoes.intolerancia_lactose) condicoes.push('intolerancia_lactose')
+    if (dadosUsuario.restricoes.intolerancia_gluten) condicoes.push('sem_gluten')
+    if (dadosUsuario.restricoes.intolerancia_proteina_leite) condicoes.push('intolerancia_lactose') // usa mesma base
   }
+  
+  // 2. TIPO DE ALIMENTAÇÃO - base tem dieta anti-inflamatória
+  if (dadosUsuario.tipo_alimentacao === 'anti_inflamatoria') {
+    condicoes.push('anti_inflamatoria')
+  }
+  
+  // 3. PROBLEMAS GASTROINTESTINAIS - mapear para condições da base
+  const mapaGI: Record<string, string> = {
+    azia_refluxo: 'azia_refluxo',
+    constipacao_intestinal: 'intestino_preso',
+    diarreia: 'diarreia',
+    dor_abdominal: 'ma_digestao',
+    sindrome_intestino_irritavel: 'sindrome_intestino_irritavel',
+    diverticulos_intestinais: 'diverticulos_intestinais',
+    gases_abdome_distendido: 'gases_abdome_distendido',
+    retocolite_doenca_crohn: 'colite',
+    disbiose: 'disbiose',
+    ma_digestao: 'ma_digestao',
+  }
+  if (dadosUsuario.condicoes_saude?.problemas_gastrointestinais?.length) {
+    for (const gi of dadosUsuario.condicoes_saude.problemas_gastrointestinais) {
+      const cond = mapaGI[gi]
+      if (cond && !condicoes.includes(cond)) condicoes.push(cond)
+    }
+  }
+  
+  // 4. condicao_digestiva (azia/refluxo) como fallback
+  if (condicoes.length === 0 && dadosUsuario.condicao_digestiva) {
+    condicoes.push('azia_refluxo')
+  }
+  
+  // 5. Padrão: azia_refluxo quando não há outras condições
+  if (condicoes.length === 0) {
+    condicoes.push('azia_refluxo')
+  }
+  
+  // Buscar itens considerando todas as condições (geral é incluído automaticamente)
+  const buscar = (tipo: ItemAlimentar['tipo']) => buscarItensMultiplasCondicoes(tipo, condicoes)
   
   // Nomes dos dias da semana
   const nomesDias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
   const diaSemana = diaNumero >= 0 && diaNumero <= 6 ? diaNumero : diaNumero % 7
   
-  // Buscar itens disponíveis do PDF
-  let cafeManhaDisponiveis = buscarItens('cafe_manha', condicao)
-  let almocoDisponiveis = buscarItens('almoco', condicao)
-  let lancheTardeDisponiveis = buscarItens('lanche_tarde', condicao)
-  let jantarDisponiveis = buscarItens('jantar', condicao)
+  // Buscar itens disponíveis do PDF (considerando todas as condições do usuário)
+  let cafeManhaDisponiveis = buscar('cafe_manha')
+  let almocoDisponiveis = buscar('almoco')
+  let lancheTardeDisponiveis = buscar('lanche_tarde')
+  let jantarDisponiveis = buscar('jantar')
   
   // Filtrar por restrições alimentares
   cafeManhaDisponiveis = filtrarItensPorRestricoes(cafeManhaDisponiveis, dadosUsuario)

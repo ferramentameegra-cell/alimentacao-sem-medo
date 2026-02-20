@@ -114,10 +114,12 @@ export default function MetaAgua({ dadosUsuario, className = '', compacto = fals
 
   // Modo sidebar (mais compacto e moderno)
   if (sidebar) {
+    const precisaLembrete = progresso < 100
     return (
-      <div className={`bg-gradient-to-br from-dark-card/60 to-dark-secondary/40 border border-cyan-500/20 rounded-xl p-3 sm:p-4 ${className}`}
+      <div
+        className={`bg-gradient-to-br from-dark-card/60 to-dark-secondary/40 border border-cyan-500/20 rounded-xl p-3 sm:p-4 ${className} ${precisaLembrete ? 'animate-agua-reminder' : ''}`}
         style={{
-          boxShadow: '0 4px 16px rgba(6, 182, 212, 0.15)'
+          boxShadow: '0 4px 16px rgba(6, 182, 212, 0.15)',
         }}
       >
         <div className="text-center mb-3">
@@ -127,6 +129,11 @@ export default function MetaAgua({ dadosUsuario, className = '', compacto = fals
           <p className="text-xs text-text-secondary font-medium">
             {formatarAgua(consumidoHoje)} / {formatarAgua(meta)}
           </p>
+          {precisaLembrete && (
+            <p className="text-xs text-cyan-400/90 mt-1">
+              Beba água! 💧
+            </p>
+          )}
         </div>
 
         {/* Copo moderno e compacto */}
@@ -228,8 +235,9 @@ export default function MetaAgua({ dadosUsuario, className = '', compacto = fals
 
   // Modo compacto e discreto (para Home)
   if (compacto) {
+    const precisaLembreteCompacto = progresso < 100
     return (
-      <div className={`bg-dark-secondary/50 border border-dark-border/50 rounded-lg p-3 sm:p-4 ${className}`}>
+      <div className={`bg-dark-secondary/50 border border-dark-border/50 rounded-lg p-3 sm:p-4 ${className} ${precisaLembreteCompacto ? 'animate-agua-reminder' : ''}`}>
         <div className="text-center mb-3">
           <h3 className="text-xs sm:text-sm font-semibold text-text-secondary mb-1">
             💧 Hidratação

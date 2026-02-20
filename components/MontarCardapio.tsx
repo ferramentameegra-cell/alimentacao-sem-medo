@@ -288,6 +288,14 @@ export default function MontarCardapio() {
             objetivo: dadosAPI.objetivo,
             dias_cardapio: dadosAPI.dias_cardapio,
           })
+          if (dadosAPI.restricoes || dadosAPI.tipo_alimentacao || dadosAPI.condicoes_saude) {
+            setRestricoes({
+              restricoes: dadosAPI.restricoes || {},
+              tipo_alimentacao: dadosAPI.tipo_alimentacao,
+              condicoes_saude: { ...dadosAPI.condicoes_saude, problemas_gastrointestinais: gi },
+              preferencias: dadosAPI.preferencias || {},
+            })
+          }
           setPassoAtual(totalPassos + 1)
           setVerificandoDadosPendentes(false)
           setCarregando(true)
@@ -409,8 +417,11 @@ export default function MontarCardapio() {
         },
         condicao_digestiva: gi.length ? 'azia' : (dadosAPI.condicao_digestiva || 'azia'),
         objetivo: dadosAPI.objetivo,
-        condicoes_saude: { problemas_gastrointestinais: gi },
+        condicoes_saude: { ...(dadosAPI.condicoes_saude || {}), problemas_gastrointestinais: gi },
         ...(custom && { condicao_digestiva_custom: custom }),
+        ...(dadosAPI.restricoes && { restricoes: dadosAPI.restricoes }),
+        ...(dadosAPI.tipo_alimentacao && { tipo_alimentacao: dadosAPI.tipo_alimentacao }),
+        ...(dadosAPI.preferencias && { preferencias: dadosAPI.preferencias }),
       }
       if (opts?.evolucao) {
         const ctx = obterContextoEvolucaoParaAPI()
@@ -631,7 +642,7 @@ export default function MontarCardapio() {
 
     // Se não tem sessão válida ou não tem plano, mostrar planos e login
     if (!temSessaoValida || !temPlano) {
-      // Salvar dados do formulário para usar depois
+      // Salvar dados do formulário para usar depois (incluindo restrições)
       localStorage.setItem('dadosCardapioPendente', JSON.stringify({
         idade: dados.idade,
         peso: dados.peso,
@@ -643,6 +654,12 @@ export default function MontarCardapio() {
         condicao_digestiva_custom: dados.condicao_digestiva_custom,
         objetivo: dados.objetivo,
         dias_cardapio: dados.dias_cardapio,
+        ...(restricoes && {
+          restricoes: restricoes.restricoes,
+          tipo_alimentacao: restricoes.tipo_alimentacao,
+          preferencias: restricoes.preferencias,
+          condicoes_saude: restricoes.condicoes_saude,
+        }),
       }))
       
       // Mostrar planos e login
