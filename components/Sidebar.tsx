@@ -1,16 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import GenioLampada from './GenioLampada'
 import MetaAgua from './MetaAgua'
 import BarraEvolucao from './BarraEvolucao'
 import { DadosUsuarioAgua } from '@/lib/calculadora_agua'
 
+const FOTO_PERFIL_KEY = 'foto_perfil_usuario'
+
 export default function Sidebar() {
   const router = useRouter()
   const pathname = usePathname()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [email, setEmail] = useState<string>('')
+  const [fotoPerfil, setFotoPerfil] = useState<string | null>(null)
+  const [menuFotoAberto, setMenuFotoAberto] = useState(false)
   const [carregando, setCarregando] = useState(true)
   const [genioAberto, setGenioAberto] = useState(false)
   const [temCardapio, setTemCardapio] = useState(false)
@@ -244,6 +249,37 @@ export default function Sidebar() {
     }
   }, [])
 
+  // Carregar foto de perfil do localStorage ao mudar o email
+  useEffect(() => {
+    if (typeof window === 'undefined' || !email || email === 'Visitante') {
+      setFotoPerfil(null)
+      return
+    }
+    const key = `${FOTO_PERFIL_KEY}_${email}`
+    const salva = localStorage.getItem(key)
+    setFotoPerfil(salva)
+  }, [email])
+
+  const handleTrocarFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !file.type.startsWith('image/')) return
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Escolha uma imagem de até 2 MB')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result as string
+      if (email && email !== 'Visitante') {
+        const key = `${FOTO_PERFIL_KEY}_${email}`
+        localStorage.setItem(key, dataUrl)
+        setFotoPerfil(dataUrl)
+      }
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('sessionId')
     localStorage.removeItem('userEmail')
@@ -340,15 +376,72 @@ export default function Sidebar() {
 
       {/* Informações do usuário */}
       <div className="mb-6 lg:mb-10 pb-6 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
-        <div
-          className="w-24 h-24 lg:w-32 lg:h-32 rounded-full flex items-center justify-center mb-4 lg:mb-6 transition-all duration-300 hover:scale-105 mx-auto lg:mx-0"
-          style={{
-            background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
-            border: '1px solid rgba(110, 143, 61, 0.25)',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
-          }}
-        >
-          <span className="text-4xl lg:text-5xl">👤</span>
+        <div className="relative inline-block mx-auto lg:mx-0 mb-4 lg:mb-6 flex justify-center lg:justify-start w-full lg:w-auto">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={handleTrocarFoto}
+            className="hidden"
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (email && email !== 'Visitante') {
+                setMenuFotoAberto(!menuFotoAberto)
+              }
+            }}
+            className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+            style={{
+              background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+              border: '1px solid rgba(110, 143, 61, 0.25)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+            }}
+          >
+            {fotoPerfil ? (
+              <img
+                src={fotoPerfil}
+                alt="Foto de perfil"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-4xl lg:text-5xl">👤</span>
+            )}
+          </button>
+          {email && email !== 'Visitante' && (
+            <>
+              {menuFotoAberto && (
+                <div
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 min-w-[180px] rounded-lg overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(180deg, #143A36 0%, #0F2E2B 100%)',
+                    border: '1px solid rgba(110, 143, 61, 0.35)',
+                    boxShadow: '0 12px 28px rgba(0, 0, 0, 0.4)'
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      fileInputRef.current?.click()
+                      setMenuFotoAberto(false)
+                    }}
+                    className="w-full px-4 py-3 text-sm font-medium text-text-primary hover:bg-accent-primary/20 transition-colors text-left flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Trocar foto de perfil
+                  </button>
+                </div>
+              )}
+              <div
+                className="fixed inset-0 z-40"
+                aria-hidden="true"
+                onClick={() => setMenuFotoAberto(false)}
+              />
+            </>
+          )}
         </div>
         <h2 className="text-xl lg:text-2xl font-bold text-text-primary mb-2 tracking-tight text-center lg:text-left">Minha Conta</h2>
         <p className="text-base lg:text-lg text-text-secondary font-light text-center lg:text-left">{email}</p>
